@@ -1,4 +1,4 @@
-GeoFound
+# GeoFound
 
 Projet Annuel de 1ère année à l'ESGI
 
@@ -6,37 +6,38 @@ Projet Annuel de 1ère année à l'ESGI
 
 * [1. Présentation du projet](#1-pr%C3%A9sentation-du-projet)
   * [1.1 Nom du projet](#11-nom-du-projet)
-  * [1.2 Description Générale du Projet](#12-Description-G%C3%A9n%C3%A9rale-du-Projet)
-* [2. Fonctionnalités](#2-Fonctionnalit%C3%A9s)
-  * [2.1 Espace Utilisateur](#21-Espace-Utilisateur)
-    * [2.1.1 Page D'accueil](#211-Page-D-accueil)
-    * [2.1.2 Page de Connexion](#212-Page-de-Connexion)
-    * [2.1.3 Page de Profil](#213-Page-de-Profil)
-    * [2.1.4 Page de Messagerie](#214-Page-de-Messagerie)
-    * [2.1.5 Recherche Utilisateur](#215-Recherche-Utilisateur)
-    * [2.1.6 Page de Récompenses](#216-Page-de-R%C3%A9compenses)
-    * [2.1.7 Formulaire de Contact](#217-Formulaire-de-Contact)
-    * [2.1.8 Politique de Confidentialité](#218-Politique-de-Confidentialit%C3%A9)
-    * [2.1.9 Page des CGU](#219-Page-des-CGU)
-  * [2.2 Espace Modération](#22-Espace-Mod%C3%A9ration)
-    * [2.2.1 Page Signalement](#221-Page-Signalement)
-    * [2.2.2 Page Messagerie Globale](#222-Page-Messagerie-Globale)
-    * [2.2.3 Page Modération des Posts](#223-Page-Mod%C3%A9ration-des-Posts)
-    * [2.2.4 Page Utilisateurs (Modération)](#224-Page-Utilisateurs-Mod%C3%A9ration)
-    * [2.2.5 Page Sanctions Utilisateurs](#225-Page-Sanctions-Utilisateurs)
-  * [2.3 Espace Administration](#23-Espace-Administration)
-    * [2.3.1 Page Maintenance Site](#231-Page-Maintenance-Site)
-    * [2.3.2 Page Utilisateurs (Administration)](#232-Page-Utilisateurs-Administration)
-    * [2.3.3 Page Gestion Utilisateurs](#233-Page-Gestion-Utilisateurs)
-    * [2.3.4 Page Gestion des Captcha](#234-Page-Gestion-des-Captcha)
-    * [2.3.5 Page logs du site](#235-Page-logs-du-site)
-    * [2.3.6 Page Statistiques](#236-Page-Statistiques)
-    * [2.3.7 Page Tickets Développeurs](#237-Page-Tickets-D%C3%A9veloppeurs)
-* [3. Contraintes Techniques](#3-Contraintes-Techniques)
-  * [3.1 Technologies Utilisés](#31-Technologies-Utilis%C3%A9s)
-  * [3.2 Sécurité](#32-S%C3%A9curit%C3%A9)
-* [4. Conclusion](#4-Conclusion)
-* [5. Prérequis et Installation](#5Pr%C3%A9requis-et-Installation)
+  * [1.2 Description Générale du Projet](#12-description-générale-du-projet)
+* [2. Fonctionnalités](#2-fonctionnalit%C3%A9s)
+  * [2.1 Espace Utilisateur](#21-espace-utilisateur)
+    * [2.1.1 Page D'accueil](#211-page-daccueil)
+    * [2.1.2 Page de Connexion](#212-page-de-connexion)
+    * [2.1.3 Page de Profil](#213-page-de-profil)
+    * [2.1.4 Page de Messagerie](#214-page-de-messagerie)
+    * [2.1.5 Recherche Utilisateur](#215-recherche-utilisateur)
+    * [2.1.6 Page de Récompenses](#216-page-de-r%C3%A9compenses)
+    * [2.1.7 Formulaire de Contact](#217-formulaire-de-contact)
+    * [2.1.8 Politique de Confidentialité](#218-politique-de-confidentialit%C3%A9)
+    * [2.1.9 Page des CGU](#219-page-des-cgu)
+  * [2.2 Espace Modération](#22-espace-mod%C3%A9ration)
+    * [2.2.1 Page Signalement](#221-page-signalement)
+    * [2.2.2 Page Messagerie Globale](#222-page-messagerie-globale)
+    * [2.2.3 Page Modération des Posts](#223-page-mod%C3%A9ration-des-posts)
+    * [2.2.4 Page Utilisateurs (Modération)](#224-page-utilisateurs-mod%C3%A9ration)
+    * [2.2.5 Page Sanctions Utilisateurs](#225-page-sanctions-utilisateurs)
+  * [2.3 Espace Administration](#23-espace-administration)
+    * [2.3.1 Page Maintenance Site](#231-page-maintenance-site)
+    * [2.3.2 Page Utilisateurs (Administration)](#232-page-utilisateurs-administration)
+    * [2.3.3 Page Gestion Utilisateurs](#233-page-gestion-utilisateurs)
+    * [2.3.4 Page Gestion des Captcha](#234-page-gestion-des-captcha)
+    * [2.3.5 Page logs du site](#235-page-logs-du-site)
+    * [2.3.6 Page Statistiques](#236-page-statistiques)
+    * [2.3.7 Page Tickets Développeurs](#237-page-tickets-d%C3%A9veloppeurs)
+* [3. Contraintes Techniques](#3-contraintes-techniques)
+  * [3.1 Technologies Utilisés](#31-technologies-utilis%C3%A9s)
+  * [3.2 Sécurité](#32-s%C3%A9curit%C3%A9)
+* [4. Conclusion](#4-conclusion)
+* [5. Prérequis et Installation](#5pr%C3%A9requis-et-installation)
+* [6. Livrables](#6-livrables)
 
 
 ---
@@ -65,7 +66,7 @@ Finalement, une interface d'administration et de modération permet de gérer le
 
 * Map Monde via l’API de Google Map montrant toute les photos enregistrés par les utilisateurs, en fonction de leur  localisation.
 * Moteur de recherche utilisant l’API Google Map pour trouver des images en fonction d’une destination, montrant les images proches de cette destination (Ajouter un curseur permettant de choisir le rayon max ?)
-* Navbar avec les pages [2.1.2 Page de Connexion](#212-Page-de-Connexion), \[2.1.5 Recherche Utilisateur\](https://2.1.5 Recherche Utilisateur), [2.1.3 Page de Profil](#213-Page-de-Profil), [2.1.6 Page de Récompenses](#216-Page-de-R%C3%A9compenses), \[2.1.4 Page de Messagerie\](https://2.1.4 Page de Messagerie). Ajout d’un onglet “Manager” pour les personnes ayant un accès de modération et/ou d’administration du site.
+* Navbar avec les pages [2.1.2 Page de Connexion](#212-Page-de-Connexion), [215-Recherche-Utilisateur](#215-Recherche-Utilisateur), [2.1.3 Page de Profil](#213-Page-de-Profil), [2.1.6 Page de Récompenses](#216-Page-de-R%C3%A9compenses), [2.1.4 Page de Messagerie](#214-Page-de-Messagerie). Ajout d’un onglet “Manager” pour les personnes ayant un accès de modération et/ou d’administration du site.
 * Footer avec la page menant vers [2.1.8 Politique de Confidentialité](#218-Politique-de-Confidentialit%C3%A9), [2.1.9 Page des CGU](#219-Page-des-CGU), [2.1.7 Formulaire de Contact](#217-Formulaire-de-Contact)
 
 #### 2.1.2 Page de Connexion
@@ -105,7 +106,7 @@ Finalement, une interface d'administration et de modération permet de gérer le
 
 * Pouvoir chercher les données d’un utilisateur (Photos, Vidéos et Textes posté, ses commentaires, ses likes s’ils sont en publique)
 * Pouvoir l’ajouter en amis
-* Pouvoir le signaler (mettre des suggestions de signalement, “Propos Incorrects”, “Compte Piraté”, ….)
+* Pouvoir le signaler (mettre des suggestions de signalement, “Propos Incorrects”, “Compte Piraté”)
 
 #### 2.1.6 Page de Récompenses
 
@@ -228,6 +229,38 @@ Utilisation de GLPI pour gérer les tickets développeurs
 ## 4. Conclusion
 
 En conclusion, le projet GeoFound représente une plateforme sociale innovante dédiée aux passionnés de voyages et d'exploration. Grâce à ses nombreuses fonctionnalités, telles que la géolocalisation des publications, la messagerie privée, et un système de récompenses, GeoFound offre une expérience utilisateur riche et interactive. L'intégration de l'API Google Maps permet une recherche intuitive et personnalisée des contenus, tandis que les espaces de modération et d'administration assurent la sécurité et la qualité des interactions sur la plateforme. Les contraintes techniques et les mesures de sécurité mises en place garantissent un environnement fiable et performant. GeoFound se positionne ainsi comme un outil incontournable pour les amateurs de découvertes et d'aventures à travers le monde.
+
+## 5. Prérequis et Installation
+
+## 6. Livrables
+
+* 30/03/2025
+  * Cahier des Charges complet
+  * Mockups Finalisé
+  * Schema BDD sous forme de MCD + Sa construction
+  * Charte Graphique
+  * Page d’Accueil du Front et Back Office
+* 04/05/2025
+  * Document Listant les principaux risques
+  * Code de processus de connexion (Captcha et Vérification par mail)
+  * Certaines fonctionnalités du back-office (Gestion utilisateurs, Captcha, Logs)
+  * Logs de connexion, de visite toute les pages du site
+  * Newsletter avec un historique d’envoi
+* 01/06/2025
+  * Front Office terminé
+  * Back Office presque terminé (composants avatar, liste utilisateurs, maintenance)
+  * Système de recherche de photo via l’api
+  * export donnée utilisateur PDF
+  * Mail automatique
+  * certificat SSL
+  * GLPI
+* 29/06/2025
+  * Rendu Complet du site
+  * Base de donnée dans un fichier .sql
+  * Dossier technique complet
+  * Dossier d’utilisation
+  * Synthèse sur le travail de chacun
+  * Easter Egg pour la soutenance
 
 
 ---
