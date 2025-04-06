@@ -54,7 +54,7 @@ CREATE TABLE follow (
 
 CREATE TABLE post_content (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    content LONGLONGTEXT
+    content LONGTEXT
 );
 
 CREATE TABLE post (
