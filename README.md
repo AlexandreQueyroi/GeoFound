@@ -6,7 +6,7 @@ Projet Annuel de 1ère année à l'ESGI
 
 * [1. Présentation du projet](#1-pr%C3%A9sentation-du-projet)
   * [1.1 Nom du projet](#11-nom-du-projet)
-  * [1.2 Description Générale du Projet](#12-description-générale-du-projet)
+  * [1.2 Description Générale du Projet](#12-description-g%C3%A9n%C3%A9rale-du-projet)
 * [2. Fonctionnalités](#2-fonctionnalit%C3%A9s)
   * [2.1 Espace Utilisateur](#21-espace-utilisateur)
     * [2.1.1 Page D'accueil](#211-page-daccueil)
@@ -231,6 +231,26 @@ Utilisation de GLPI pour gérer les tickets développeurs
 En conclusion, le projet GeoFound représente une plateforme sociale innovante dédiée aux passionnés de voyages et d'exploration. Grâce à ses nombreuses fonctionnalités, telles que la géolocalisation des publications, la messagerie privée, et un système de récompenses, GeoFound offre une expérience utilisateur riche et interactive. L'intégration de l'API Google Maps permet une recherche intuitive et personnalisée des contenus, tandis que les espaces de modération et d'administration assurent la sécurité et la qualité des interactions sur la plateforme. Les contraintes techniques et les mesures de sécurité mises en place garantissent un environnement fiable et performant. GeoFound se positionne ainsi comme un outil incontournable pour les amateurs de découvertes et d'aventures à travers le monde.
 
 ## 5. Prérequis et Installation
+
+Cloner le projet dans un dossier
+
+Pour installer la base de donnée, allé dans le dossier du projet et écrire \`mysql -u root -p < database.sql\`
+
+
+:::info
+Par défaut, un utilisateur administrateur sera créé, pour se connecter avec :
+
+User : admin
+
+Password : admin
+
+:::
+
+S’il n’y a pas d’erreurs, tout est bon et vous pouvez passer à l’étape suivante. S’il y a une erreur, veuillez faire :
+
+* mysql -u root -p < delete_database.sql
+
+Recommencer l’installation de la base de donnée en corrigeant l’erreur.
 
 ## 6. Livrables
 
