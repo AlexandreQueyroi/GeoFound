@@ -1,5 +1,5 @@
 <?php
-include_once '/bdd.php';
+include_once(__DIR__ . '/bdd.php');
 function getRankColorSpan($rank)
 {
     global $conn;

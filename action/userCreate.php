@@ -1,16 +1,16 @@
 <?php
-include_once '../api/bdd.php';
+include_once(__DIR__ . '/../api/bdd.php');
 session_start();
 
 if (isset($_POST['newuser']) && isset($_POST['newpass']) && isset($_POST['newpass_confirm'])) {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = password_hash(htmlspecialchars($_POST['newpass']), CRYPT_SHA256);
         $pseudo = htmlspecialchars($_POST['newuser']);
-        $sql = "INSERT INTO users (pseudo, password) VALUES (?, ?)";
+        $sql = "INSERT INTO users (pseudo, password) VALUES (:pseudo, :password)";
         $stmg = $conn->prepare($sql);
-        $stmg->bind_param("ss", $pseudo, $password);
+        $stmg->bindParam(":pseudo", $pseudo, PDO::PARAM_STR);
+        $stmg->bindParam(":password", $password, PDO::PARAM_STR);
         $stmg->execute();
-        $stmg->close();
         $loginData = array(
             'username' => $pseudo,
             'password' => htmlspecialchars($_POST['newpass'])

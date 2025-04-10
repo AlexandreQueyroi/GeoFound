@@ -4,8 +4,8 @@ if (!($_SESSION['rank'] === "admin" || $_SESSION['rank'] === "mod")) {
     header("Location: /index.php");
     exit();
 }
-include_once '../api/bdd.php';
-include_once '../build/header_back.php';
+include_once(__DIR__ . '/../api/bdd.php');
+include_once(__DIR__ . '/../build/header_back.php');
 ?>
 
 <div class="bg-gray-900">
@@ -93,4 +93,4 @@ include_once '../build/header_back.php';
 </div>
 
 <?php
-include_once '../build/footer.php';
+include_once(__DIR__ . '/../build/footer.php');

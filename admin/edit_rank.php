@@ -1,6 +1,6 @@
 <?php
-include_once '../build/header_back.php';
-include_once '../api/bdd.php';
+include_once(__DIR__ . '/../build/header_back.php');
+include_once(__DIR__ . '/../api/bdd.php');
 session_start();
 if (!isset($_SESSION['user'])) {
     header("Location: ../index.php");
@@ -34,4 +34,4 @@ if (isset($_GET['id'])) {
 
 
 <?php
-include_once '../build/footer.php';
+include_once(__DIR__ . '/../build/footer.php');

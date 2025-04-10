@@ -1,7 +1,7 @@
 <?php
-include_once './build/header.php';
-include_once './api/bdd.php';
-include_once './modal.php';
+include_once(__DIR__ . '/build/header.php');
+include_once(__DIR__ . '/api/bdd.php');
+include_once(__DIR__ . '/modal.php');
 
 if (isset($_POST['envoyer'])) {
     $description = $_POST['description'];
@@ -22,7 +22,8 @@ if (isset($_POST['envoyer'])) {
     unset($_POST['envoyer'], $_POST['description']);
     header("Location: index.php");
     exit();
-};
+}
+;
 ?>
 
 <div class="text-black">
@@ -99,4 +100,4 @@ if (isset($_POST['envoyer'])) {
 
 
 <?php
-include_once './build/footer.php';
+include_once(__DIR__ . '/build/footer.php');

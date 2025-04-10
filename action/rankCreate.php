@@ -1,5 +1,5 @@
 <?php
-include_once '../api/bdd.php';
+include_once(__DIR__ . '/../api/bdd.php');
 session_start();
 if (!isset($_SESSION['user'])) {
     header("Location: ../index.php");

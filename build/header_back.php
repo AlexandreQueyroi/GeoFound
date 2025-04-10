@@ -20,7 +20,7 @@ session_start();
 ?>
 
 <body class="flex flex-col min-h-screen bg-[#0A0A23]">
-    <?php include_once '../modal.php'; ?>
+    <?php include_once(__DIR__ . '/../modal.php'); ?>
     <?php var_dump($_SESSION); ?>
     <header class="bg-[#081225] text-white p-3">
         <div class="container mx-auto flex justify-center items-center text-center text-2xl">

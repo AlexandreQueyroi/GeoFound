@@ -1,5 +1,9 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="fr">
+
 
 <head>
     <meta charset="UTF-8">
@@ -15,12 +19,9 @@
     <script src="switchmode.js" defer></script>
 </head>
 
-<?php
-session_start();
-?>
 
 <body class="flex flex-col min-h-screen bg-[#0A0A23]">
-    <?php include_once '../modal.php'; ?>
+    <?php include_once(__DIR__ . '/../modal.php'); ?>
     <?php var_dump($_SESSION); ?>
     <header class="bg-[#081225] text-white p-3">
         <div class="container mx-auto flex justify-center items-center text-center text-2xl">
@@ -52,7 +53,7 @@ session_start();
                         echo '</a>';
                         echo '<button data-modal-target="authentication-modal" data-modal-toggle="authentication-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
                             Connexion
-                            </button>'; 
+                            </button>';
                     } else {
                         echo '<a href="#" class="hover:text-gray-400">Messages</a>';
                         echo '<span class="border-2 border-white h-6"></span>';
