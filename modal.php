@@ -19,7 +19,7 @@
                 </button>
             </div>
             <div class="p-4 md:p-5">
-                <form class="space-y-4" id="connection-form" action="action/userConnection.php" method="POST">
+                <form class="space-y-4" id="connection-form" action="<?php echo "/action/userConnection.php"?>" method="POST">
                     <div>
                         <label for="pseudo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Identifiant ou adresse email
@@ -84,7 +84,7 @@
                 </button>
             </div>
             <div class="p-4 md:p-5">
-                <form action="action/createaccount.php" method="POST" class="space-y-4">
+                <form action="<?php echo "/action/createaccount.php"?>" method="POST" class="space-y-4">
                     <div>
                         <label for="newuser" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Identifiant
@@ -160,7 +160,7 @@
                 </button>
             </div>
             <div class="p-4 md:p-5">
-                <form action="../action/rankCreate.php" method="POST" class="space-y-4">
+                <form action="<?php echo "/action/rankCreate.php"?>" method="POST" class="space-y-4">
                     <div>
                         <label for="grade-name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Nom du grade

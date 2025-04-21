@@ -22,7 +22,9 @@ session_start();
 
 <body class="flex flex-col min-h-screen bg-[#0A0A23]">
     <?php include_once(__DIR__ . '/../modal.php'); ?>
+    <p class="text-white"> 
     <?php var_dump($_SESSION); ?>
+    </p>
     <header class="bg-[#081225] text-white p-3">
         <div class="container mx-auto flex justify-center items-center text-center text-2xl">
             <a href="#" class="flex items-center text-3xl font-semibold">
@@ -36,7 +38,7 @@ session_start();
                     <span class="border-2 border-white h-6"></span>
                     <a href="#" class="hover:text-gray-400">Explorer</a>
                     <span class="border-2 border-white h-6"></span>
-                    <a href="#" class="hover:text-gray-400">Récompenses</a>
+                    <a href="<?php echo "/reward.php"?>" class="hover:text-gray-400">Récompenses</a>
                     <span class="border-2 border-white h-6"></span>
                     <?php
                     if (empty($_SESSION['user'])) {

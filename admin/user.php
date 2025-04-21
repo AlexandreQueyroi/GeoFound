@@ -1,4 +1,10 @@
 <?php
+session_start();
+$_SESSION['last_url'] = $_SERVER['REQUEST_URI'];
+if (!isset($_SESSION['user'])) {
+    header('Location: /action/userConnection.php');
+    exit();
+}
 include_once(__DIR__ . '/../build/header_back.php');
 include_once(__DIR__ . '/../api/bdd.php');
 // if (!($_SESSION['user_rank'] === "admin" || $_SESSION['user_rank'] === "mod")) {
@@ -25,7 +31,7 @@ include_once(__DIR__ . '/../api/bdd.php');
         </thead>
         <tbody>
             <?php
-            $sql = "SELECT rank, pseudo, email, desactivated, avatar, connected, id FROM users";
+            $sql = "SELECT rank, pseudo, email, desactivated, avatar, token, id FROM users";
             $result = $conn->query($sql);
             include "../api/rank.php";
 
@@ -38,7 +44,7 @@ include_once(__DIR__ . '/../api/bdd.php');
                     echo "<td class='text-center px-4'> exemple@exemple.com </td>";
                     echo "<td class='text-center px-4'><div class='flex justify-center items-center'><span class=\"iconify text-lg text-bold " . ($row['desactivated'] ? "text-red-500" : "text-green-500") . "\" data-icon='" . ($row['desactivated'] ? "tabler:x" : "tabler:check") . "'></span></div></td>";
                     echo "<td class='text-center px-4'><div class='flex justify-center items-center'><img src='data:image/jpeg;base64," . $row['avatar'] . "' alt='Avatar' class='w-8 h-8 rounded-full'></div></td>";
-                    echo "<td class='text-center px-4'><div class='flex justify-center items-center'><span class=\"iconify text-lg text-bold " . ($row['connected'] ? "text-green-500" : "text-red-500") . "\" data-icon='" . ($row['connected'] ? "tabler:check" : "tabler:x") . "'></span></div></td>";
+                    echo "<td class='text-center px-4'><div class='flex justify-center items-center'><span class=\"iconify text-lg text-bold " . ($row['token'] ? "text-green-500" : "text-red-500") . "\" data-icon='" . ($row['token'] ? "tabler:check" : "tabler:x") . "'></span></div></td>";
                     echo "<td class='text-center px-4'><div class='flex justify-center items-center'><a href='edit_user.php?id=" . $row['id'] . "' class='text-blue-500 hover:underline'><span class='iconify' data-icon='tabler:settings'></span></a></div></td>";
                     echo "</tr>";
                 }

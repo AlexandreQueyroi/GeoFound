@@ -9,7 +9,8 @@ CREATE TABLE users (
     email VARCHAR(64) UNIQUE,
     description TEXT,
     desactivated BOOLEAN DEFAULT FALSE,
-    connected BOOLEAN DEFAULT FALSE,
+    token TEXT UNIQUE,
+    connected DATETIME,
     avatar TEXT
 );
 

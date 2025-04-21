@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
-    <link rel="icon" type="image/x-icon" href="img/logo.png">
+    <link rel="icon" type="image/x-icon" href="<?php __DIR__ ?>"/img/logo.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="switchmode.js" defer></script>
@@ -21,7 +21,9 @@ session_start();
 
 <body class="flex flex-col min-h-screen bg-[#0A0A23]">
     <?php include_once(__DIR__ . '/../modal.php'); ?>
+    <p class="text-white"> 
     <?php var_dump($_SESSION); ?>
+    </p>
     <header class="bg-[#081225] text-white p-3">
         <div class="container mx-auto flex justify-center items-center text-center text-2xl">
             <a href="#" class="flex items-center text-3xl font-semibold">
