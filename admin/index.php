@@ -1,7 +1,8 @@
 <?php
 session_start();
 if (!($_SESSION['rank'] === "admin" || $_SESSION['rank'] === "mod")) {
-    header("Location: /index.php");
+    header("Location: /error/403");
+    // http_response_code(403);
     exit();
 }
 include_once(__DIR__ . '/../api/bdd.php');

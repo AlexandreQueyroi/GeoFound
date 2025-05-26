@@ -1,3 +1,4 @@
+<script src=modal.js></script>
 <div id="authentication-modal" tabindex="-1" aria-hidden="true"
     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-md max-h-full">
@@ -15,11 +16,12 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                     </svg>
-                    <span class="sr-only">Close modal</span>
+                    <span class="sr-only">Fermer la Modal</span>
                 </button>
             </div>
             <div class="p-4 md:p-5">
-                <form class="space-y-4" id="connection-form" action="<?php echo "/action/userConnection.php"?>" method="POST">
+                <form class="space-y-4" id="connection-form" action="<?php echo "/action/userConnection.php" ?>"
+                    method="POST">
                     <div>
                         <label for="pseudo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Identifiant ou adresse email
@@ -51,8 +53,8 @@
                         </a>
                     </div>
                     <button type="submit"
-                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login
-                        to your account</button>
+                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Se
+                        connecter</button>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
                         Pas encore inscrit? <a href="#" class="text-blue-700 hover:underline dark:text-blue-500"
                             data-modal-hide="authentication-modal" data-modal-target="modal-createaccount"
@@ -84,7 +86,7 @@
                 </button>
             </div>
             <div class="p-4 md:p-5">
-                <form action="<?php echo "/action/createaccount.php"?>" method="POST" class="space-y-4">
+                <form action="<?php echo "/action/userCreate.php" ?>" method="POST" class="space-y-4">
                     <div>
                         <label for="newuser" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Identifiant
@@ -127,7 +129,29 @@
                             </button>
                         </div>
                     </div>
+                    <label for="captcha-answer"
+                        class="block mt-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Captcha - Résolvez la question ci-dessous
+                    </label>
+                    <div class="mb-4">
+                        <p id="captcha-question" class="text-sm font-medium text-gray-900 dark:text-white mb-2"></p>
+                        <div class="flex gap-2">
+                            <input type="text" id="captcha-answer" class="w-3/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 
+                                    dark:bg-gray-600 dark:border-gray-500 dark:text-white" placeholder="Votre réponse"
+                                required />
+                            <button type="button" id="check-captcha" class="w-1/4 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none 
+                                    focus:ring-green-300 font-medium rounded-lg text-sm py-2.5
+                                    text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                Valider
+                            </button>
+                        </div>
+                        <p id="response" class="text-sm mt-2 text-red-500 dark:text-red-400"></p>
+                    </div>
 
+                    <script>
+                        fetchCaptcha();
+                        document.getElementById('check-captcha').addEventListener('click', checkCaptcha);
+                    </script>
                     <button type="submit" id="submitBtn" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none 
                         focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5
                         text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -160,7 +184,7 @@
                 </button>
             </div>
             <div class="p-4 md:p-5">
-                <form action="<?php echo "/action/rankCreate.php"?>" method="POST" class="space-y-4">
+                <form action="<?php echo "/action/rankCreate.php" ?>" method="POST" class="space-y-4">
                     <div>
                         <label for="grade-name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Nom du grade

@@ -10,8 +10,4 @@ if (!isset($_SESSION['user'])) {
 }
 include_once(__DIR__ . '/build/header.php');
 include_once(__DIR__ . '/../api/bdd.php');
-// if (!($_SESSION['user_rank'] === "admin" || $_SESSION['user_rank'] === "mod")) {
-//     header("Location: /index.php");
-//     exit();
-// }
 ?>

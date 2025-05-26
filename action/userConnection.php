@@ -1,28 +1,7 @@
 <?php
 include_once(__DIR__ . '/../api/bdd.php');
+include_once(__DIR__ . '/../api/log.php');
 session_start();
-if (isset($_GET["checkuser"])) {
-    $user = htmlspecialchars($_GET["checkuser"]);
-    $stmt = $conn->prepare("SELECT id FROM users WHERE pseudo = :pseudo");
-    $stmt->bindParam(':pseudo', $user, PDO::PARAM_STR);
-    $stmt->execute();
-
-    if ($stmt->rowCount() > 0) {
-        echo "exist";
-    }
-    exit;
-}
-if (isset($_GET["checkemail"])) {
-    $user = htmlspecialchars($_GET["checkemail"]);
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email");
-    $stmt->bindParam(':email', $user, PDO::PARAM_STR);
-    $stmt->execute();
-
-    if ($stmt->rowCount() > 0) {
-        echo "exist";
-    }
-    exit;
-}
 if (!isset($_SESSION['user'])) {
     if (!isset($_SESSION['user']) && isset($_COOKIE['token'])) {
         $token = $_COOKIE['token'];
@@ -30,14 +9,17 @@ if (!isset($_SESSION['user'])) {
         $stmt->bindParam(':token', $token, PDO::PARAM_STR);
         $stmt->execute();
         $user = $stmt->fetch();
-    
+
         if ($user) {
             $_SESSION['user'] = $user['pseudo'];
             $_SESSION['rank'] = $user['rank'];
             $_SESSION['id'] = $user['id'];
-    
+
+            custom_log("INFO", ' User ' . $user['pseudo'] . ' with ID : ' . $user['id'] . ' just auto relogged in.', "userConnection.php");
+
             $stmt = $conn->prepare("UPDATE users SET connected = :date WHERE id = :id");
-            $stmt->bindParam(':date', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+            $currentDate = date("Y-m-d H:i:s");
+            $stmt->bindParam(':date', $currentDate, PDO::PARAM_STR);
             $stmt->bindParam(':id', $user['id'], PDO::PARAM_INT);
             $stmt->execute();
 
@@ -57,18 +39,23 @@ if (!isset($_SESSION['user'])) {
         $stmt->bindParam(':pseudo', $pseudo, PDO::PARAM_STR);
         $stmt->execute();
         $user = $stmt->fetch();
-        if ($user && password_verify($password, $user['password']) && $user['token'] == NULL) {
+        if ($user && password_verify($password, $user['password']) && !isset($user['token'])) {
             $stmt = $conn->prepare("UPDATE users SET connected = :date WHERE id = :id");
-            $stmt->bindParam(':date', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+            $currentDate = date("Y-m-d H:i:s");
+            $stmt->bindParam(':date', $currentDate, PDO::PARAM_STR);
             $stmt->bindParam(':id', $user['id'], PDO::PARAM_INT);
             $stmt->execute();
             $_SESSION['user'] = $pseudo;
             $_SESSION['id'] = $user['id'];
             $_SESSION['rank'] = $user['rank'];
+
+            custom_log("INFO", ' User ' . $pseudo . ' with ID : ' . $user['id'] . ' just logged in.', "userConnection.php");
+
             if (isset($_COOKIE['cookie_accepted'])) {
                 $token = random_int(1000000000, 9999999999) . "-" . $user['id'] . "-" . time();
+                $token = password_hash($token, PASSWORD_DEFAULT);
                 setcookie("token", $token, time() + (7 * 86400), "/", "", false, true);
-                
+
                 $stmt = $conn->prepare("UPDATE users SET token = :token WHERE id = :id");
                 $stmt->bindParam(':token', $token, PDO::PARAM_STR);
                 $stmt->bindParam(':id', $user['id'], PDO::PARAM_INT);
@@ -85,16 +72,24 @@ if (!isset($_SESSION['user'])) {
     }
 } else {
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["disconnect"])) {
-        $stmt = $conn->prepare("UPDATE users SET connected = NULL WHERE id = :id");
+        $stmt = $conn->prepare("UPDATE users SET connected = NULL, token = NULL WHERE id = :id");
         $stmt->bindParam(':id', $_SESSION['id'], PDO::PARAM_INT);
         $stmt->execute();
+        custom_log("INFO", ' User ' . $_SESSION['user'] . ' with ID : ' . $_SESSION['id'] . ' just logged out.', "userConnection.php");
         session_unset();
         session_destroy();
         header("Location: /");
+        setcookie("token", "0", time() - (7 * 86400), "/", "", false, true);
         exit;
     }
 }
-
-header("Location: /error.php?error=403&message=Accès refusé, vous devez être connecté");
+// if ($_SESSION['last_url'] != "/") {
+//     header("Location: /error.php?error=403");
+//     exit;
+// }
+// header("Location: /error.php?error=Contact support with code 'ConnectionAbort'");
+// http_response_code(403);
+// header("Location: /error/403");
+custom_log("ERROR", ' User ' . ($_SESSION['user'] ?? 'NULL') . ' with ID : ' . ($_SESSION['id'] ?? 'NULL') . " and server variable : " . print_r($_SERVER ?? 'SERVER VARIABLE NOT FOUND', true) . ' just failed connection check.', "userConnection.php");
 exit;
 ?>

@@ -9,16 +9,16 @@ if (isset($_POST['envoyer'])) {
     $image_data = file_get_contents($image_tmp);
     $image_base64 = base64_encode($image_data);
     $sql = "INSERT INTO post_content (content) VALUES (?)";
-    $stmg = $conn->prepare($sql);
-    $stmg->bind_param("s", $image_base64);
-    $stmg->execute();
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $image_base64);
+    $stmt->execute();
     $image_id = $conn->lastInsertId();
-    $stmg->close();
-    $sql = "INSERT INTO post (description, content_id, user_id) VALUES (?, ?, 1)";
-    $stmg = $conn->prepare($sql);
-    $stmg->bind_param("si", $description, $image_id);
-    $stmg->execute();
-    $stmg->close();
+    $stmt->close();
+    $sql = "INSERT INTO post (description, content_id, user) VALUES (?, ?, 1)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $description, $image_id);
+    $stmt->execute();
+    $stmt->close();
     unset($_POST['envoyer'], $_POST['description']);
     header("Location: index.php");
     exit();
@@ -33,7 +33,7 @@ if (isset($_POST['envoyer'])) {
     </button>
 
     <?php
-    $sql = "SELECT post.description, post_content.content, post.user_id FROM post 
+    $sql = "SELECT post.description, post_content.content, post.user FROM post 
         INNER JOIN post_content ON post.content_id = post_content.id 
         ORDER BY post.id DESC";
     $result = $conn->query($sql);
@@ -41,11 +41,11 @@ if (isset($_POST['envoyer'])) {
     if ($result->rowCount() > 0) {
         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
             $user_name = "Unknown";
-            $user_id = $row['user_id'];
+            $user = $row['user'];
             $sql = "SELECT pseudo FROM users WHERE id = ?";
-            $stmg = $conn->prepare($sql);
-            $stmg->execute([$user_id]);
-            $resT = $stmg->fetch();
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$user]);
+            $resT = $stmt->fetch();
             if ($resT) {
                 $user_name = $resT["pseudo"];
             }

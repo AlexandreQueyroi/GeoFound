@@ -1,0 +1,14 @@
+======================
+Fichier de logs du 07/05/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[07/05/2025 04:02:06] - [ERROR] - [2] - Undefined array key "last_url" - /var/www/geofound/action/userConnection.php:86
+[07/05/2025 04:02:06] - [ERROR] -  User NULL with ID : NULL just failed connection check. ---> userConnection.php
+[07/05/2025 04:02:06] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[07/05/2025 04:02:06] - [ERROR] - Contact support with code 'ConnectionAbort' : Session content :  ---> [ERROR]
+[07/05/2025 05:26:10] - [ERROR] -  User NULL with ID : NULL just failed connection check. ---> userConnection.php
+[07/05/2025 05:26:10] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[07/05/2025 05:26:10] - [ERROR] - Contact support with code 'ConnectionAbort' : Session content :  ---> [ERROR]
+[07/05/2025 21:40:42] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[07/05/2025 21:40:42] - [ERROR] - 403 : Session content :  ---> [ERROR]

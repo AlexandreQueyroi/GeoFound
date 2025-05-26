@@ -6,33 +6,44 @@ if (isset($_POST['newuser']) && isset($_POST['newpass']) && isset($_POST['newpas
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = password_hash(htmlspecialchars($_POST['newpass']), CRYPT_SHA256);
         $pseudo = htmlspecialchars($_POST['newuser']);
-        $sql = "INSERT INTO users (pseudo, password) VALUES (:pseudo, :password)";
-        $stmg = $conn->prepare($sql);
-        $stmg->bindParam(":pseudo", $pseudo, PDO::PARAM_STR);
-        $stmg->bindParam(":password", $password, PDO::PARAM_STR);
-        $stmg->execute();
-        $loginData = array(
-            'username' => $pseudo,
-            'password' => htmlspecialchars($_POST['newpass'])
-        );
+        $email = htmlspecialchars($_POST['newmail']);
+        $sql = "INSERT INTO users (pseudo, password, email) VALUES (:pseudo, :password, :email)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(":pseudo", $pseudo, PDO::PARAM_STR);
+        $stmt->bindParam(":password", $password, PDO::PARAM_STR);
+        $stmt->bindParam(":email", $email, PDO::PARAM_STR);
+        $stmt->execute();
+        $id = $conn->lastInsertId();
 
+        $state = "success";
+        $data = array(
+            'username' => $pseudo,
+            'id' => $id,
+            'type' => 'confirmCreate',
+            'email' => htmlspecialchars($_POST['newmail'])
+        );
         $options = array(
             'http' => array(
-                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                'header' => "Content-type: application/json\r\n",
                 'method' => 'POST',
-                'content' => http_build_query($loginData),
+                'content' => json_encode($data),
             ),
         );
 
         $context = stream_context_create($options);
-        $result = file_get_contents('/var/www/htmlaction/action/user.php', false, $context);
-
-        if ($result === FALSE) {
-            echo "error";
+        $result = file_get_contents('https://geofound.fr/api/PHPMailer.php', false, $context);
+        var_dump($result);
+        var_dump($http_response_header);
+        if ($result === false) {
+            $err = error_get_last();
+            print_r($err);
+            exit;
         }
-        header("Location: ../index.php");
+
+        header("Location: /accountCreated?status=" . $state);
+        exit;
 
     }
 }
-header("Location: ../index.php");
+header("Location: /");
 ?>

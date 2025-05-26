@@ -20,6 +20,12 @@ session_start();
 ?>
 
 <body class="flex flex-col min-h-screen bg-[#0A0A23]">
+<?php 
+    error_reporting(E_ALL);
+    ini_set("display_errors", 0);
+
+    echo $undefinedVariable;
+?>
     <?php include_once(__DIR__ . '/../modal.php'); ?>
     <p class="text-white"> 
     <?php var_dump($_SESSION); ?>

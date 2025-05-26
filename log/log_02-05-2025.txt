@@ -1,0 +1,10 @@
+======================
+Fichier de logs du 02/05/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[02/05/2025 09:35:26] - Error: [2] Undefined array key "token" - /var/www/geofound/action/userConnection.php:41
+[02/05/2025 09:35:26] - Error: [8] Only variables should be passed by reference - /var/www/geofound/action/userConnection.php:43
+[02/05/2025 09:35:26] - [INFO] -  User admin with ID : 1 just logged in. ---> userConnection.php
+[02/05/2025 09:35:51] - [INFO] -  User admin with ID : 1 just logged out. ---> userConnection.php
+[02/05/2025 14:24:22] - Error: [2] Undefined array key "last_url" - /var/www/geofound/action/userConnection.php:82

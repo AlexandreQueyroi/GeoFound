@@ -1,5 +1,19 @@
 <?php
 session_start();
+$_SESSION['last_url'] = $_SERVER['REQUEST_URI'];
+if (strpos($_SESSION['last_url'], '?') !== false) {
+    $url = strstr($_SESSION['last_url'], '?', true);
+} else {
+    $url = $_SESSION['last_url'];
+}
+if (!isset($_SESSION['user']) && ($url != "/" && $url != "/accountCreated" && $url != "/verify")) {
+    echo "<script>console.log('not logged');</script>";
+    echo "<script>console.log('url : " . $url . "');</script>";
+    header('Location: /action/userConnection.php');
+    exit();
+} else {
+    echo "<script>console.log('logged');</script>";
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -21,9 +35,12 @@ session_start();
 
 
 <body class="flex flex-col min-h-screen bg-[#0A0A23]">
+    <?php include_once(__DIR__ . '/../api/log.php'); ?>
     <?php include_once(__DIR__ . '/../modal.php'); ?>
-    <p class="text-white"> 
-    <?php var_dump($_SESSION); ?>
+    <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col space-y-2"></div>
+    <audio id="notif-sound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae6c7.mp3" preload="auto"></audio>
+    <p class="text-white">
+        <?php var_dump($_SESSION); ?>
     </p>
     <header class="bg-[#081225] text-white p-3">
         <div class="container mx-auto flex justify-center items-center text-center text-2xl">
@@ -38,7 +55,7 @@ session_start();
                     <span class="border-2 border-white h-6"></span>
                     <a href="#" class="hover:text-gray-400">Explorer</a>
                     <span class="border-2 border-white h-6"></span>
-                    <a href="<?php echo "/reward.php"?>" class="hover:text-gray-400">Récompenses</a>
+                    <a href="<?php echo "/reward.php" ?>" class="hover:text-gray-400">Récompenses</a>
                     <span class="border-2 border-white h-6"></span>
                     <?php
                     if (empty($_SESSION['user'])) {
@@ -57,9 +74,9 @@ session_start();
                             Connexion
                             </button>';
                     } else {
-                        echo '<a href="#" class="hover:text-gray-400">Messages</a>';
+                        echo '<a href="/me/inbox" class="hover:text-gray-400">Messages</a>';
                         echo '<span class="border-2 border-white h-6"></span>';
-                        echo '<a href="#" class="hover:text-gray-400">Profil</a>';
+                        echo '<a href="/me/" class="hover:text-gray-400">Profil</a>';
                         echo '<span class="border-2 border-white h-6"></span>';
                         echo "<form action='/action/userConnection.php' method='post'>";
                         echo "<input type='hidden' name='disconnect' value='true'>";
@@ -73,3 +90,41 @@ session_start();
     </header>
 
     <container class="flex-grow max-1000px mx-auto">
+<script>
+// Fonction pour afficher un toast
+function showToast(message, pseudo) {
+    const toast = document.createElement('div');
+    toast.className = 'bg-blue-700 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-2 animate-fade-in-up';
+    toast.innerHTML = `<span class='font-bold'>${pseudo}</span><span class='ml-2'>: ${message}</span>`;
+    document.getElementById('toast-container').appendChild(toast);
+    document.getElementById('notif-sound').play();
+    setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => toast.remove(), 500);
+    }, 5000);
+}
+// Petite animation fade-in-up
+const style = document.createElement('style');
+style.innerHTML = `
+@keyframes fade-in-up {from {opacity:0;transform:translateY(20px);}to {opacity:1;transform:translateY(0);}}
+.animate-fade-in-up {animation: fade-in-up 0.3s;}
+#toast-container > div {transition: opacity 0.5s;}
+}`;
+document.head.appendChild(style);
+
+// --- Notification message reçus partout sur le site ---
+let lastNotifiedMsgId = null;
+function pollLastMessage() {
+    fetch('/api/last_message.php')
+        .then(r => r.json())
+        .then(msg => {
+            if (msg && msg.id && msg.id !== lastNotifiedMsgId) {
+                showToast(msg.content, msg.pseudo);
+                lastNotifiedMsgId = msg.id;
+            }
+        });
+}
+setInterval(pollLastMessage, 7000);
+// Appel initial pour ne pas attendre 7s au chargement
+pollLastMessage();
+</script>

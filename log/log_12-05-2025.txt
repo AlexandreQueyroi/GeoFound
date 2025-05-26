@@ -1,0 +1,17 @@
+======================
+Fichier de logs du 12/05/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[12/05/2025 00:05:29] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[12/05/2025 00:05:29] - [ERROR] - 403 : Session content :  ---> [ERROR]
+[12/05/2025 02:33:59] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[12/05/2025 02:33:59] - [ERROR] - 403 : Session content :  ---> [ERROR]
+[12/05/2025 02:34:00] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[12/05/2025 02:34:00] - [ERROR] - 403 : Session content :  ---> [ERROR]
+[12/05/2025 20:56:15] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[12/05/2025 20:56:15] - [ERROR] - 403 : Session content :  ---> [ERROR]
+[12/05/2025 23:23:26] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[12/05/2025 23:23:26] - [ERROR] - 403 : Session content :  ---> [ERROR]
+[12/05/2025 23:23:40] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[12/05/2025 23:23:40] - [ERROR] - 403 : Session content :  ---> [ERROR]

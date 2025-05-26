@@ -38,16 +38,18 @@
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 <script>
-  if (!Cookies.get('cookie_accepted')) {
-    document.getElementById('cookie-banner').classList.remove("hidden");
+  console.log(document.cookie.includes('cookie=true'));
+  if (!document.cookie.includes('cookie=true')) {
+    document.getElementById('cookie-banner').style.display = 'flex';
+  } else {
+    document.getElementById('cookie-banner').style.display = 'none';
   }
 
   document.getElementById('accept-cookies').addEventListener('click', () => {
-    Cookies.set('cookie_accepted', 'true', { expires: 365 });
+    document.cookie = "cookie=true; path=/; max-age=" + 365 * 24 * 60 * 60;
     document.getElementById('cookie-banner').style.display = 'none';
-    location.reload(); // Recharge pour que PHP puisse poser les cookies auto-login
+    location.reload();
   });
 </script>
 <script src="../build/cookies.js"></script>

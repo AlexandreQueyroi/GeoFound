@@ -1,0 +1,143 @@
+======================
+Fichier de logs du 15/05/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[15/05/2025 13:37:16] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+(
+    [HTTP_HOST] => geofound.fr
+    [HTTP_CACHE_CONTROL] => no-cache
+    [HTTP_PRAGMA] => no-cache
+    [HTTP_COOKIE] => PHPSESSID=3lbbj9n00fn6f7ujus0jfafrt0
+    [HTTP_ACCEPT_LANGUAGE] => fr;q=0.9,en;q=0.8
+    [HTTP_CF_RAY] => 9403076b5d19d149-CDG
+    [HTTP_X_FORWARDED_FOR] => 34.155.153.172
+    [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
+    [HTTP_SENTRY_TRACE] => 8e1bcf0741114c29bb9a0d0e899dde80-b0487318d5b276a9
+    [HTTP_BAGGAGE] => sentry-trace_id=8e1bcf0741114c29bb9a0d0e899dde80,sentry-environment=production,sentry-public_key=5e9a301c0471ab6c2e45ec1a0c7056bc
+    [HTTP_USER_AGENT] => Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/
+    [HTTP_ACCEPT_ENCODING] => gzip, br
+    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+    [HTTP_CF_VISITOR] => {"scheme":"https"}
+    [HTTP_X_FORWARDED_PROTO] => https
+    [HTTP_CDN_LOOP] => cloudflare; loops=1
+    [HTTP_CF_CONNECTING_IP] => 34.155.153.172
+    [HTTP_CF_IPCOUNTRY] => FR
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at geofound.fr Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
+    [SERVER_NAME] => geofound.fr
+    [SERVER_ADDR] => 193.70.0.80
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 172.71.127.65
+    [DOCUMENT_ROOT] => /var/www/geofound
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
+    [SERVER_ADMIN] => [no address given]
+    [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
+    [REMOTE_PORT] => 19900
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => HEAD
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /action/userConnection.php
+    [SCRIPT_NAME] => /action/userConnection.php
+    [PHP_SELF] => /action/userConnection.php
+    [REQUEST_TIME_FLOAT] => 1747316236.0926
+    [REQUEST_TIME] => 1747316236
+)
+ just failed connection check. ---> userConnection.php
+[15/05/2025 13:37:16] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+(
+    [HTTP_HOST] => geofound.fr
+    [HTTP_CACHE_CONTROL] => no-cache
+    [HTTP_PRAGMA] => no-cache
+    [HTTP_COOKIE] => PHPSESSID=4av5gis1aqat8n5eculd5nb970
+    [HTTP_ACCEPT_LANGUAGE] => fr;q=0.9,en;q=0.8
+    [HTTP_CF_RAY] => 9403076be806d357-CDG
+    [HTTP_X_FORWARDED_FOR] => 34.155.153.172
+    [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
+    [HTTP_SENTRY_TRACE] => 8e1bcf0741114c29bb9a0d0e899dde80-b0487318d5b276a9
+    [HTTP_BAGGAGE] => sentry-trace_id=8e1bcf0741114c29bb9a0d0e899dde80,sentry-environment=production,sentry-public_key=5e9a301c0471ab6c2e45ec1a0c7056bc
+    [HTTP_USER_AGENT] => Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/
+    [HTTP_ACCEPT_ENCODING] => gzip, br
+    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+    [HTTP_CF_VISITOR] => {"scheme":"https"}
+    [HTTP_X_FORWARDED_PROTO] => https
+    [HTTP_CDN_LOOP] => cloudflare; loops=1
+    [HTTP_CF_CONNECTING_IP] => 34.155.153.172
+    [HTTP_CF_IPCOUNTRY] => FR
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at geofound.fr Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
+    [SERVER_NAME] => geofound.fr
+    [SERVER_ADDR] => 193.70.0.80
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 172.71.127.67
+    [DOCUMENT_ROOT] => /var/www/geofound
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
+    [SERVER_ADMIN] => [no address given]
+    [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
+    [REMOTE_PORT] => 29678
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /action/userConnection.php
+    [SCRIPT_NAME] => /action/userConnection.php
+    [PHP_SELF] => /action/userConnection.php
+    [REQUEST_TIME_FLOAT] => 1747316236.1799
+    [REQUEST_TIME] => 1747316236
+)
+ just failed connection check. ---> userConnection.php
+[15/05/2025 13:37:16] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+(
+    [HTTP_HOST] => geofound.fr
+    [HTTP_CACHE_CONTROL] => no-cache
+    [HTTP_PRAGMA] => no-cache
+    [HTTP_COOKIE] => PHPSESSID=p79ae5e1595ufd8gpi261isli3
+    [HTTP_ACCEPT_LANGUAGE] => fr;q=0.9,en;q=0.8
+    [HTTP_CF_RAY] => 9403076c6cf39e55-CDG
+    [HTTP_X_FORWARDED_FOR] => 34.155.153.172
+    [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
+    [HTTP_SENTRY_TRACE] => 8e1bcf0741114c29bb9a0d0e899dde80-b0487318d5b276a9
+    [HTTP_BAGGAGE] => sentry-trace_id=8e1bcf0741114c29bb9a0d0e899dde80,sentry-environment=production,sentry-public_key=5e9a301c0471ab6c2e45ec1a0c7056bc
+    [HTTP_USER_AGENT] => Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/
+    [HTTP_ACCEPT_ENCODING] => gzip, br
+    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+    [HTTP_CF_VISITOR] => {"scheme":"https"}
+    [HTTP_X_FORWARDED_PROTO] => https
+    [HTTP_CDN_LOOP] => cloudflare; loops=1
+    [HTTP_CF_CONNECTING_IP] => 34.155.153.172
+    [HTTP_CF_IPCOUNTRY] => FR
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at geofound.fr Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
+    [SERVER_NAME] => geofound.fr
+    [SERVER_ADDR] => 193.70.0.80
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 172.71.131.196
+    [DOCUMENT_ROOT] => /var/www/geofound
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
+    [SERVER_ADMIN] => [no address given]
+    [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
+    [REMOTE_PORT] => 36640
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /action/userConnection.php
+    [SCRIPT_NAME] => /action/userConnection.php
+    [PHP_SELF] => /action/userConnection.php
+    [REQUEST_TIME_FLOAT] => 1747316236.2577
+    [REQUEST_TIME] => 1747316236
+)
+ just failed connection check. ---> userConnection.php

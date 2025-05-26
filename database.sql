@@ -11,13 +11,16 @@ CREATE TABLE users (
     desactivated BOOLEAN DEFAULT FALSE,
     token TEXT UNIQUE,
     connected DATETIME,
+    verified BOOLEAN DEFAULT FALSE,
+    verified_at DATETIME,
     avatar TEXT
 );
 
 CREATE TABLE message (
     id INT PRIMARY KEY AUTO_INCREMENT,
     posted_at DATETIME,
-    content VARCHAR(512)
+    content VARCHAR(512),
+    state VARCHAR(16) DEFAULT 'sent'
 );
 
 CREATE TABLE support (
@@ -63,10 +66,10 @@ CREATE TABLE post (
     latitude FLOAT,
     longitude FLOAT,
     content_id INT NOT NULL,
-    user_id INT NOT NULL,
+    user INT NOT NULL,
     name VARCHAR(256),
     description VARCHAR(512),
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (user) REFERENCES users(id),
     FOREIGN KEY (content_id) REFERENCES post_content(id),
     date DATETIME
 );
@@ -125,6 +128,16 @@ CREATE TABLE reward (
     nom VARCHAR(256),
     description VARCHAR(512),
     stock INT
+);
+
+CREATE TABLE user_message (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    message_id INT NOT NULL,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    FOREIGN KEY (message_id) REFERENCES message(id) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 INSERT INTO users (pseudo, rank, password, description) VALUES ('admin', "admin", '$2y$10$mjIYy.RcnzPIGytlmqifBudv8b5mqW.0KE/JpIFXmkRiv0WrxpfB2', 'Default admin account');
