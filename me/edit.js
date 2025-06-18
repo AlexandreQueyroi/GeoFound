@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Gestion de l'éditeur d'avatar
     const avatarEditorModal = document.getElementById('avatarEditorModal');
     const openAvatarEditor = document.getElementById('openAvatarEditor');
     const closeAvatarEditor = document.getElementById('closeAvatarEditor');
@@ -48,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const avatarData = {
             hairStyle: document.getElementById('hairStyle').value,
             faceStyle: document.getElementById('faceStyle').value,
-            // Ajouter d'autres options
         };
 
         try {
@@ -74,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Gestion de l'export des données
     document.getElementById('exportPDF').addEventListener('click', async () => {
         try {
             const response = await fetch('/api/export_data.php?format=pdf');
@@ -109,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Gestion de la désactivation du compte
     const deactivateModal = document.getElementById('deactivateModal');
     document.getElementById('deactivateAccount').addEventListener('click', () => {
         deactivateModal.classList.remove('hidden');
@@ -140,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
         deactivateModal.classList.remove('flex');
     });
 
-    // Gestion de la suppression du compte
     const deleteModal = document.getElementById('deleteModal');
     document.getElementById('deleteAccount').addEventListener('click', () => {
         deleteModal.classList.remove('hidden');

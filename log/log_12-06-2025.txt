@@ -1,0 +1,49 @@
+======================
+Fichier de logs du 12/06/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[12/06/2025 09:46:56] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+(
+    [HTTP_CF_RAY] => 94e86c835a2bafe2-NRT
+    [HTTP_X_FORWARDED_FOR] => 185.54.229.46
+    [HTTP_HOST] => geofound.fr
+    [HTTP_COOKIE] => PHPSESSID=o4kaccsu5qtjkgj42meg7ur0k7
+    [HTTP_ACCEPT_ENCODING] => gzip
+    [HTTP_ACCEPT_LANGUAGE] => en-US,en;q=0.9,fr;q=0.8
+    [HTTP_X_FORWARDED_PROTO] => http
+    [HTTP_CDN_LOOP] => cloudflare; loops=1
+    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+    [HTTP_CF_VISITOR] => {"scheme":"http"}
+    [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
+    [HTTP_CACHE_CONTROL] => max-age=0
+    [HTTP_CF_CONNECTING_IP] => 185.54.229.46
+    [HTTP_CF_IPCOUNTRY] => JP
+    [HTTP_USER_AGENT] => Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3.1 Mobile/15E148 Safari/604.1
+    [HTTP_CONNECTION] => Keep-Alive
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at geofound.fr Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
+    [SERVER_NAME] => geofound.fr
+    [SERVER_ADDR] => 193.70.0.80
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 172.70.223.179
+    [DOCUMENT_ROOT] => /var/www/geofound
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
+    [SERVER_ADMIN] => [no address given]
+    [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
+    [REMOTE_PORT] => 35200
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /action/userConnection.php
+    [SCRIPT_NAME] => /action/userConnection.php
+    [PHP_SELF] => /action/userConnection.php
+    [REQUEST_TIME_FLOAT] => 1749721616.0257
+    [REQUEST_TIME] => 1749721616
+)
+ just failed connection check. ---> userConnection.php

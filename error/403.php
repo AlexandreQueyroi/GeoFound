@@ -44,4 +44,3 @@ $errorMessages = [
 
 </html>
 <?php
-// Pas d'erreur ici, allez vous faitre voir monsieur

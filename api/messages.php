@@ -26,7 +26,6 @@ foreach ($messages as $m) {
         'state' => $m['state']
     ];
 }
-// Marquer comme lus tous les messages reçus non lus dans cette conversation
 $update = $conn->prepare('UPDATE message m
     JOIN user_message um ON m.id = um.message_id
     SET m.state = "read"

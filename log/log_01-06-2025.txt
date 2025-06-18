@@ -1,0 +1,7 @@
+======================
+Fichier de logs du 01/06/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[01/06/2025 18:34:48] - [ERROR] - [2] - Undefined array key "verificationID" - /var/www/geofound/verify.php:57
+[01/06/2025 18:34:48] - [ERROR] - Verification ERROR : undefined ---> verify.php

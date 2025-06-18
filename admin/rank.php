@@ -51,8 +51,6 @@ include_once(__DIR__ . '/../api/bdd.php');
         </table>
     </div>
 </div>
-<!-- <div class="bg-gray-900 p-6 rounded-lg shadow-lg max-w-screen-xl mx-auto mt-10">
-</div> -->
 
 <?php
 include_once(__DIR__ . '/../build/footer.php');

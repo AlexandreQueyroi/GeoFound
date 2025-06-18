@@ -1,28 +1,30 @@
 ======================
-Fichier de logs du 26/05/2025
+Fichier de logs du 27/05/2025
 Format : [Date Heure] - [Type] - Message ---> Source
 ======================
 
-[26/05/2025 00:03:16] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+[27/05/2025 08:13:33] - [ERROR] -  User NULL with ID : NULL and server variable : Array
 (
-    [HTTP_HOST] => vps-1407a1ea.vps.ovh.net
-    [HTTP_USER_AGENT] => curl/7.54.0
-    [HTTP_CONNECTION] => close
+    [HTTP_HOST] => 193.70.0.80
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36
+    [HTTP_COOKIE] => PHPSESSID=0pp8asbs45lm9gqdti039blo9t
+    [HTTP_REFERER] => http://193.70.0.80/index.php?lang=en
+    [HTTP_ACCEPT_ENCODING] => gzip
     [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at vps-1407a1ea.vps.ovh.net Port 80</address>
+    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at 193.70.0.80 Port 80</address>
 
     [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
-    [SERVER_NAME] => vps-1407a1ea.vps.ovh.net
+    [SERVER_NAME] => 193.70.0.80
     [SERVER_ADDR] => 193.70.0.80
     [SERVER_PORT] => 80
-    [REMOTE_ADDR] => 172.105.246.139
+    [REMOTE_ADDR] => 185.230.55.9
     [DOCUMENT_ROOT] => /var/www/geofound
     [REQUEST_SCHEME] => http
     [CONTEXT_PREFIX] => 
     [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
     [SERVER_ADMIN] => [no address given]
     [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
-    [REMOTE_PORT] => 37212
+    [REMOTE_PORT] => 38970
     [GATEWAY_INTERFACE] => CGI/1.1
     [SERVER_PROTOCOL] => HTTP/1.1
     [REQUEST_METHOD] => GET
@@ -30,18 +32,68 @@ Format : [Date Heure] - [Type] - Message ---> Source
     [REQUEST_URI] => /action/userConnection.php
     [SCRIPT_NAME] => /action/userConnection.php
     [PHP_SELF] => /action/userConnection.php
-    [REQUEST_TIME_FLOAT] => 1748217796.2029
-    [REQUEST_TIME] => 1748217796
+    [REQUEST_TIME_FLOAT] => 1748333613.7088
+    [REQUEST_TIME] => 1748333613
 )
  just failed connection check. ---> userConnection.php
-[26/05/2025 12:13:05] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+[27/05/2025 12:08:53] - [ERROR] -  User NULL with ID : NULL and server variable : Array
 (
     [HTTP_X_FORWARDED_FOR] => 82.96.134.87
-    [HTTP_REFERER] => https://geofound.fr/me/inbox
+    [HTTP_SEC_CH_UA_PLATFORM] => "Windows"
     [HTTP_ACCEPT_ENCODING] => gzip, br
     [HTTP_COOKIE] => PHPSESSID=je6qf2iiuovjdbnl7mf94amp2e; cookie=true
     [HTTP_PRIORITY] => u=0, i
-    [HTTP_CF_RAY] => 945d2f3f7c3f8c76-CDG
+    [HTTP_CF_RAY] => 946566736914d473-CDG
+    [HTTP_ACCEPT_LANGUAGE] => fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
+    [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 OPR/118.0.0.0 (Edition std-2)
+    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+    [HTTP_SEC_FETCH_SITE] => cross-site
+    [HTTP_SEC_FETCH_MODE] => navigate
+    [HTTP_SEC_FETCH_USER] => ?1
+    [HTTP_SEC_FETCH_DEST] => document
+    [HTTP_SEC_CH_UA] => "Not(A:Brand";v="99", "Opera GX";v="118", "Chromium";v="133"
+    [HTTP_SEC_CH_UA_MOBILE] => ?0
+    [HTTP_X_FORWARDED_PROTO] => https
+    [HTTP_HOST] => geofound.fr
+    [HTTP_CDN_LOOP] => cloudflare; loops=1
+    [HTTP_CF_CONNECTING_IP] => 82.96.134.87
+    [HTTP_CF_IPCOUNTRY] => FR
+    [HTTP_CF_VISITOR] => {"scheme":"https"}
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at geofound.fr Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
+    [SERVER_NAME] => geofound.fr
+    [SERVER_ADDR] => 193.70.0.80
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 172.69.222.246
+    [DOCUMENT_ROOT] => /var/www/geofound
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
+    [SERVER_ADMIN] => [no address given]
+    [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
+    [REMOTE_PORT] => 59588
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /action/userConnection.php
+    [SCRIPT_NAME] => /action/userConnection.php
+    [PHP_SELF] => /action/userConnection.php
+    [REQUEST_TIME_FLOAT] => 1748347733.0414
+    [REQUEST_TIME] => 1748347733
+)
+ just failed connection check. ---> userConnection.php
+[27/05/2025 12:08:58] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+(
+    [HTTP_X_FORWARDED_FOR] => 82.96.134.87
+    [HTTP_REFERER] => https://geofound.fr/
+    [HTTP_ACCEPT_ENCODING] => gzip, br
+    [HTTP_COOKIE] => PHPSESSID=je6qf2iiuovjdbnl7mf94amp2e; cookie=true
+    [HTTP_PRIORITY] => u=0, i
+    [HTTP_CF_RAY] => 94656694bf36d473-CDG
     [HTTP_ACCEPT_LANGUAGE] => fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
     [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
     [HTTP_USER_AGENT] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 OPR/118.0.0.0 (Edition std-2)
@@ -66,14 +118,14 @@ Format : [Date Heure] - [Type] - Message ---> Source
     [SERVER_NAME] => geofound.fr
     [SERVER_ADDR] => 193.70.0.80
     [SERVER_PORT] => 80
-    [REMOTE_ADDR] => 172.71.232.67
+    [REMOTE_ADDR] => 172.69.222.247
     [DOCUMENT_ROOT] => /var/www/geofound
     [REQUEST_SCHEME] => http
     [CONTEXT_PREFIX] => 
     [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
     [SERVER_ADMIN] => [no address given]
     [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
-    [REMOTE_PORT] => 22200
+    [REMOTE_PORT] => 18456
     [GATEWAY_INTERFACE] => CGI/1.1
     [SERVER_PROTOCOL] => HTTP/1.1
     [REQUEST_METHOD] => GET
@@ -81,78 +133,14 @@ Format : [Date Heure] - [Type] - Message ---> Source
     [REQUEST_URI] => /action/userConnection.php
     [SCRIPT_NAME] => /action/userConnection.php
     [PHP_SELF] => /action/userConnection.php
-    [REQUEST_TIME_FLOAT] => 1748261585.8498
-    [REQUEST_TIME] => 1748261585
+    [REQUEST_TIME_FLOAT] => 1748347738.3661
+    [REQUEST_TIME] => 1748347738
 )
  just failed connection check. ---> userConnection.php
-[26/05/2025 12:13:08] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+[27/05/2025 19:57:22] - [INFO] -  User admin with ID : 1 just logged in. ---> userConnection.php
+[27/05/2025 22:24:57] - [ERROR] -  User NULL with ID : NULL and server variable : Array
 (
-    [HTTP_X_FORWARDED_FOR] => 82.96.134.87
-    [HTTP_REFERER] => https://geofound.fr/me/
-    [HTTP_ACCEPT_ENCODING] => gzip, br
-    [HTTP_COOKIE] => PHPSESSID=je6qf2iiuovjdbnl7mf94amp2e; cookie=true
-    [HTTP_PRIORITY] => u=0, i
-    [HTTP_CF_RAY] => 945d2f4dde198c76-CDG
-    [HTTP_ACCEPT_LANGUAGE] => fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
-    [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
-    [HTTP_USER_AGENT] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 OPR/118.0.0.0 (Edition std-2)
-    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-    [HTTP_SEC_FETCH_SITE] => same-origin
-    [HTTP_SEC_FETCH_MODE] => navigate
-    [HTTP_SEC_FETCH_DEST] => document
-    [HTTP_SEC_CH_UA] => "Not(A:Brand";v="99", "Opera GX";v="118", "Chromium";v="133"
-    [HTTP_SEC_CH_UA_MOBILE] => ?0
-    [HTTP_SEC_CH_UA_PLATFORM] => "Windows"
-    [HTTP_X_FORWARDED_PROTO] => https
-    [HTTP_HOST] => geofound.fr
-    [HTTP_CDN_LOOP] => cloudflare; loops=1
-    [HTTP_CF_CONNECTING_IP] => 82.96.134.87
-    [HTTP_CF_IPCOUNTRY] => FR
-    [HTTP_CF_VISITOR] => {"scheme":"https"}
-    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at geofound.fr Port 80</address>
-
-    [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
-    [SERVER_NAME] => geofound.fr
-    [SERVER_ADDR] => 193.70.0.80
-    [SERVER_PORT] => 80
-    [REMOTE_ADDR] => 172.71.232.67
-    [DOCUMENT_ROOT] => /var/www/geofound
-    [REQUEST_SCHEME] => http
-    [CONTEXT_PREFIX] => 
-    [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
-    [SERVER_ADMIN] => [no address given]
-    [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
-    [REMOTE_PORT] => 22200
-    [GATEWAY_INTERFACE] => CGI/1.1
-    [SERVER_PROTOCOL] => HTTP/1.1
-    [REQUEST_METHOD] => GET
-    [QUERY_STRING] => 
-    [REQUEST_URI] => /action/userConnection.php
-    [SCRIPT_NAME] => /action/userConnection.php
-    [PHP_SELF] => /action/userConnection.php
-    [REQUEST_TIME_FLOAT] => 1748261588.1529
-    [REQUEST_TIME] => 1748261588
-)
- just failed connection check. ---> userConnection.php
-[26/05/2025 12:13:14] - [INFO] -  User admin with ID : 1 just logged in. ---> userConnection.php
-[26/05/2025 12:13:24] - [INFO] -  User mod with ID : 33 just logged in. ---> userConnection.php
-[26/05/2025 12:13:28] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 12:13:39] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 12:17:19] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 12:23:13] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 12:23:26] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 12:26:03] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 12:27:00] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 12:46:21] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 12:48:39] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 14:08:59] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 14:12:55] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 15:22:53] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 15:32:19] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3
-[26/05/2025 22:19:55] - [ERROR] -  User NULL with ID : NULL and server variable : Array
-(
-    [HTTP_HOST] => 193.70.0.80
+    [HTTP_HOST] => 193.70.0.80:80
     [HTTP_USER_AGENT] => Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1
     [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
     [HTTP_ACCEPT_ENCODING] => gzip
@@ -160,7 +148,7 @@ Format : [Date Heure] - [Type] - Message ---> Source
     [HTTP_CACHE_CONTROL] => no-cache
     [HTTP_CONNECTION] => keep-alive, close
     [HTTP_PRAGMA] => no-cache
-    [HTTP_REFERER] => http://193.70.0.80/reward.php
+    [HTTP_REFERER] => http://193.70.0.80:80/reward.php
     [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
     [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
     [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at 193.70.0.80 Port 80</address>
@@ -169,14 +157,14 @@ Format : [Date Heure] - [Type] - Message ---> Source
     [SERVER_NAME] => 193.70.0.80
     [SERVER_ADDR] => 193.70.0.80
     [SERVER_PORT] => 80
-    [REMOTE_ADDR] => 101.33.66.34
+    [REMOTE_ADDR] => 43.133.14.237
     [DOCUMENT_ROOT] => /var/www/geofound
     [REQUEST_SCHEME] => http
     [CONTEXT_PREFIX] => 
     [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
     [SERVER_ADMIN] => [no address given]
     [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
-    [REMOTE_PORT] => 46334
+    [REMOTE_PORT] => 56228
     [GATEWAY_INTERFACE] => CGI/1.1
     [SERVER_PROTOCOL] => HTTP/1.1
     [REQUEST_METHOD] => GET
@@ -184,7 +172,7 @@ Format : [Date Heure] - [Type] - Message ---> Source
     [REQUEST_URI] => /action/userConnection.php
     [SCRIPT_NAME] => /action/userConnection.php
     [PHP_SELF] => /action/userConnection.php
-    [REQUEST_TIME_FLOAT] => 1748297995.9397
-    [REQUEST_TIME] => 1748297995
+    [REQUEST_TIME_FLOAT] => 1748384697.9244
+    [REQUEST_TIME] => 1748384697
 )
  just failed connection check. ---> userConnection.php

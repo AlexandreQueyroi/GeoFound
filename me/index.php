@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 
 include_once(__DIR__ . '/../build/header.php');
 include_once(__DIR__ . '/../api/bdd.php');
+
 if (!isset($_SESSION['id'])) {
     header('Location: /');
     exit;
@@ -16,17 +17,25 @@ $stmt = $conn->prepare("SELECT pseudo, avatar FROM users WHERE id = :id");
 $stmt->execute(['id' => $user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$stmt = $conn->prepare("SELECT COUNT(*) FROM post WHERE user_id = :id");
-$stmt->execute(['id' => $user_id]);
-$post_count = $stmt->fetchColumn();
+try {
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM post WHERE user_id = :id");
+    $stmt->execute(['id' => $user_id]);
+    $post_count = $stmt->fetchColumn() ?: 0;
+} catch (Exception $e) {
+    $post_count = 0;
+}
 
-$stmt = $conn->prepare("SELECT COUNT(*) FROM follow WHERE user2_id = :id AND state = 'accepted'");
-$stmt->execute(['id' => $user_id]);
-$followers_count = $stmt->fetchColumn();
+try {
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM follow WHERE user2_id = :id AND state = 'accepted'");
+    $stmt->execute(['id' => $user_id]);
+    $followers_count = $stmt->fetchColumn() ?: 0;
+} catch (Exception $e) {
+    $followers_count = 0;
+}
 
 $stmt = $conn->prepare("SELECT COUNT(*) FROM follow WHERE user1_id = :id AND state = 'accepted'");
 $stmt->execute(['id' => $user_id]);
-$following_count = $stmt->fetchColumn();
+$following_count = $stmt->fetchColumn() ?: 0;
 
 $stmt = $conn->prepare("SELECT post.description, post_content.content FROM post INNER JOIN post_content ON post.content_id = post_content.id WHERE post.user_id = :id ORDER BY post.id DESC");
 $stmt->execute(['id' => $user_id]);

@@ -9,7 +9,6 @@ if (!isset($_SESSION['id'])) {
 
 $user_id = $_SESSION['id'];
 
-// Désactiver le compte
 $stmt = $conn->prepare("UPDATE users SET desactivated = 1 WHERE id = ?");
 $stmt->execute([$user_id]);
 

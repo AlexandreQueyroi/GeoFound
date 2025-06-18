@@ -8,7 +8,7 @@ $sql = 'SELECT m.id, m.content, m.posted_at, u.pseudo, um.sender_id
         FROM message m
         JOIN user_message um ON m.id = um.message_id
         JOIN users u ON um.sender_id = u.id
-        WHERE um.receiver_id = :uid AND um.sender_id != :uid
+        WHERE um.receiver_id = :uid AND um.sender_id != :uid AND m.state = "sent"
         ORDER BY m.posted_at DESC
         LIMIT 1';
 $stmt = $conn->prepare($sql);

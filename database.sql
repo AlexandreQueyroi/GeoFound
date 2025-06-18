@@ -13,7 +13,8 @@ CREATE TABLE users (
     connected DATETIME,
     verified BOOLEAN DEFAULT FALSE,
     verified_at DATETIME,
-    avatar TEXT
+    avatar TEXT,
+    point INT
 );
 
 CREATE TABLE message (
@@ -76,14 +77,23 @@ CREATE TABLE post (
 
 CREATE TABLE comment (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    comment_at DATETIME,
-    content VARCHAR(256)
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    content VARCHAR(512) NOT NULL,
+    comment_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE reaction (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    state VARCHAR(50),
-    react_at DATETIME
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    state ENUM('like', 'love', 'wow') DEFAULT 'like',
+    react_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_reaction (post_id, user_id)
 );
 
 CREATE TABLE report (
@@ -127,7 +137,9 @@ CREATE TABLE reward (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(256),
     description VARCHAR(512),
-    stock INT
+    stock INT,
+    point INT,
+    image LONGTEXT
 );
 
 CREATE TABLE user_message (

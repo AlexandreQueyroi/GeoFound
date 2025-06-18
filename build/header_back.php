@@ -49,8 +49,8 @@ session_start();
                     <a href="../admin/log.php" class="hover:text-gray-400">Logs</a>
                     <span class="border-2 border-white h-6"></span>
                     <a href="../admin/stat.php" class="hover:text-gray-400">Statistiques</a>
-                    <!-- <span class="border-2 border-white h-6"></span>
-                    <a href="#" class="hover:text-gray-400">GLPI</a> -->
+                    <span class="border-2 border-white h-6"></span>
+                    <a href="#" class="hover:text-gray-400">GLPI</a>
                     <?php
                     if (empty($_SESSION['user'])) {
                         echo '<button data-modal-target="authentication-modal" data-modal-toggle="authentication-modal"

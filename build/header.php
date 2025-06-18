@@ -1,12 +1,12 @@
 <?php
 session_start();
-$_SESSION['last_url'] = $_SERVER['REQUEST_URI'];
+$_SESSION['last_url'] = $_SERVER['REQUEST_URI'] ?? '/';
 if (strpos($_SESSION['last_url'], '?') !== false) {
     $url = strstr($_SESSION['last_url'], '?', true);
 } else {
     $url = $_SESSION['last_url'];
 }
-if (!isset($_SESSION['user']) && ($url != "/" && $url != "/accountCreated" && $url != "/verify")) {
+if (!isset($_SESSION['id']) && ($url != "/" && $url != "/accountCreated" && $url != "/verify")) {
     echo "<script>console.log('not logged');</script>";
     echo "<script>console.log('url : " . $url . "');</script>";
     header('Location: /action/userConnection.php');
@@ -38,7 +38,6 @@ if (!isset($_SESSION['user']) && ($url != "/" && $url != "/accountCreated" && $u
     <?php include_once(__DIR__ . '/../api/log.php'); ?>
     <?php include_once(__DIR__ . '/../modal.php'); ?>
     <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col space-y-2"></div>
-    <audio id="notif-sound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae6c7.mp3" preload="auto"></audio>
     <p class="text-white">
         <?php var_dump($_SESSION); ?>
     </p>
@@ -51,14 +50,16 @@ if (!isset($_SESSION['user']) && ($url != "/" && $url != "/accountCreated" && $u
             <nav>
                 <div class="flex items-center space-x-9 text-2xl font-bold">
                     <span class="border-2 border-white h-6"></span>
-                    <a href="#" class="hover:text-gray-400">Accueil</a>
+                    <a href="/" class="hover:text-gray-400">Accueil</a>
                     <span class="border-2 border-white h-6"></span>
                     <a href="#" class="hover:text-gray-400">Explorer</a>
                     <span class="border-2 border-white h-6"></span>
-                    <a href="<?php echo "/reward.php" ?>" class="hover:text-gray-400">Récompenses</a>
-                    <span class="border-2 border-white h-6"></span>
                     <?php
                     if (empty($_SESSION['user'])) {
+                        echo '<a href="#" class="hover:text-gray-400"
+                            data-modal-target="authentication-modal"
+                            data-modal-toggle="authentication-modal">Récompenses</a>';
+                        echo '<span class="border-2 border-white h-6"></span>';
                         echo '<a href="#" class="hover:text-gray-400"
                             data-modal-target="authentication-modal"
                             data-modal-toggle="authentication-modal">Messages</a>';
@@ -74,6 +75,8 @@ if (!isset($_SESSION['user']) && ($url != "/" && $url != "/accountCreated" && $u
                             Connexion
                             </button>';
                     } else {
+                        echo '<a href="/reward" class="hover:text-gray-400">Récompenses</a>';
+                        echo '<span class="border-2 border-white h-6"></span>';
                         echo '<a href="/me/inbox" class="hover:text-gray-400">Messages</a>';
                         echo '<span class="border-2 border-white h-6"></span>';
                         echo '<a href="/me/" class="hover:text-gray-400">Profil</a>';
@@ -91,7 +94,6 @@ if (!isset($_SESSION['user']) && ($url != "/" && $url != "/accountCreated" && $u
 
     <container class="flex-grow max-1000px mx-auto">
 <script>
-// Fonction pour afficher un toast
 function showToast(message, pseudo) {
     const toast = document.createElement('div');
     toast.className = 'bg-blue-700 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-2 animate-fade-in-up';
@@ -103,7 +105,6 @@ function showToast(message, pseudo) {
         setTimeout(() => toast.remove(), 500);
     }, 5000);
 }
-// Petite animation fade-in-up
 const style = document.createElement('style');
 style.innerHTML = `
 @keyframes fade-in-up {from {opacity:0;transform:translateY(20px);}to {opacity:1;transform:translateY(0);}}
@@ -112,7 +113,6 @@ style.innerHTML = `
 }`;
 document.head.appendChild(style);
 
-// --- Notification message reçus partout sur le site ---
 let lastNotifiedMsgId = null;
 function pollLastMessage() {
     fetch('/api/last_message.php')
@@ -125,6 +125,5 @@ function pollLastMessage() {
         });
 }
 setInterval(pollLastMessage, 7000);
-// Appel initial pour ne pas attendre 7s au chargement
 pollLastMessage();
 </script>

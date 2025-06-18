@@ -8,7 +8,6 @@ if (!isset($_SESSION['id'])) {
 
 $user_id = $_SESSION['id'];
 
-// Récupération des informations de l'utilisateur
 $stmt = $conn->prepare("SELECT pseudo, email, avatar FROM users WHERE id = :id");
 $stmt->execute(['id' => $user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -18,9 +17,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
     <div class="max-w-4xl mx-auto">
         <h1 class="text-3xl font-bold text-white mb-8">Paramètres du compte</h1>
         
-        <!-- Formulaire d'édition -->
         <form id="editProfileForm" class="space-y-6 bg-[#081225] p-6 rounded-lg">
-            <!-- Avatar -->
             <div class="space-y-4">
                 <h2 class="text-xl font-semibold text-white">Avatar</h2>
                 <div class="flex items-center space-x-4">
@@ -37,21 +34,18 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 </div>
             </div>
 
-            <!-- Pseudo -->
             <div class="space-y-2">
                 <label for="pseudo" class="block text-white">Pseudo</label>
                 <input type="text" id="pseudo" name="pseudo" value="<?= htmlspecialchars($user['pseudo']) ?>" 
                     class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
             </div>
 
-            <!-- Email -->
             <div class="space-y-2">
                 <label for="email" class="block text-white">Email</label>
                 <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" 
                     class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
             </div>
 
-            <!-- Mot de passe -->
             <div class="space-y-2">
                 <label for="password" class="block text-white">Nouveau mot de passe</label>
                 <input type="password" id="password" name="password" 
@@ -70,11 +64,9 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
             </div>
         </form>
 
-        <!-- Actions du compte -->
         <div class="mt-8 space-y-4">
             <h2 class="text-xl font-semibold text-white mb-4">Actions du compte</h2>
             
-            <!-- Export des données -->
             <div class="flex space-x-4">
                 <button id="exportPDF" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
                     Exporter en PDF
@@ -84,7 +76,6 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 </button>
             </div>
 
-            <!-- Désactivation/Suppression -->
             <div class="flex space-x-4">
                 <button id="deactivateAccount" class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
                     Désactiver le compte
@@ -97,7 +88,6 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Modal pour l'éditeur d'avatar -->
 <div id="avatarEditorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
     <div class="bg-[#081225] p-6 rounded-lg max-w-2xl w-full">
         <div class="flex justify-between items-center mb-4">
@@ -110,14 +100,12 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
         
         <div class="grid grid-cols-2 gap-4">
-            <!-- Options de personnalisation -->
             <div class="space-y-4">
                 <div>
                     <label class="block text-white mb-2">Cheveux</label>
                     <select id="hairStyle" class="w-full bg-gray-700 text-white rounded-lg px-4 py-2">
                         <option value="style1">Style 1</option>
                         <option value="style2">Style 2</option>
-                        <!-- Ajouter plus d'options -->
                     </select>
                 </div>
                 <div>
@@ -125,13 +113,10 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                     <select id="faceStyle" class="w-full bg-gray-700 text-white rounded-lg px-4 py-2">
                         <option value="face1">Visage 1</option>
                         <option value="face2">Visage 2</option>
-                        <!-- Ajouter plus d'options -->
                     </select>
                 </div>
-                <!-- Ajouter plus d'options de personnalisation -->
             </div>
             
-            <!-- Aperçu -->
             <div class="flex items-center justify-center">
                 <div id="avatarPreview" class="w-48 h-48 rounded-full bg-gray-300"></div>
             </div>
@@ -148,7 +133,6 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Modal de confirmation pour la désactivation -->
 <div id="deactivateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
     <div class="bg-[#081225] p-6 rounded-lg max-w-md w-full">
         <h3 class="text-xl font-semibold text-white mb-4">Désactiver le compte</h3>
@@ -164,7 +148,6 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Modal de confirmation pour la suppression -->
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
     <div class="bg-[#081225] p-6 rounded-lg max-w-md w-full">
         <h3 class="text-xl font-semibold text-white mb-4">Supprimer le compte</h3>
