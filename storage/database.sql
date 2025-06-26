@@ -14,21 +14,21 @@ CREATE TABLE users (
     verified BOOLEAN DEFAULT FALSE,
     verified_at DATETIME,
     avatar TEXT,
-    point INT
+    point INT DEFAULT 0
 );
 
 CREATE TABLE message (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    posted_at DATETIME,
+    posted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     content VARCHAR(512),
     state VARCHAR(16) DEFAULT 'sent'
 );
 
 CREATE TABLE support (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    date DATETIME,
-    contant VARCHAR(1024),
-    state VARCHAR(50),
+    date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    content VARCHAR(1024),
+    state VARCHAR(50) DEFAULT 'open',
     respond_at DATETIME,
     assigned_to INT,
     FOREIGN KEY (assigned_to) REFERENCES users(id)
@@ -48,7 +48,7 @@ CREATE TABLE avatar (
 
 CREATE TABLE follow (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    follow_at DATETIME,
+    follow_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     state VARCHAR(50) DEFAULT 'pending',
     user1_id INT NOT NULL,
     user2_id INT NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE post (
     description VARCHAR(512),
     FOREIGN KEY (user) REFERENCES users(id),
     FOREIGN KEY (content_id) REFERENCES post_content(id),
-    date DATETIME
+    date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE comment (
@@ -110,7 +110,7 @@ CREATE TABLE report (
     id INT PRIMARY KEY AUTO_INCREMENT,
     report_to INT,
     report_reason VARCHAR(512),
-    report_date DATETIME,
+    report_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     assigned_to INT,
     response VARCHAR(512),
     status VARCHAR(50) DEFAULT 'not treated',
@@ -123,23 +123,23 @@ CREATE TABLE sanction (
     id INT PRIMARY KEY AUTO_INCREMENT,
     type VARCHAR(50),
     reason VARCHAR(512),
-    begin_at DATETIME,
+    begin_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     end_at DATETIME,
-    cancel BOOLEAN
+    cancel BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE captcha (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(256),
     response TEXT,
-    enabled BOOLEAN,
-    requested BOOLEAN,
-    success_requested BOOLEAN
+    enabled BOOLEAN DEFAULT FALSE,
+    requested BOOLEAN DEFAULT FALSE,
+    success_requested BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE order_table (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    made_at DATETIME,
+    made_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     deliver_at DATETIME
 );
 
@@ -147,8 +147,8 @@ CREATE TABLE reward (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(256),
     description VARCHAR(512),
-    stock INT,
-    point INT,
+    stock INT DEFAULT 0,
+    point INT DEFAULT 0,
     image LONGTEXT
 );
 
@@ -258,13 +258,12 @@ WHERE r.name = 'moderator' AND p.name IN (
     'post.moderate', 'comment.moderate', 'message.global', 'log.view'
 );
 
--- Mise à jour de la table users pour utiliser les nouveaux rangs
-UPDATE users SET rank = (SELECT id FROM ranks WHERE name = 'admin') WHERE pseudo = 'admin';
+-- Création de l'utilisateur admin par défaut
+INSERT INTO users (pseudo, rank, password, email, description, verified) VALUES 
+('admin', 'admin', '$2y$10$mjIYy.RcnzPIGytlmqifBudv8b5mqW.0KE/JpIFXmkRiv0WrxpfB2', 'admin@geofound.com', 'Default admin account', TRUE);
 
-INSERT INTO users (pseudo, rank, password, description) VALUES ('admin', "admin", '$2y$10$mjIYy.RcnzPIGytlmqifBudv8b5mqW.0KE/JpIFXmkRiv0WrxpfB2', 'Default admin account');
-
-FLUSH PRIVILEGES;
-CREATE USER 'geofound'@'%' IDENTIFIED BY 'geofound-2025';
+-- Création de l'utilisateur et attribution des privilèges
+CREATE USER IF NOT EXISTS 'geofound'@'%' IDENTIFIED BY 'geofound-2025';
 GRANT ALL PRIVILEGES ON geofound.* TO 'geofound'@'%';
 FLUSH PRIVILEGES;
 

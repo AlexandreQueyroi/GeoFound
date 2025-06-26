@@ -32,6 +32,10 @@ $routes = [
     '/api' => ['controller' => 'ApiController', 'action' => 'index'],
 
     '/api/posts' => ['controller' => 'ApiController', 'action' => 'posts'],
+    '/api/comment' => ['controller' => 'ApiController', 'action' => 'comment'],
+    '/api/comments' => ['controller' => 'ApiController', 'action' => 'comments'],
+    '/api/react' => ['controller' => 'ApiController', 'action' => 'react'],
+    '/api/bookmark' => ['controller' => 'ApiController', 'action' => 'bookmark'],
 
     '/403' => ['controller' => 'ErrorController', 'action' => 'error403'],
     '/404' => ['controller' => 'ErrorController', 'action' => 'error404'],

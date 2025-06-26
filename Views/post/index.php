@@ -345,9 +345,7 @@ function submitComment(postId) {
     const form = document.getElementById(`comment-form-${postId}`);
     const input = document.getElementById(`comment-input-${postId}`);
     const content = input.value.trim();
-    
     if (!content) return;
-    
     fetch('/api/comment', {
         method: 'POST',
         headers: {
@@ -358,24 +356,34 @@ function submitComment(postId) {
     .then(response => response.json())
     .then(data => {
         if (data.error) {
-            console.error('Erreur:', data.error);
             showNotification('Erreur lors de l\'ajout du commentaire', 'error');
             return;
         }
-        
-        
         input.value = '';
-        
-        
-        loadComments(postId);
-        
-        
+        // Recharge dynamiquement les commentaires
+        fetch(`/api/comments?post_id=${postId}`)
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById(`comments-list-${postId}`);
+                list.innerHTML = '';
+                if (data.comments && data.comments.length > 0) {
+                    data.comments.forEach(c => {
+                        list.insertAdjacentHTML('beforeend', `
+                            <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
+                                <span class="font-semibold text-gray-900 dark:text-white mr-2">${c.username}</span>
+                                <span class="text-gray-500 text-xs">${c.comment_at ? new Date(c.comment_at).toLocaleString() : ''}</span>
+                                <div class="mt-1 text-gray-800 dark:text-gray-200">${c.content}</div>
+                            </div>
+                        `);
+                    });
+                } else {
+                    list.innerHTML = '<div class="text-gray-400 text-sm">Aucun commentaire</div>';
+                }
+            });
         updateCommentCount(postId, 1);
-        
         showNotification('Commentaire ajouté !', 'success');
     })
     .catch(error => {
-        console.error('Erreur lors de l\'ajout du commentaire:', error);
         showNotification('Erreur lors de l\'ajout du commentaire', 'error');
     });
 }

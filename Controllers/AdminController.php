@@ -60,7 +60,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php:
+                $data = json_decode(file_get_contents('php://input'), true);
                 $name = $data['name'] ?? '';
                 $description = $data['description'] ?? '';
                 
@@ -92,9 +92,9 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php:
+                $data = json_decode(file_get_contents('php://input'), true);
                 $name = $data['name'] ?? '';
-                $color = $data['color'] ?? '
+                $color = $data['color'] ?? '';
                 
                 if (empty($name)) {
                     http_response_code(400);
@@ -111,10 +111,10 @@ class AdminController {
                 break;
                 
             case 'PUT':
-                $data = json_decode(file_get_contents('php:
+                $data = json_decode(file_get_contents('php://input'), true);
                 $id = $data['id'] ?? 0;
                 $name = $data['name'] ?? '';
-                $color = $data['color'] ?? '
+                $color = $data['color'] ?? '';
                 
                 if (empty($id) || empty($name)) {
                     http_response_code(400);
@@ -172,7 +172,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php:
+                $data = json_decode(file_get_contents('php://input'), true);
                 $rankId = $data['rank_id'] ?? 0;
                 $permissionId = $data['permission_id'] ?? 0;
                 
@@ -233,7 +233,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php:
+                $data = json_decode(file_get_contents('php://input'), true);
                 $userId = $data['user_id'] ?? 0;
                 $permissionId = $data['permission_id'] ?? 0;
                 $expiresAt = $data['expires_at'] ?? null;
@@ -294,7 +294,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php:
+                $data = json_decode(file_get_contents('php://input'), true);
                 $pagePath = $data['page_path'] ?? '';
                 $pageName = $data['page_name'] ?? '';
                 $isMaintenance = $data['is_maintenance'] ?? false;
@@ -342,7 +342,7 @@ class AdminController {
         header('Content-Type: application/json');
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $data = json_decode(file_get_contents('php:
+            $data = json_decode(file_get_contents('php://input'), true);
             $isMaintenance = $data['is_maintenance'] ?? false;
             
             if (Permission::setAllPagesMaintenance($isMaintenance)) {
@@ -379,7 +379,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php:
+                $data = json_decode(file_get_contents('php://input'), true);
                 $pagePath = $data['page_path'] ?? '';
                 $permissionId = $data['permission_id'] ?? '';
                 $description = $data['description'] ?? '';
