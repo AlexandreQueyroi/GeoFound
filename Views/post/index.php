@@ -1,0 +1,438 @@
+<?php include_once __DIR__ . '/../layouts/header.php'; ?>
+<?php include_once __DIR__ . '/../layouts/modal.php'; ?>
+
+<style>
+
+.posts-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)) !important;
+    gap: 2rem !important;
+    justify-items: center !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 1rem !important;
+}
+
+.post-card {
+    width: 100% !important;
+    max-width: 450px !important;
+    background: 
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid 
+    overflow: hidden !important;
+    transition: all 0.3s ease !important;
+}
+
+.post-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.4) !important;
+}
+
+
+.post-card button svg {
+    display: inline-block;
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+}
+
+
+@media (max-width: 768px) {
+    .posts-grid {
+        grid-template-columns: 1fr !important;
+        max-width: 100% !important;
+    }
+    
+    .post-card {
+        max-width: 100% !important;
+    }
+}
+</style>
+
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header de la page -->
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Posts</h1>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <iconify-icon icon="tabler:search" width="20" height="20"></iconify-icon>
+                    </button>
+                    <button class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <iconify-icon icon="tabler:bell" width="20" height="20"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grille des posts -->
+    <div class="py-8">
+        <div id="posts-container" class="posts-grid"></div>
+        <div id="loading" class="text-center py-4 text-gray-500 hidden">Chargement...</div>
+        <div id="no-more-posts" class="text-center py-4 text-gray-500 hidden">Plus de posts à afficher.</div>
+    </div>
+</div>
+
+<script>
+let offset = 0;
+const limit = 6;
+let loading = false;
+let allLoaded = false;
+
+window.isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+
+function renderPost(post) {
+    const isLiked = false; // À remplacer par la logique utilisateur si besoin
+    const likeCount = post.like_count ?? 0;
+    const commentCount = post.comment_count ?? 0;
+    return `
+    <div class="post-card">
+        <div class="flex items-center p-6 border-b border-gray-100 dark:border-gray-700">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
+                ${post.username ? post.username.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <div class="flex-1">
+                <div class="font-semibold text-gray-900 dark:text-white text-lg">
+                    ${post.username ? post.username : 'Utilisateur inconnu'}
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    ${post.date ? new Date(post.date).toLocaleDateString() : ''}
+                </div>
+            </div>
+            <button class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <iconify-icon icon="tabler:dots-vertical" width="20" height="20" class="text-white"></iconify-icon>
+            </button>
+        </div>
+        ${post.content ? `
+        <div class='relative aspect-square bg-gray-100 dark:bg-gray-700'>
+            <img src='data:image/jpeg;base64,${post.content}' alt='Image du post' class='w-full h-full object-cover' />
+            <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center opacity-0 hover:opacity-100">
+                <div class="flex space-x-6">
+                    <button onclick="likePost(${post.id})" class="p-3 bg-white bg-opacity-90 rounded-full shadow-lg hover:bg-opacity-100 transition-all duration-200 transform hover:scale-110">
+                        <iconify-icon icon="tabler:heart" width="24" height="24" class="text-gray-700"></iconify-icon>
+                    </button>
+                    <button onclick="toggleComments(${post.id})" class="p-3 bg-white bg-opacity-90 rounded-full shadow-lg hover:bg-opacity-100 transition-all duration-200 transform hover:scale-110">
+                        <iconify-icon icon="tabler:message-circle" width="24" height="24" class="text-gray-700"></iconify-icon>
+                    </button>
+                    <button onclick="sharePost(${post.id})" class="p-3 bg-white bg-opacity-90 rounded-full shadow-lg hover:bg-opacity-100 transition-all duration-200 transform hover:scale-110">
+                        <iconify-icon icon="tabler:share" width="24" height="24" class="text-gray-700"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+        ` : ''}
+        <div class="p-6">
+            <div class="flex items-center space-x-6 mb-4">
+                <button onclick="likePost(${post.id})" class="flex items-center space-x-2 text-white hover:text-red-500 transition-colors duration-200 transform hover:scale-105">
+                    <svg class="w-6 h-6 fill-none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                    <iconify-icon icon="tabler:heart" width="24" height="24"></iconify-icon>
+                    <span class="text-lg font-medium like-count-${post.id}">${likeCount}</span>
+                </button>
+                <button onclick="toggleComments(${post.id})" class="flex items-center space-x-2 text-white hover:text-blue-400 transition-colors duration-200 transform hover:scale-105">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <iconify-icon icon="tabler:message-circle" width="24" height="24"></iconify-icon>
+                    <span class="text-lg font-medium comment-count-${post.id}">${commentCount}</span>
+                </button>
+                <button onclick="sharePost(${post.id})" class="flex items-center space-x-2 text-white hover:text-green-400 transition-colors duration-200 transform hover:scale-105">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path></svg>
+                    <span class="text-lg font-medium">Partager</span>
+                </button>
+                <div class="flex-1"></div>
+                <button class="text-white hover:text-yellow-400 transition-colors duration-200 transform hover:scale-105">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                </button>
+            </div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-xl mb-2">${post.name ? post.name : 'Sans titre'}</h3>
+            <p class="text-gray-700 dark:text-gray-300 text-base leading-relaxed">${post.description ? post.description : ''}</p>
+            <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mt-2">
+                ${(post.latitude && post.longitude) ? `<div class='flex items-center space-x-1'><iconify-icon icon="tabler:map-pin" width="16" height="16" class="text-white"></iconify-icon><span>${Number(post.latitude).toFixed(4)}, ${Number(post.longitude).toFixed(4)}</span></div>` : ''}
+                <span>•</span>
+                <span class="cursor-pointer hover:text-blue-500 transition-colors">Voir plus</span>
+            </div>
+            <div id="comments-${post.id}" class="hidden mt-6 border-t border-gray-100 dark:border-gray-700 pt-4">
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Commentaires</h4>
+                    <div id="comments-list-${post.id}" class="space-y-3"></div>
+                </div>
+                ${window.isLoggedIn ? `
+                <form id="comment-form-${post.id}" class="flex space-x-2" onsubmit="event.preventDefault(); submitComment(${post.id});">
+                    <input type="text" id="comment-input-${post.id}" placeholder="Ajouter un commentaire..." class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">Envoyer</button>
+                </form>
+                ` : `<p class="text-gray-500 dark:text-gray-400 text-sm">Connectez-vous pour commenter</p>`}
+            </div>
+        </div>
+    </div>
+    `;
+}
+
+function loadPosts() {
+    if (loading || allLoaded) return;
+    loading = true;
+    document.getElementById('loading').classList.remove('hidden');
+    fetch(`/api/posts?offset=${offset}&limit=${limit}`)
+        .then(res => res.json())
+        .then(data => {
+            const posts = data.posts;
+            if (posts.length === 0) {
+                allLoaded = true;
+                document.getElementById('no-more-posts').classList.remove('hidden');
+            } else {
+                const container = document.getElementById('posts-container');
+                posts.forEach(post => {
+                    container.insertAdjacentHTML('beforeend', renderPost(post));
+                });
+                offset += posts.length;
+            }
+        })
+        .finally(() => {
+            loading = false;
+            document.getElementById('loading').classList.add('hidden');
+        });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadPosts();
+    window.addEventListener('scroll', () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+            loadPosts();
+        }
+    });
+});
+
+function likePost(postId) {
+    fetch('/api/react', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `post_id=${postId}&state=like`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('Erreur: ' + data.error);
+            return;
+        }
+        // Met à jour le compteur de likes
+        const likeCount = document.querySelector(`.like-count-${postId}`);
+        if (likeCount) {
+            let count = parseInt(likeCount.textContent) || 0;
+            if (data.action === 'added') count++;
+            if (data.action === 'removed') count = Math.max(0, count - 1);
+            likeCount.textContent = count;
+        }
+        // Met à jour la couleur du bouton
+        const btns = document.querySelectorAll(`button[onclick="likePost(${postId})"]`);
+        btns.forEach(btn => {
+            if (data.action === 'added') {
+                btn.classList.add('text-red-500');
+                btn.classList.remove('text-white');
+            } else {
+                btn.classList.remove('text-red-500');
+                btn.classList.add('text-white');
+            }
+        });
+    });
+}
+
+function commentPost(postId) {
+    console.log('Comment post:', postId);
+    
+}
+
+function sharePost(postId) {
+    
+    const postUrl = `${window.location.origin}/post/${postId}`;
+    
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Post GeoFound',
+            text: 'Regardez ce post intéressant !',
+            url: postUrl
+        }).then(() => {
+            console.log('Post partagé avec succès');
+        }).catch((error) => {
+            console.log('Erreur lors du partage:', error);
+            fallbackShare(postUrl);
+        });
+    } else {
+        
+        fallbackShare(postUrl);
+    }
+}
+
+function fallbackShare(url) {
+    
+    navigator.clipboard.writeText(url).then(() => {
+        
+        showNotification('Lien copié dans le presse-papiers !', 'success');
+    }).catch(() => {
+        
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('Lien copié dans le presse-papiers !', 'success');
+    });
+}
+
+function showNotification(message, type = 'info') {
+    const toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) return;
+    
+    const toast = document.createElement('div');
+    const icon = type === 'success' ? '✅' : 'ℹ️';
+    
+    toast.className = 'bg-gray-800 text-white p-4 rounded-lg shadow-lg flex items-center space-x-3 animate-fade-in-up';
+    toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+    
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+function openPostModal() {
+    const modal = document.getElementById('post-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function toggleComments(postId) {
+    const commentsDiv = document.getElementById(`comments-${postId}`);
+    if (!commentsDiv) return;
+    if (commentsDiv.classList.contains('hidden')) {
+        // Charger les commentaires
+        fetch(`/api/comments?post_id=${postId}`)
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById(`comments-list-${postId}`);
+                list.innerHTML = '';
+                if (data.comments && data.comments.length > 0) {
+                    data.comments.forEach(c => {
+                        list.insertAdjacentHTML('beforeend', `
+                            <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
+                                <span class="font-semibold text-gray-900 dark:text-white mr-2">${c.username}</span>
+                                <span class="text-gray-500 text-xs">${c.comment_at ? new Date(c.comment_at).toLocaleString() : ''}</span>
+                                <div class="mt-1 text-gray-800 dark:text-gray-200">${c.content}</div>
+                            </div>
+                        `);
+                    });
+                } else {
+                    list.innerHTML = '<div class="text-gray-400 text-sm">Aucun commentaire</div>';
+                }
+            });
+        commentsDiv.classList.remove('hidden');
+    } else {
+        commentsDiv.classList.add('hidden');
+    }
+}
+
+function submitComment(postId) {
+    const form = document.getElementById(`comment-form-${postId}`);
+    const input = document.getElementById(`comment-input-${postId}`);
+    const content = input.value.trim();
+    
+    if (!content) return;
+    
+    fetch('/api/comment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `post_id=${postId}&content=${encodeURIComponent(content)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            console.error('Erreur:', data.error);
+            showNotification('Erreur lors de l\'ajout du commentaire', 'error');
+            return;
+        }
+        
+        
+        input.value = '';
+        
+        
+        loadComments(postId);
+        
+        
+        updateCommentCount(postId, 1);
+        
+        showNotification('Commentaire ajouté !', 'success');
+    })
+    .catch(error => {
+        console.error('Erreur lors de l\'ajout du commentaire:', error);
+        showNotification('Erreur lors de l\'ajout du commentaire', 'error');
+    });
+}
+
+function updateCommentCount(postId, increment = 0) {
+    const countElement = document.querySelector(`.comment-count-${postId}`);
+    if (countElement) {
+        const currentCount = parseInt(countElement.textContent) || 0;
+        countElement.textContent = currentCount + increment;
+    }
+}
+
+function toggleBookmark(button, postId) {
+    fetch('/api/bookmark', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `post_id=${postId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            console.error('Erreur:', data.error);
+            showNotification('Erreur lors de l\'action', 'error');
+            return;
+        }
+
+        const svg = button.querySelector('svg');
+        if (data.action === 'added') {
+            svg.classList.add('fill-current', 'text-yellow-400');
+            showNotification('Post ajouté aux favoris !', 'success');
+        } else if (data.action === 'removed') {
+            svg.classList.remove('fill-current', 'text-yellow-400');
+            showNotification('Post retiré des favoris', 'info');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showNotification('Une erreur est survenue', 'error');
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.posts-grid > div');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = `opacity 0.5s ease-out ${index * 0.1}s, transform 0.5s ease-out ${index * 0.1}s`;
+        
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+    });
+});
+</script>
+
+<?php include_once __DIR__ . '/../layouts/footer.php'; ?> 

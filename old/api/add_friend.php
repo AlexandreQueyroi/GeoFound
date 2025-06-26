@@ -1,0 +1,22 @@
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+include_once('bdd.php');
+session_start();
+if (!isset($_SESSION['user_id'])) exit;
+$uid = $_SESSION['user_id'];
+$pseudo = trim($_POST['pseudo'] ?? '');
+if ($pseudo == '') exit('Pseudo requis');
+$stmt = $conn->prepare('SELECT id FROM users WHERE pseudo = :pseudo');
+$stmt->execute(['pseudo'=>$pseudo]);
+$user = $stmt->fetch();
+if (!$user) exit('Utilisateur introuvable');
+$fid = $user['id'];
+if ($fid == $uid) exit('Impossible de s\'ajouter soi-même');
+$stmt = $conn->prepare('SELECT * FROM follow WHERE (user1_id=:uid AND user2_id=:fid) OR (user1_id=:fid AND user2_id=:uid)');
+$stmt->execute(['uid'=>$uid,'fid'=>$fid]);
+if ($stmt->rowCount() > 0) exit('Demande déjà envoyée');
+$stmt = $conn->prepare('INSERT INTO follow (user1_id, user2_id, follow_at, state) VALUES (:uid, :fid, NOW(), "pending")');
+$stmt->execute(['uid'=>$uid,'fid'=>$fid]);
+echo 'Demande envoyée'; 

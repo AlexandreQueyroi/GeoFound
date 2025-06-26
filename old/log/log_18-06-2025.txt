@@ -1,0 +1,7 @@
+======================
+Fichier de logs du 18/06/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[18/06/2025 22:26:03] - [INFO] -  User admin with ID : 1 just logged in. ---> userConnection.php
+[18/06/2025 22:26:09] - [ERROR] - [8] - session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/me/inbox.php:3

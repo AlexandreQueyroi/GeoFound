@@ -1,0 +1,54 @@
+======================
+Fichier de logs du 05/05/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[05/05/2025 07:40:25] - Error: [2] Undefined array key "token" - /var/www/geofound/action/userConnection.php:41
+[05/05/2025 07:40:25] - Error: [8] Only variables should be passed by reference - /var/www/geofound/action/userConnection.php:43
+[05/05/2025 07:40:25] - [INFO] -  User admin with ID : 1 just logged in. ---> userConnection.php
+[05/05/2025 07:45:50] - [INFO] -  User admin with ID : 1 just logged out. ---> userConnection.php
+[05/05/2025 09:11:14] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:11:14] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:11:14] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:20:12] - Error: [2] Undefined array key "last_url" - /var/www/geofound/action/userConnection.php:85
+[05/05/2025 09:20:12] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:20:12] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:20:12] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:23:27] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:23:27] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:23:27] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:23:56] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:23:56] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:23:56] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:23:57] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:23:57] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:23:57] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:24:01] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:24:01] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:24:01] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:25:45] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:45] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:45] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:25:46] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:46] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:46] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:25:46] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:46] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:46] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:25:50] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:50] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:50] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:25:54] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:54] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:25:54] - [ERROR] -  User  with ID :  just tried to access a page without being logged in. ---> userConnection.php
+[05/05/2025 09:26:44] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:26:44] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 09:26:44] - [ERROR] -  User  with ID :  just failed connection check. ---> userConnection.php
+[05/05/2025 09:36:27] - Error: [8] session_start(): Ignoring session_start() because a session is already active - /var/www/geofound/accountCreated.php:4
+[05/05/2025 09:45:27] - Error: [2] Undefined variable $pseudo - /var/www/geofound/accountCreated.php:5
+[05/05/2025 09:45:27] - Error: [2] Undefined array key "newmail" - /var/www/geofound/accountCreated.php:7
+[05/05/2025 09:45:27] - Error: [8192] htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated - /var/www/geofound/accountCreated.php:7
+[05/05/2025 17:40:58] - Error: [2] Undefined array key "last_url" - /var/www/geofound/action/userConnection.php:85
+[05/05/2025 17:40:58] - Error: [2] Undefined array key "user" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 17:40:58] - Error: [2] Undefined array key "id" - /var/www/geofound/action/userConnection.php:89
+[05/05/2025 17:40:58] - [ERROR] -  User  with ID :  just failed connection check. ---> userConnection.php

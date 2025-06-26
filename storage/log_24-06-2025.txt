@@ -1,0 +1,6 @@
+======================
+Fichier de logs du 24/06/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[24/06/2025 19:10:02] - [ERROR] - Permission refusée - user_id: non défini, permission: post.create ---> PostController::create

@@ -1,0 +1,39 @@
+======================
+Fichier de logs du 28/05/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[28/05/2025 03:23:30] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+(
+    [HTTP_HOST] => 193.70.0.80
+    [HTTP_USER_AGENT] => Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
+    [HTTP_ACCEPT] => */*
+    [HTTP_COOKIE] => PHPSESSID=9qdgdtflg74vvc9r3uoi11fsv6
+    [HTTP_REFERER] => http://193.70.0.80/reward.php
+    [HTTP_ACCEPT_ENCODING] => gzip
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at 193.70.0.80 Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
+    [SERVER_NAME] => 193.70.0.80
+    [SERVER_ADDR] => 193.70.0.80
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 206.189.66.59
+    [DOCUMENT_ROOT] => /var/www/geofound
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
+    [SERVER_ADMIN] => [no address given]
+    [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
+    [REMOTE_PORT] => 20754
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /action/userConnection.php
+    [SCRIPT_NAME] => /action/userConnection.php
+    [PHP_SELF] => /action/userConnection.php
+    [REQUEST_TIME_FLOAT] => 1748402610.722
+    [REQUEST_TIME] => 1748402610
+)
+ just failed connection check. ---> userConnection.php

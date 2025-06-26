@@ -1,0 +1,11 @@
+======================
+Fichier de logs du 11/05/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[11/05/2025 03:23:09] - [ERROR] - [2] - Undefined array key "last_url" - /var/www/geofound/action/userConnection.php:86
+[11/05/2025 03:23:09] - [ERROR] -  User NULL with ID : NULL just failed connection check. ---> userConnection.php
+[11/05/2025 22:55:04] - [ERROR] - [2] - Undefined global variable $_SESSION - /var/www/geofound/error.php:27
+[11/05/2025 22:55:04] - [ERROR] - 403 : Session content :  ---> [ERROR]
+[11/05/2025 23:40:54] - [ERROR] - [2] - Undefined array key "last_url" - /var/www/geofound/action/userConnection.php:86
+[11/05/2025 23:40:54] - [ERROR] -  User NULL with ID : NULL just failed connection check. ---> userConnection.php

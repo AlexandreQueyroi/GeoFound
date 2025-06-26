@@ -1,0 +1,36 @@
+======================
+Fichier de logs du 18/05/2025
+Format : [Date Heure] - [Type] - Message ---> Source
+======================
+
+[18/05/2025 01:43:49] - [ERROR] -  User NULL with ID : NULL and server variable : Array
+(
+    [HTTP_HOST] => vps-1407a1ea.vps.ovh.net
+    [HTTP_USER_AGENT] => curl/7.54.0
+    [HTTP_CONNECTION] => close
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.52 (Ubuntu) Server at vps-1407a1ea.vps.ovh.net Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.52 (Ubuntu)
+    [SERVER_NAME] => vps-1407a1ea.vps.ovh.net
+    [SERVER_ADDR] => 193.70.0.80
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 172.105.246.139
+    [DOCUMENT_ROOT] => /var/www/geofound
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /var/www/geofound
+    [SERVER_ADMIN] => [no address given]
+    [SCRIPT_FILENAME] => /var/www/geofound/action/userConnection.php
+    [REMOTE_PORT] => 47900
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /action/userConnection.php
+    [SCRIPT_NAME] => /action/userConnection.php
+    [PHP_SELF] => /action/userConnection.php
+    [REQUEST_TIME_FLOAT] => 1747532629.0406
+    [REQUEST_TIME] => 1747532629
+)
+ just failed connection check. ---> userConnection.php

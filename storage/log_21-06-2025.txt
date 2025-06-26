@@ -1,0 +1,18 @@
+[21/06/2025 02:53:59] - [INFO] - Test de logging ---> test.php
+[21/06/2025 02:54:22] - [INFO] - Création de post demandée ---> PostController::create
+[21/06/2025 02:54:22] - [INFO] - Début de handleCreatePost ---> PostController::handleCreatePost
+[21/06/2025 02:54:22] - [INFO] - Données reçues - title: esdxcjgiuesgdxiug, content: eiudsciugdxig, lat: 48.8566, lng: 2.3522 ---> PostController::handleCreatePost
+[21/06/2025 02:54:22] - [INFO] - Tentative de création du post avec les données: {"user_id":1,"name":"esdxcjgiuesgdxiug","description":"eiudsciugdxig","latitude":48.8566,"longitude":2.3522,"date":"2025-06-21 02:54:22"} ---> PostController::handleCreatePost
+[21/06/2025 02:54:22] - [ERROR] - Échec de la création du post ---> PostController::handleCreatePost
+[21/06/2025 02:56:28] - [INFO] - Création de post demandée ---> PostController::create
+[21/06/2025 02:56:28] - [INFO] - Début de handleCreatePost ---> PostController::handleCreatePost
+[21/06/2025 02:56:28] - [INFO] - Données reçues - title: esdxcjgiuesgdxiug, content: eiudsciugdxig, lat: 48.8566, lng: 2.3522 ---> PostController::handleCreatePost
+[21/06/2025 02:56:28] - [INFO] - Tentative de création du post avec les données: {"user_id":1,"name":"esdxcjgiuesgdxiug","description":"eiudsciugdxig","latitude":48.8566,"longitude":2.3522,"date":"2025-06-21 02:56:28"} ---> PostController::handleCreatePost
+[21/06/2025 02:56:28] - [ERROR] - Erreur création post: SQLSTATE[HY000]: General error: 1364 Field 'content_id' doesn't have a default value ---> Post::create
+[21/06/2025 02:56:28] - [ERROR] - Échec de la création du post ---> PostController::handleCreatePost
+[21/06/2025 02:58:16] - [INFO] - Création de post demandée ---> PostController::create
+[21/06/2025 02:58:16] - [INFO] - Début de handleCreatePost ---> PostController::handleCreatePost
+[21/06/2025 02:58:16] - [INFO] - Données reçues - title: sdxuigxiugiug, content: ezusdfwcyuxgdsugxc, lat: 48.8566, lng: 2.3522 ---> PostController::handleCreatePost
+[21/06/2025 02:58:16] - [INFO] - Tentative de création du post avec les données: {"user_id":1,"name":"sdxuigxiugiug","description":"ezusdfwcyuxgdsugxc","latitude":48.8566,"longitude":2.3522,"date":"2025-06-21 02:58:16"} ---> PostController::handleCreatePost
+[21/06/2025 02:58:16] - [INFO] - Post créé avec succès, ID: 1 ---> PostController::handleCreatePost
+[21/06/2025 09:02:29] - [ERROR] - Permission refusée - user_id: non défini, permission: post.create ---> PostController::create

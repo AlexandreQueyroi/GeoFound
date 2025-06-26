@@ -1,0 +1,187 @@
+
+.post {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.post-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    padding: 15px;
+}
+
+.post h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.5em;
+    color: 
+}
+
+.post-location {
+    color: 
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.post-location i {
+    margin-right: 5px;
+}
+
+.post-content {
+    margin: 15px 0;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    color: 
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+
+.post-reactions {
+    display: flex;
+    gap: 15px;
+    padding: 10px 15px;
+    border-top: 1px solid 
+}
+
+.reaction-count {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.reaction-emoji {
+    font-size: 1.2em;
+}
+
+.reaction-buttons {
+    display: flex;
+    gap: 10px;
+    padding: 10px 15px;
+    border-top: 1px solid 
+}
+
+.reaction-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.reaction-btn:hover {
+    transform: scale(1.2);
+}
+
+
+.comment-form {
+    padding: 15px;
+    border-top: 1px solid 
+}
+
+.comment-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid 
+    border-radius: 4px;
+    margin-bottom: 10px;
+    resize: vertical;
+}
+
+.comment-form button {
+    background: 
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.comment-form button:hover {
+    background: 
+}
+
+.comments-section {
+    padding: 15px;
+    border-top: 1px solid 
+}
+
+.comments-section h2 {
+    margin: 0 0 15px 0;
+    font-size: 1.2em;
+    color: 
+}
+
+.comment {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid 
+}
+
+.comment:last-child {
+    border-bottom: none;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.comment-author {
+    font-weight: bold;
+    color: 
+}
+
+.comment-date {
+    color: 
+    font-size: 0.9em;
+}
+
+.comment-content {
+    color: 
+    line-height: 1.4;
+}
+
+
+.post-actions {
+    padding: 10px 15px;
+    border-top: 1px solid 
+    display: flex;
+    justify-content: flex-end;
+}
+
+.share-btn {
+    background: none;
+    border: none;
+    color: 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.share-btn:hover {
+    background-color: 
+}
+
+.share-btn i {
+    font-size: 1.1em;
+} 

@@ -1,0 +1,29 @@
+[21/06/2025 04:41:10] UNCAUGHT EXCEPTION: Class "\App\Controllers\" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:41:12] UNCAUGHT EXCEPTION: Class "\App\Controllers\" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:41:45] UNCAUGHT EXCEPTION: Class "\App\Controllers\" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:42:41] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:42:42] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:42:42] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:42:43] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:42:48] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:43:08] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:43:09] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:43:09] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21/06/2025 04:43:10] UNCAUGHT EXCEPTION: Class "\App\Controllers\TestModalController" not found in /var/www/geofound/public/index.php on line 59
+#0 {main}
+[21-Jun-2025 04:43:34 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /var/www/geofound/public/test-modal.php on line 2
+[21-Jun-2025 04:48:15 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /var/www/geofound/public/test-modal.php on line 2
+[21-Jun-2025 04:50:08 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /var/www/geofound/public/test-modal.php on line 2
+[21-Jun-2025 04:50:09 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /var/www/geofound/public/test-modal.php on line 2
+[21-Jun-2025 04:50:12 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /var/www/geofound/public/test-modal.php on line 2
