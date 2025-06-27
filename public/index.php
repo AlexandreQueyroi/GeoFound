@@ -29,7 +29,13 @@ require_once __DIR__ . '/../config/routes.php';
 use App\Helpers\PermissionMiddleware;
 PermissionMiddleware::checkMaintenance();
 
-$uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$basePath = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+$basePath = rtrim($basePath, '/');
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+if (strpos($uri, $basePath) === 0) {
+    $uri = substr($uri, strlen($basePath));
+}
+$uri = trim($uri, '/');
 $routeFound = false;
 
 foreach (

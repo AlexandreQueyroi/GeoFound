@@ -6,7 +6,7 @@ class Post {
     private static $db;
     public static function init() {
         if (!self::$db) {
-            self::$db = \App\Helpers\Database::getConnection();
+            self::$db = Database::getConnection();
         }
     }
 

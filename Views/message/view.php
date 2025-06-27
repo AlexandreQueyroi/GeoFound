@@ -66,7 +66,7 @@
 
 .friends-sidebar {
     width: 300px;
-    border-right: 1px solid 
+    border-right: 1px solid;
     padding: 10px;
 }
 
@@ -80,7 +80,7 @@
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    background: 
+    background: #FFFFFF;
     margin-bottom: 20px;
     border-radius: 8px;
 }
@@ -92,7 +92,7 @@
 
 .message.sent {
     margin-left: auto;
-    background: 
+    background: #FFFFFF;
     color: white;
     border-radius: 15px 15px 0 15px;
     padding: 10px 15px;
@@ -101,7 +101,7 @@
 .message.received {
     margin-right: auto;
     background: white;
-    border: 1px solid 
+    border: 1px solid;
     border-radius: 15px 15px 15px 0;
     padding: 10px 15px;
 }
@@ -110,17 +110,9 @@
     font-size: 0.8em;
     opacity: 0.7;
     margin-top: 5px;
-}
-
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid 
-}
-
-    background: 
-}
-
-    background: 
 }
 
 .modal {

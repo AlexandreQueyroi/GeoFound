@@ -33,8 +33,8 @@ if (isset($_SESSION['user_id'])) {
     <title>Geofound</title>
     <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="/assets/img/logo.png">
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/img/logo.png">
+    <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -119,9 +119,9 @@ if (isset($_SESSION['user_id'])) {
             transition: opacity 0.5s;
         }
     </style>
-    <script src="/assets/js/permissions.js?v=<?php echo time(); ?>" defer></script>
+    <script src="assets/js/permissions.js?v=<?php echo time(); ?>" defer></script>
     <?php if (strpos($_SERVER['REQUEST_URI'], 'message') !== false): ?>
-    <script src="/assets/js/messagerie.js?v=<?=time()?>" defer></script>
+    <script src="assets/js/messagerie.js?v=<?=time()?>" defer></script>
     <?php endif; ?>
     
     <script>
@@ -150,14 +150,14 @@ if (isset($_SESSION['user_id'])) {
     <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col space-y-2"></div>
     
     <audio id="notif-sound" preload="auto">
-        <source src="/assets/sounds/notification.mp3" type="audio/mpeg">
+        <source src="assets/sounds/notification.mp3" type="audio/mpeg">
     </audio>
     
     <header class="bg-[#081225] text-white shadow">
         <div class="container mx-auto flex items-center justify-between py-2 px-4">
             <div class="flex items-center gap-8">
                 <a href="/" class="flex items-center space-x-2">
-                    <img src="/assets/img/logo.png" alt="Logo" class="w-12 h-12">
+                    <img src="assets/img/logo.png" alt="Logo" class="w-12 h-12">
                     <span class="text-2xl font-bold hidden sm:block">GeoFound</span>
                 </a>
                 <nav>

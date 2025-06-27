@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maintenance - GeoFound</title>
     <script src="https:
-    <link rel="icon" type="image/x-icon" href="/assets/img/logo.png">
+    <link rel="icon" type="image/x-icon" href="assets/img/logo.png">
 </head>
 <body class="bg-[
     <div class="text-center max-w-md mx-auto px-4">
@@ -32,6 +32,6 @@
         </div>
     </div>
     <?php include_once __DIR__ . '/../layouts/modal.php'; ?>
-    <script src="/assets/js/modal.js"></script>
+    <script src="assets/js/modal.js"></script>
 </body>
 </html> 

@@ -366,8 +366,8 @@ class AdminController {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
                 
-                Permission::init();
-                $stmt = Permission::$db->prepare("
+                $db = Permission::init();
+                $stmt = $db->prepare("
                     SELECT pp.page_path, pp.permission_id, p.name as permission_name, p.description
                     FROM page_permissions pp
                     JOIN permissions p ON pp.permission_id = p.id

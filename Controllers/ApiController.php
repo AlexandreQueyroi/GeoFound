@@ -1,10 +1,8 @@
 <?php
 namespace App\Controllers;
 use App\Helpers\Database;
-use App\Models\User;
-use App\Models\Post;
-use App\Models\Message;
 use App\Helpers\Logger;
+use Exception;
 
 class ApiController {
     public function user($id = null) {

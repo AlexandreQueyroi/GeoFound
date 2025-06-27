@@ -7,7 +7,7 @@ class Permission {
     private static $db;
 
     public static function init() {
-        self::$db = Database::getConnection();
+        return self::$db = Database::getConnection();
     }
 
     /**

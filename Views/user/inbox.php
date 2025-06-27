@@ -2,7 +2,7 @@
 <?php include_once __DIR__ . '/../layouts/modal.php'; ?>
 <style>
 .selected {
-    background-color: 
+    background-color: #FFFFFF
 }
 </style>
 <div class="container mx-auto px-2 py-2 md:px-4 md:py-4">
@@ -115,5 +115,5 @@
     window.selectedFriendId = <?= $selected_friend ? intval($selected_friend) : 'null' ?>;
 </script>
 <script src="https:
-<script src="/assets/js/messagerie.js"></script>
+<script src="assets/js/messagerie.js"></script>
 <?php include_once __DIR__ . '/../layouts/footer.php'; ?> 

@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Models\Permission;
 use App\Models\Post;
 use App\Helpers\Logger;
+use Exception;
 
 class PostController {
     public function index() {
@@ -145,7 +146,7 @@ class PostController {
                 ]);
             }
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Logger::error('Exception lors de la création du post: ' . $e->getMessage(), 'PostController::handleCreatePost');
             echo json_encode([
                 'success' => false,
@@ -178,7 +179,7 @@ class PostController {
             throw new Exception('Erreur lors du téléchargement du fichier');
         }
         
-        return '/assets/uploads/posts/' . $filename;
+        return 'assets/uploads/posts/' . $filename;
     }
     
     private function isAjaxRequest() {

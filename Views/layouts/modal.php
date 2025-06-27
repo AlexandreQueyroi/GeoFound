@@ -419,4 +419,4 @@
         </div>
     </div>
 </div>
-<script src="/assets/js/permissions.js"></script> 
+<script src="assets/js/permissions.js"></script> 
