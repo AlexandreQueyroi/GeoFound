@@ -562,7 +562,7 @@ class AdminController {
             $params = [];
             
             if (!empty($search)) {
-                $whereConditions[] = "(u.username LIKE ? OR u.email LIKE ?)";
+                $whereConditions[] = "(u.pseudo LIKE ? OR u.email LIKE ?)";
                 $params[] = "%$search%";
                 $params[] = "%$search%";
             }
@@ -573,8 +573,8 @@ class AdminController {
             }
             
             if (!empty($status)) {
-                $whereConditions[] = "u.status = ?";
-                $params[] = $status;
+                $whereConditions[] = "u.desactivated = ?";
+                $params[] = $status === 'banned' ? 1 : 0;
             }
             
             $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
@@ -592,20 +592,17 @@ class AdminController {
             
             // Requête pour récupérer les utilisateurs
             $query = "
-                SELECT u.id, u.username, u.email, u.status, u.connected, u.created_at,
+                SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected,
                        r.id as rank_id, r.name as rank_name, r.color as rank_color,
                        COUNT(up.id) as permissions_count
                 FROM users u 
                 LEFT JOIN ranks r ON u.rank = r.id 
                 LEFT JOIN user_permissions up ON u.id = up.user_id
                 $whereClause
-                GROUP BY u.id
-                ORDER BY u.created_at DESC 
-                LIMIT ? OFFSET ?
+                GROUP BY u.id, u.pseudo, u.email, u.desactivated, u.connected, r.id, r.name, r.color
+                ORDER BY u.id DESC 
+                LIMIT $limit OFFSET $offset
             ";
-            
-            $params[] = $limit;
-            $params[] = $offset;
             
             $stmt = $db->prepare($query);
             $stmt->execute($params);
@@ -620,7 +617,7 @@ class AdminController {
             ]);
         } catch (\Exception $e) {
             http_response_code(500);
-            echo json_encode(['error' => 'Erreur lors de la récupération des utilisateurs']);
+            echo json_encode(['error' => 'Erreur lors de la récupération des utilisateurs', 'details' => $e->getMessage()]);
         }
     }
 
@@ -641,7 +638,7 @@ class AdminController {
                 case 'GET':
                     // Récupérer les informations de l'utilisateur
                     $stmt = $db->prepare("
-                        SELECT u.id, u.username, u.email, u.status, u.connected, u.created_at,
+                        SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected,
                                r.id as rank_id, r.name as rank_name, r.color as rank_color
                         FROM users u 
                         LEFT JOIN ranks r ON u.rank = r.id 
@@ -673,13 +670,13 @@ class AdminController {
                     // Modifier l'utilisateur
                     $data = json_decode(file_get_contents('php://input'), true);
                     
-                    $username = $data['username'] ?? '';
+                    $pseudo = $data['username'] ?? '';
                     $email = $data['email'] ?? '';
                     $rankId = $data['rank_id'] ?? null;
                     $status = $data['status'] ?? 'active';
                     $permissions = $data['permissions'] ?? [];
                     
-                    if (empty($username) || empty($email)) {
+                    if (empty($pseudo) || empty($email)) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Nom d\'utilisateur et email requis']);
                         exit;
@@ -691,10 +688,11 @@ class AdminController {
                         // Mettre à jour l'utilisateur
                         $stmt = $db->prepare("
                             UPDATE users 
-                            SET username = ?, email = ?, rank = ?, status = ?
+                            SET pseudo = ?, email = ?, rank = ?, desactivated = ?
                             WHERE id = ?
                         ");
-                        $stmt->execute([$username, $email, $rankId, $status, $userId]);
+                        $desactivated = $status === 'banned' ? 1 : 0;
+                        $stmt->execute([$pseudo, $email, $rankId, $desactivated, $userId]);
                         
                         // Supprimer les anciennes permissions
                         $stmt = $db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
@@ -747,7 +745,7 @@ class AdminController {
             $db = \App\Helpers\Database::getConnection();
             
             // Récupérer le statut actuel
-            $stmt = $db->prepare("SELECT status FROM users WHERE id = ?");
+            $stmt = $db->prepare("SELECT desactivated FROM users WHERE id = ?");
             $stmt->execute([$userId]);
             $user = $stmt->fetch();
             
@@ -758,15 +756,15 @@ class AdminController {
             }
             
             // Basculer le statut
-            $newStatus = $user['status'] === 'banned' ? 'active' : 'banned';
+            $newStatus = $user['desactivated'] ? 0 : 1;
             
-            $stmt = $db->prepare("UPDATE users SET status = ? WHERE id = ?");
+            $stmt = $db->prepare("UPDATE users SET desactivated = ? WHERE id = ?");
             $stmt->execute([$newStatus, $userId]);
             
             echo json_encode([
                 'success' => true, 
                 'message' => 'Statut modifié',
-                'new_status' => $newStatus
+                'new_status' => $newStatus ? 'banned' : 'active'
             ]);
         } catch (\Exception $e) {
             http_response_code(500);

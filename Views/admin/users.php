@@ -205,23 +205,23 @@ function renderUsers() {
                         <img class="h-10 w-10 rounded-full" src="/assets/img/avatars/default-avatar.png" alt="">
                     </div>
                     <div class="ml-4">
-                        <div class="text-sm font-medium text-white">${user.username}</div>
+                        <div class="text-sm font-medium text-white">${user.pseudo}</div>
                         <div class="text-sm text-gray-400">${user.email}</div>
                     </div>
                 </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" style="background-color: ${user.rank_color}; color: white;">
-                    ${user.rank_name}
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" style="background-color: ${user.rank_color || '#3B82F6'}; color: white;">
+                    ${user.rank_name || 'Aucun rang'}
                 </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.status === 'active' ? 'bg-green-100 text-green-800' :
-                    user.status === 'banned' ? 'bg-red-100 text-red-800' :
+                    user.status == 0 ? 'bg-green-100 text-green-800' :
+                    user.status == 1 ? 'bg-red-100 text-red-800' :
                     'bg-gray-100 text-gray-800'
                 }">
-                    ${user.status === 'active' ? 'Actif' : user.status === 'banned' ? 'Banni' : 'Inactif'}
+                    ${user.status == 0 ? 'Actif' : user.status == 1 ? 'Banni' : 'Inactif'}
                 </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
@@ -237,7 +237,7 @@ function renderUsers() {
                     Éditer
                 </button>
                 <button onclick="toggleUserStatus(${user.id})" class="text-yellow-400 hover:text-yellow-300 mr-3">
-                    ${user.status === 'banned' ? 'Débannir' : 'Bannir'}
+                    ${user.status == 1 ? 'Débannir' : 'Bannir'}
                 </button>
                 <button onclick="deleteUser(${user.id})" class="text-red-400 hover:text-red-300">
                     Supprimer
@@ -317,10 +317,10 @@ async function editUser(userId) {
         const user = await response.json();
         
         document.getElementById('edit-user-id').value = user.id;
-        document.getElementById('edit-username').value = user.username;
+        document.getElementById('edit-username').value = user.pseudo;
         document.getElementById('edit-email').value = user.email;
-        document.getElementById('edit-rank').value = user.rank_id;
-        document.getElementById('edit-status').value = user.status;
+        document.getElementById('edit-rank').value = user.rank_id || '';
+        document.getElementById('edit-status').value = user.status == 1 ? 'banned' : 'active';
         
         // Cocher les permissions de l'utilisateur
         const checkboxes = document.querySelectorAll('#edit-permissions input[type="checkbox"]');
