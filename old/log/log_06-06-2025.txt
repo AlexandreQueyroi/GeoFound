@@ -1,6 +1,0 @@
-======================
-Fichier de logs du 06/06/2025
-Format : [Date Heure] - [Type] - Message ---> Source
-======================
-
-[06/06/2025 14:19:10] - [INFO] -  User admin with ID : 1 just logged in. ---> userConnection.php

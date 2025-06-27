@@ -1,6 +1,0 @@
-======================
-Fichier de logs du 03/05/2025
-Format : [Date Heure] - [Type] - Message ---> Source
-======================
-
-[03/05/2025 15:08:36] - Error: [2] Undefined array key "last_url" - /var/www/geofound/action/userConnection.php:82
