@@ -163,7 +163,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<script src="/me/edit.js"></script>
+<script src="/assets/js/editProfile.js"></script>
 
 <?php
 include_once(__DIR__ . '/../build/footer.php');

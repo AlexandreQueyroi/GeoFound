@@ -219,7 +219,6 @@ CREATE TABLE page_permissions (
     UNIQUE KEY unique_page_permission (page_path, permission_id)
 );
 
--- Insertion des permissions de base
 INSERT INTO permissions (name, description) VALUES
 ('*', 'Permission administrateur - Accès à tout'),
 ('admin.access', 'Accès au panel d\'administration'),
@@ -240,13 +239,11 @@ INSERT INTO permissions (name, description) VALUES
 ('log.view', 'Voir les logs'),
 ('captcha.manage', 'Gestion des captchas');
 
--- Insertion des rangs de base
 INSERT INTO ranks (name, color) VALUES
 ('admin', '#EF4444'),
 ('moderator', '#F59E0B'),
 ('user', '#3B82F6');
 
--- Attribution des permissions aux rangs
 INSERT INTO rank_permissions (rank_id, permission_id) 
 SELECT r.id, p.id FROM ranks r, permissions p 
 WHERE r.name = 'admin' AND p.name = '*';
@@ -258,11 +255,9 @@ WHERE r.name = 'moderator' AND p.name IN (
     'post.moderate', 'comment.moderate', 'message.global', 'log.view'
 );
 
--- Création de l'utilisateur admin par défaut
 INSERT INTO users (pseudo, rank, password, email, description, verified) VALUES 
 ('admin', 'admin', '$2y$10$mjIYy.RcnzPIGytlmqifBudv8b5mqW.0KE/JpIFXmkRiv0WrxpfB2', 'admin@geofound.com', 'Default admin account', TRUE);
 
--- Création de l'utilisateur et attribution des privilèges
 CREATE USER IF NOT EXISTS 'geofound'@'%' IDENTIFIED BY 'geofound-2025';
 GRANT ALL PRIVILEGES ON geofound.* TO 'geofound'@'%';
 FLUSH PRIVILEGES;

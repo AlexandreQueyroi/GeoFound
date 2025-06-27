@@ -2,17 +2,24 @@
 <?php include_once __DIR__ . '/../layouts/modal.php'; ?>
 <style>
 .selected {
-    background-color: 
+    background-color: #2563eb !important; /* Couleur de sélection (bleu Tailwind) */
 }
 </style>
 <div class="container mx-auto px-2 py-2 md:px-4 md:py-4">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-2 md:gap-4 h-[calc(100vh-12rem)]">
-        <div class="bg-[
+        <div class="bg-secondary rounded-lg p-4 flex flex-col h-full">
             <h2 class="text-white text-lg md:text-xl font-bold mb-2 md:mb-3">Amis</h2>
             <div class="flex-1 overflow-y-auto min-h-0">
                 <ul id="friend-list" class="space-y-2">
                     <?php foreach ($friends ?? [] as $f): ?>
                         <li data-id="<?= $f['id'] ?>" data-pseudo="<?= htmlspecialchars($f['pseudo']) ?>" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-700 cursor-pointer<?php if (isset($selected_friend) && $selected_friend == $f['id']) echo ' selected'; ?>">
+                            <?php if (!empty($f['avatar'])): ?>
+                                <img src="<?= htmlspecialchars($f['avatar']) ?>" alt="Avatar" class="w-10 h-10 rounded-full object-cover mr-2">
+                            <?php else: ?>
+                                <div class="bg-primary rounded-full w-10 h-10 flex items-center justify-center text-white font-bold text-lg mr-2">
+                                    <?= strtoupper(substr($f['pseudo'], 0, 1)) ?>
+                                </div>
+                            <?php endif; ?>
                             <span class="text-white"><?= htmlspecialchars($f['pseudo']) ?></span>
                         </li>
                     <?php endforeach; ?>
@@ -23,48 +30,17 @@
                 <button id="friend-requests-btn" class="w-full text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2 md:px-4 md:py-2">Demandes d'amis</button>
             </div>
         </div>
-        <div class="bg-[
-            <div id="conversation-header" class="text-white text-lg md:text-xl font-bold mb-2 md:mb-3">
-                <?php
-                if ($selected_friend) {
-                    $friend_pseudo = '';
-                    foreach ($friends as $f) {
-                        if ($f['id'] == $selected_friend) {
-                            $friend_pseudo = $f['pseudo'];
-                            break;
-                        }
-                    }
-                    echo 'Conversation avec ' . htmlspecialchars($friend_pseudo);
-                } elseif (empty($friends)) {
-                    echo '<span class="text-gray-400">Aucun ami</span>';
-                }
-                ?>
-            </div>
-            <div id="messages" class="flex-1 overflow-y-auto space-y-3 mb-2 md:mb-3 pr-2 custom-scrollbar bg-[
-                <?php if ($selected_friend): ?>
-                    <?php if (count($messages) === 0): ?>
-                        <div class="flex justify-center items-center h-full text-gray-400 text-center">Ceci est le début de votre conversation</div>
-                    <?php else: ?>
-                        <?php foreach ($messages as $m): ?>
-                            <div class="flex <?= $m['sent'] ? 'justify-end' : 'justify-start' ?>">
-                                <div class="max-w-[70%] <?= $m['sent'] ? 'bg-blue-600' : 'bg-gray-700' ?> rounded-lg p-3">
-                                    <div class="text-white"><?= htmlspecialchars($m['content']) ?></div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                <?php else: ?>
+        <div class="bg-secondary rounded-lg p-4 flex flex-col h-full md:col-span-3">
+            <div id="conversation-header" class="text-white text-lg md:text-xl font-bold mb-2 md:mb-3"></div>
+            <div id="messages" class="flex-1 overflow-y-auto space-y-3 mb-2 md:mb-3 pr-2 custom-scrollbar" style="max-height: 60vh; min-height: 200px;">
+                <div id="messages-list">
                     <div class="flex justify-center items-center h-full text-gray-400 text-center">Cliquez sur un utilisateur pour commencer à discuter</div>
-                <?php endif; ?>
-            </div>
-            <?php if ($selected_friend): ?>
-            <form id="send-message-form" class="mt-2">
-                <div class="flex gap-2">
-                    <input type="text" id="message-input" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2" placeholder="Votre message..." autocomplete="off">
-                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Envoyer</button>
                 </div>
+            </div>
+            <form id="send-message-form" class="mt-auto flex gap-2 hidden">
+                <input type="text" id="message-input" class="flex-1 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2" placeholder="Votre message..." autocomplete="off">
+                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Envoyer</button>
             </form>
-            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -116,4 +92,103 @@
 </script>
 <script src="https:
 <script src="/assets/js/messagerie.js"></script>
+<script>
+function renderMessages(messages, userId) {
+    const messagesList = document.getElementById('messages-list');
+    messagesList.innerHTML = '';
+    if (!messages || messages.length === 0) {
+        messagesList.innerHTML = '<div class="flex justify-center items-center h-full text-gray-400 text-center">Ceci est le début de votre conversation</div>';
+        return;
+    }
+    messages.forEach(m => {
+        const isOwn = m.sent || m.sender_id == userId;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex' + (isOwn ? ' justify-end' : ' justify-start') + ' mb-3';
+        const bubble = document.createElement('div');
+        bubble.className = 'max-w-[70%] px-4 py-2 rounded-2xl shadow ' + (isOwn ? 'bg-blue-600 text-white rounded-br-none ml-8' : 'bg-gray-700 text-white rounded-bl-none mr-8');
+        const content = document.createElement('div');
+        content.className = 'text-sm';
+        content.textContent = m.content;
+        bubble.appendChild(content);
+        const time = document.createElement('div');
+        time.className = 'text-xs text-gray-300 text-right mt-1';
+        let date = m.posted_at || m.time;
+        if (date) {
+            const d = new Date(date);
+            time.textContent = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }
+        bubble.appendChild(time);
+        wrapper.appendChild(bubble);
+        messagesList.appendChild(wrapper);
+    });
+    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+}
+
+function loadConversation(friendId, scrollToBottom = true) {
+    fetch('/message/conversation?friend_id=' + friendId)
+        .then(r => r.json())
+        .then(data => {
+            // Accepte les deux formats de réponse
+            if (Array.isArray(data)) {
+                renderMessages(data, window.currentUserId);
+                if (scrollToBottom) {
+                    const messagesDiv = document.getElementById('messages');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+            } else if (data && data.messages) {
+                renderMessages(data.messages, window.currentUserId);
+                if (scrollToBottom) {
+                    const messagesDiv = document.getElementById('messages');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+            }
+        });
+}
+
+function setConversationHeader(pseudo) {
+    document.getElementById('conversation-header').textContent = pseudo ? 'Conversation avec ' + pseudo : '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    window.currentUserId = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
+    // Initialisation : tout masquer
+    setConversationHeader('');
+    document.getElementById('send-message-form').classList.add('hidden');
+    document.getElementById('messages-list').innerHTML = '<div class="flex justify-center items-center h-full text-gray-400 text-center">Cliquez sur un utilisateur pour commencer à discuter</div>';
+    document.querySelectorAll('#friend-list li').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const id = this.getAttribute('data-id');
+            const pseudo = this.getAttribute('data-pseudo');
+            setConversationHeader(pseudo);
+            window.selectedFriendId = id;
+            loadConversation(id, true);
+            document.querySelectorAll('#friend-list li').forEach(li => li.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('send-message-form').classList.remove('hidden');
+        });
+    });
+    // Envoi de message AJAX
+    const form = document.getElementById('send-message-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('message-input');
+            const content = input.value.trim();
+            if (!content || !window.selectedFriendId) return;
+            fetch('/message/send', {
+                method: 'POST',
+                body: new URLSearchParams({ friend_id: window.selectedFriendId, content })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    loadConversation(window.selectedFriendId, true);
+                    input.value = '';
+                }
+            });
+        });
+    }
+});
+</script>
 <?php include_once __DIR__ . '/../layouts/footer.php'; ?> 

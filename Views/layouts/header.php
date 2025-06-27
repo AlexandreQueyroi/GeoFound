@@ -118,6 +118,18 @@ if (isset($_SESSION['user_id'])) {
         #toast-container > div {
             transition: opacity 0.5s;
         }
+        
+        /* Styles pour le bouton Manager */
+        .manager-button {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .user-menu-group:hover .manager-button {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
     <script src="/assets/js/permissions.js?v=<?php echo time(); ?>" defer></script>
     <?php if (strpos($_SERVER['REQUEST_URI'], 'message') !== false): ?>
@@ -167,17 +179,8 @@ if (isset($_SESSION['user_id'])) {
                         <li><a href="/post" class="hover:text-blue-400 transition">Posts</a></li>
                         <li><a href="/reward" class="hover:text-blue-400 transition">Récompenses</a></li>
                         <?php if (isset($_SESSION['user'])): ?>
-                            <li><a href="/message/inbox" class="hover:text-blue-400 transition">Messages</a></li>
+                            <li><a href="/me/inbox" class="hover:text-blue-400 transition">Messages</a></li>
                             <li><a href="/me" class="hover:text-blue-400 transition">Profil</a></li>
-                            <?php if (in_array('admin.stats', $userPermissions) || in_array('*', $userPermissions)): ?>
-                                <li><a href="/admin/stats" class="hover:text-blue-400 transition">Statistiques</a></li>
-                            <?php endif; ?>
-                            <?php if (in_array('admin.glpi', $userPermissions) || in_array('*', $userPermissions)): ?>
-                                <li><a href="/admin/glpi" class="hover:text-blue-400 transition">GLPI</a></li>
-                            <?php endif; ?>
-                            <?php if (in_array('admin.access', $userPermissions) || in_array('*', $userPermissions)): ?>
-                                <li><a href="/admin" class="hover:text-blue-400 transition">Administration</a></li>
-                            <?php endif; ?>
                         <?php endif; ?>
                     </ul>
                 </nav>
@@ -188,14 +191,28 @@ if (isset($_SESSION['user_id'])) {
                     <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full px-1 hidden group-hover:block">!</span>
                 </button>
                 <?php if (isset($_SESSION['user'])): ?>
-                    <div class="relative group">
+                    <div class="relative group user-menu-group">
                         <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#1a2234] transition group" id="user-menu-button" type="button">
                             <span class="font-semibold"><?php echo htmlspecialchars($_SESSION['user']); ?></span>
                             <iconify-icon icon="tabler:chevron-down" width="20" height="20"></iconify-icon>
                         </button>
+                        
+                        <!-- Bouton Manager (visible au survol) -->
+                        <?php if (in_array('admin.access', $userPermissions) || in_array('*', $userPermissions)): ?>
+                        <button 
+                            onclick="window.location.href='/admin'" 
+                            class="manager-button absolute -top-2 -right-2 bg-purple-600 hover:bg-purple-700 text-white text-xs px-2 py-1 rounded-full shadow-lg transition-all duration-300 z-10"
+                            title="Accéder à l'administration"
+                        >
+                            <iconify-icon icon="tabler:settings" width="12" height="12"></iconify-icon>
+                            Manager
+                        </button>
+                        <?php endif; ?>
+                        
                         <div class="absolute right-0 mt-0 w-48 bg-[#1a2234] rounded-lg shadow-lg py-2 z-50 hidden group-hover:block" id="user-menu-dropdown" style="min-width: 180px; padding-top:0; padding-bottom:0;">
                             <a href="/me" class="block px-4 py-2 hover:bg-blue-600 transition">Mon profil</a>
-                            <a href="/message/inbox" class="block px-4 py-2 hover:bg-blue-600 transition">Messagerie</a>
+                            <a href="/me/inbox" class="block px-4 py-2 hover:bg-blue-600 transition">Messagerie</a>
+                            <a href="/me/edit" class="block px-4 py-2 hover:bg-blue-600 transition">Éditer le profil</a>
                             <a href="/user/settings" class="block px-4 py-2 hover:bg-blue-600 transition">Paramètres</a>
                             <form action="/auth/logout" method="post">
                                 <button type="submit" class="w-full text-left px-4 py-2 hover:bg-red-600 transition">Déconnexion</button>

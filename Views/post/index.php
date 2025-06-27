@@ -16,10 +16,10 @@
 .post-card {
     width: 100% !important;
     max-width: 450px !important;
-    background: 
+    background: #1f2937 !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
-    border: 1px solid 
+    border: 1px solid #374151 !important;
     overflow: hidden !important;
     transition: all 0.3s ease !important;
 }
@@ -29,7 +29,6 @@
     box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.4) !important;
 }
 
-
 .post-card button svg {
     display: inline-block;
     vertical-align: middle;
@@ -37,6 +36,47 @@
     height: 24px;
 }
 
+/* Styles spécifiques pour les émotes au survol */
+.post-image-container {
+    position: relative !important;
+    aspect-ratio: 1 !important;
+    background-color: #374151 !important;
+}
+
+.post-image-container:hover .post-hover-overlay {
+    opacity: 1 !important;
+    background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.post-hover-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+.post-hover-buttons {
+    display: flex !important;
+    gap: 1.5rem !important;
+}
+
+.post-hover-button {
+    padding: 0.75rem !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.2s ease !important;
+    transform: scale(1) !important;
+}
+
+.post-hover-button:hover {
+    background-color: rgba(255, 255, 255, 1) !important;
+    transform: scale(1.1) !important;
+}
 
 @media (max-width: 768px) {
     .posts-grid {
@@ -47,6 +87,16 @@
     .post-card {
         max-width: 100% !important;
     }
+}
+
+.favorite-star {
+    color: #fff;
+    filter: drop-shadow(0 0 2px #0008);
+    transition: color 0.2s;
+}
+.favorite-star.favorited {
+    color: #facc15;
+    filter: drop-shadow(0 0 4px #facc15);
 }
 </style>
 
@@ -91,9 +141,10 @@ function renderPost(post) {
     return `
     <div class="post-card">
         <div class="flex items-center p-6 border-b border-gray-100 dark:border-gray-700">
-            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
-                ${post.username ? post.username.charAt(0).toUpperCase() : 'U'}
-            </div>
+            ${post.avatar ?
+                `<img src="${post.avatar}" alt="Avatar" class="w-12 h-12 rounded-full object-cover mr-4" />` :
+                `<div class=\"w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4\">${post.username ? post.username.charAt(0).toUpperCase() : 'U'}</div>`
+            }
             <div class="flex-1">
                 <div class="font-semibold text-gray-900 dark:text-white text-lg">
                     ${post.username ? post.username : 'Utilisateur inconnu'}
@@ -107,18 +158,18 @@ function renderPost(post) {
             </button>
         </div>
         ${post.content ? `
-        <div class='relative aspect-square bg-gray-100 dark:bg-gray-700'>
+        <div class='post-image-container'>
             <img src='data:image/jpeg;base64,${post.content}' alt='Image du post' class='w-full h-full object-cover' />
-            <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center opacity-0 hover:opacity-100">
-                <div class="flex space-x-6">
-                    <button onclick="likePost(${post.id})" class="p-3 bg-white bg-opacity-90 rounded-full shadow-lg hover:bg-opacity-100 transition-all duration-200 transform hover:scale-110">
-                        <iconify-icon icon="tabler:heart" width="24" height="24" class="text-gray-700"></iconify-icon>
+            <div class="post-hover-overlay">
+                <div class="post-hover-buttons">
+                    <button onclick="likePost(${post.id})" class="post-hover-button">
+                        <span class="iconify" data-icon="tabler:heart" style="font-size:24px;color:#ef4444"></span>
                     </button>
-                    <button onclick="toggleComments(${post.id})" class="p-3 bg-white bg-opacity-90 rounded-full shadow-lg hover:bg-opacity-100 transition-all duration-200 transform hover:scale-110">
-                        <iconify-icon icon="tabler:message-circle" width="24" height="24" class="text-gray-700"></iconify-icon>
+                    <button onclick="toggleComments(${post.id})" class="post-hover-button">
+                        <span class="iconify" data-icon="tabler:message-circle" style="font-size:24px;color:#3b82f6"></span>
                     </button>
-                    <button onclick="sharePost(${post.id})" class="p-3 bg-white bg-opacity-90 rounded-full shadow-lg hover:bg-opacity-100 transition-all duration-200 transform hover:scale-110">
-                        <iconify-icon icon="tabler:share" width="24" height="24" class="text-gray-700"></iconify-icon>
+                    <button onclick="sharePost(${post.id})" class="post-hover-button">
+                        <span class="iconify" data-icon="tabler:share" style="font-size:24px;color:#22c55e"></span>
                     </button>
                 </div>
             </div>
@@ -127,26 +178,20 @@ function renderPost(post) {
         <div class="p-6">
             <div class="flex items-center space-x-6 mb-4">
                 <button onclick="likePost(${post.id})" class="flex items-center space-x-2 text-white hover:text-red-500 transition-colors duration-200 transform hover:scale-105">
-                    <svg class="w-6 h-6 fill-none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
-                    <iconify-icon icon="tabler:heart" width="24" height="24"></iconify-icon>
+                    <span class="iconify" data-icon="tabler:heart" style="font-size:24px;color:#ef4444"></span>
                     <span class="text-lg font-medium like-count-${post.id}">${likeCount}</span>
                 </button>
                 <button onclick="toggleComments(${post.id})" class="flex items-center space-x-2 text-white hover:text-blue-400 transition-colors duration-200 transform hover:scale-105">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                    </svg>
-                    <iconify-icon icon="tabler:message-circle" width="24" height="24"></iconify-icon>
+                    <span class="iconify" data-icon="tabler:message-circle" style="font-size:24px;color:#3b82f6"></span>
                     <span class="text-lg font-medium comment-count-${post.id}">${commentCount}</span>
                 </button>
                 <button onclick="sharePost(${post.id})" class="flex items-center space-x-2 text-white hover:text-green-400 transition-colors duration-200 transform hover:scale-105">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path></svg>
+                    <span class="iconify" data-icon="tabler:share" style="font-size:24px;color:#22c55e"></span>
                     <span class="text-lg font-medium">Partager</span>
                 </button>
                 <div class="flex-1"></div>
-                <button class="text-white hover:text-yellow-400 transition-colors duration-200 transform hover:scale-105">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                <button onclick="favoritePost(${post.id})" id="fav-btn-${post.id}" class="text-white hover:text-yellow-400 transition-colors duration-200 transform hover:scale-105">
+                    <span class="iconify favorite-star" id="fav-star-${post.id}" data-icon="tabler:star" style="font-size:24px;"></span>
                 </button>
             </div>
             <h3 class="font-bold text-gray-900 dark:text-white text-xl mb-2">${post.name ? post.name : 'Sans titre'}</h3>
@@ -427,6 +472,17 @@ function toggleBookmark(button, postId) {
     });
 }
 
+const favorites = {};
+function favoritePost(postId) {
+    // Toggle l'état local
+    favorites[postId] = !favorites[postId];
+    const star = document.getElementById('fav-star-' + postId);
+    if (favorites[postId]) {
+        star.classList.add('favorited');
+    } else {
+        star.classList.remove('favorited');
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const cards = document.querySelectorAll('.posts-grid > div');

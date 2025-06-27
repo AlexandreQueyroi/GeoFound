@@ -43,6 +43,14 @@ class AdminController {
         require __DIR__ . '/../Views/admin/maintenance.php';
     }
 
+    public function users() {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
+            header('Location: /error/403');
+            exit;
+        }
+        require __DIR__ . '/../Views/admin/users.php';
+    }
+
     
     public function apiPermissions() {
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.permissions')) {
@@ -442,6 +450,327 @@ class AdminController {
                 http_response_code(500);
                 echo json_encode(['error' => 'Erreur lors de la suppression des permissions']);
             }
+        }
+    }
+
+    // API pour les statistiques du tableau de bord
+    public function apiStats() {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.access')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+        
+        try {
+            $db = \App\Helpers\Database::getConnection();
+            
+            // Statistiques des utilisateurs
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM users");
+            $stmt->execute();
+            $users = $stmt->fetch()['count'];
+            
+            // Statistiques des posts
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM posts");
+            $stmt->execute();
+            $posts = $stmt->fetch()['count'];
+            
+            // Statistiques des messages
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM messages");
+            $stmt->execute();
+            $messages = $stmt->fetch()['count'];
+            
+            // Pages en maintenance
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM page_maintenance WHERE is_maintenance = 1");
+            $stmt->execute();
+            $maintenance = $stmt->fetch()['count'];
+            
+            echo json_encode([
+                'users' => $users,
+                'posts' => $posts,
+                'messages' => $messages,
+                'maintenance' => $maintenance
+            ]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Erreur lors de la récupération des statistiques']);
+        }
+    }
+
+    // API pour l'activité récente
+    public function apiActivity() {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.access')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+        
+        try {
+            $db = \App\Helpers\Database::getConnection();
+            
+            // Récupérer les dernières activités (exemple avec les derniers utilisateurs connectés)
+            $stmt = $db->prepare("
+                SELECT u.username, u.connected, 'Connexion utilisateur' as description
+                FROM users u 
+                WHERE u.connected IS NOT NULL 
+                ORDER BY u.connected DESC 
+                LIMIT 5
+            ");
+            $stmt->execute();
+            $activities = $stmt->fetchAll();
+            
+            // Formater les données
+            $formattedActivities = array_map(function($activity) {
+                return [
+                    'description' => $activity['description'] . ' : ' . $activity['username'],
+                    'created_at' => $activity['connected']
+                ];
+            }, $activities);
+            
+            echo json_encode($formattedActivities);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Erreur lors de la récupération de l\'activité']);
+        }
+    }
+
+    // API pour la gestion des utilisateurs
+    public function apiUsers() {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+        
+        try {
+            $db = \App\Helpers\Database::getConnection();
+            
+            $page = $_GET['page'] ?? 1;
+            $search = $_GET['search'] ?? '';
+            $rank = $_GET['rank'] ?? '';
+            $status = $_GET['status'] ?? '';
+            $limit = 10;
+            $offset = ($page - 1) * $limit;
+            
+            // Construire la requête avec filtres
+            $whereConditions = [];
+            $params = [];
+            
+            if (!empty($search)) {
+                $whereConditions[] = "(u.username LIKE ? OR u.email LIKE ?)";
+                $params[] = "%$search%";
+                $params[] = "%$search%";
+            }
+            
+            if (!empty($rank)) {
+                $whereConditions[] = "u.rank = ?";
+                $params[] = $rank;
+            }
+            
+            if (!empty($status)) {
+                $whereConditions[] = "u.status = ?";
+                $params[] = $status;
+            }
+            
+            $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+            
+            // Requête pour compter le total
+            $countQuery = "
+                SELECT COUNT(*) as total 
+                FROM users u 
+                LEFT JOIN ranks r ON u.rank = r.id 
+                $whereClause
+            ";
+            $stmt = $db->prepare($countQuery);
+            $stmt->execute($params);
+            $total = $stmt->fetch()['total'];
+            
+            // Requête pour récupérer les utilisateurs
+            $query = "
+                SELECT u.id, u.username, u.email, u.status, u.connected, u.created_at,
+                       r.id as rank_id, r.name as rank_name, r.color as rank_color,
+                       COUNT(up.id) as permissions_count
+                FROM users u 
+                LEFT JOIN ranks r ON u.rank = r.id 
+                LEFT JOIN user_permissions up ON u.id = up.user_id
+                $whereClause
+                GROUP BY u.id
+                ORDER BY u.created_at DESC 
+                LIMIT ? OFFSET ?
+            ";
+            
+            $params[] = $limit;
+            $params[] = $offset;
+            
+            $stmt = $db->prepare($query);
+            $stmt->execute($params);
+            $users = $stmt->fetchAll();
+            
+            echo json_encode([
+                'success' => true,
+                'users' => $users,
+                'total_pages' => ceil($total / $limit),
+                'current_page' => $page,
+                'total' => $total
+            ]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Erreur lors de la récupération des utilisateurs']);
+        }
+    }
+
+    // API pour récupérer/modifier un utilisateur spécifique
+    public function apiUser($userId) {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+        
+        try {
+            $db = \App\Helpers\Database::getConnection();
+            
+            switch ($_SERVER['REQUEST_METHOD']) {
+                case 'GET':
+                    // Récupérer les informations de l'utilisateur
+                    $stmt = $db->prepare("
+                        SELECT u.id, u.username, u.email, u.status, u.connected, u.created_at,
+                               r.id as rank_id, r.name as rank_name, r.color as rank_color
+                        FROM users u 
+                        LEFT JOIN ranks r ON u.rank = r.id 
+                        WHERE u.id = ?
+                    ");
+                    $stmt->execute([$userId]);
+                    $user = $stmt->fetch();
+                    
+                    if (!$user) {
+                        http_response_code(404);
+                        echo json_encode(['error' => 'Utilisateur non trouvé']);
+                        exit;
+                    }
+                    
+                    // Récupérer les permissions de l'utilisateur
+                    $stmt = $db->prepare("
+                        SELECT p.id, p.name, p.description
+                        FROM user_permissions up
+                        JOIN permissions p ON up.permission_id = p.id
+                        WHERE up.user_id = ?
+                    ");
+                    $stmt->execute([$userId]);
+                    $user['permissions'] = $stmt->fetchAll();
+                    
+                    echo json_encode($user);
+                    break;
+                    
+                case 'PUT':
+                    // Modifier l'utilisateur
+                    $data = json_decode(file_get_contents('php://input'), true);
+                    
+                    $username = $data['username'] ?? '';
+                    $email = $data['email'] ?? '';
+                    $rankId = $data['rank_id'] ?? null;
+                    $status = $data['status'] ?? 'active';
+                    $permissions = $data['permissions'] ?? [];
+                    
+                    if (empty($username) || empty($email)) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Nom d\'utilisateur et email requis']);
+                        exit;
+                    }
+                    
+                    $db->beginTransaction();
+                    
+                    try {
+                        // Mettre à jour l'utilisateur
+                        $stmt = $db->prepare("
+                            UPDATE users 
+                            SET username = ?, email = ?, rank = ?, status = ?
+                            WHERE id = ?
+                        ");
+                        $stmt->execute([$username, $email, $rankId, $status, $userId]);
+                        
+                        // Supprimer les anciennes permissions
+                        $stmt = $db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
+                        $stmt->execute([$userId]);
+                        
+                        // Ajouter les nouvelles permissions
+                        if (!empty($permissions)) {
+                            $stmt = $db->prepare("
+                                INSERT INTO user_permissions (user_id, permission_id, created_by) 
+                                VALUES (?, ?, ?)
+                            ");
+                            foreach ($permissions as $permissionId) {
+                                $stmt->execute([$userId, $permissionId, $_SESSION['user_id']]);
+                            }
+                        }
+                        
+                        $db->commit();
+                        echo json_encode(['success' => true, 'message' => 'Utilisateur mis à jour']);
+                    } catch (\Exception $e) {
+                        $db->rollBack();
+                        throw $e;
+                    }
+                    break;
+                    
+                case 'DELETE':
+                    // Supprimer l'utilisateur
+                    $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+                    $stmt->execute([$userId]);
+                    
+                    echo json_encode(['success' => true, 'message' => 'Utilisateur supprimé']);
+                    break;
+            }
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Erreur lors de l\'opération sur l\'utilisateur']);
+        }
+    }
+
+    // API pour basculer le statut d'un utilisateur
+    public function apiToggleUserStatus($userId) {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+        
+        try {
+            $db = \App\Helpers\Database::getConnection();
+            
+            // Récupérer le statut actuel
+            $stmt = $db->prepare("SELECT status FROM users WHERE id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch();
+            
+            if (!$user) {
+                http_response_code(404);
+                echo json_encode(['error' => 'Utilisateur non trouvé']);
+                exit;
+            }
+            
+            // Basculer le statut
+            $newStatus = $user['status'] === 'banned' ? 'active' : 'banned';
+            
+            $stmt = $db->prepare("UPDATE users SET status = ? WHERE id = ?");
+            $stmt->execute([$newStatus, $userId]);
+            
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Statut modifié',
+                'new_status' => $newStatus
+            ]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Erreur lors de la modification du statut']);
         }
     }
 } 

@@ -19,9 +19,13 @@
                             <li class="friend-item" data-friend-id="<?= htmlspecialchars($friend['id']) ?>" data-friend-online="<?= $friend['is_online'] ? 'true' : 'false' ?>">
                                 <div class="flex items-center p-3 rounded-lg friend-selector hover:bg-gray-700 cursor-pointer transition-colors duration-200">
                                     <div class="relative mr-3">
-                                        <div class="bg-primary rounded-full w-12 h-12 flex items-center justify-center text-white font-bold text-xl">
-                                            <?= strtoupper(substr($friend['pseudo'], 0, 1)) ?>
-                                        </div>
+                                        <?php if (!empty($friend['avatar'])): ?>
+                                            <img src="<?= htmlspecialchars($friend['avatar']) ?>" alt="Avatar" class="w-12 h-12 rounded-full object-cover">
+                                        <?php else: ?>
+                                            <div class="bg-primary rounded-full w-12 h-12 flex items-center justify-center text-white font-bold text-xl">
+                                                <?= strtoupper(substr($friend['pseudo'], 0, 1)) ?>
+                                            </div>
+                                        <?php endif; ?>
                                         <?php if ($friend['is_online']): ?>
                                             <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-secondary"></span>
                                         <?php endif; ?>

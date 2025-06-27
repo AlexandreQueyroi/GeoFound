@@ -6,7 +6,7 @@ class Friend {
     public static function getFriends($userId) {
         $pdo = Database::getConnection();
         
-        $sql = "SELECT u.id, u.pseudo, u.email, u.connected
+        $sql = "SELECT u.id, u.pseudo, u.email, u.connected, u.avatar
                 FROM users u
                 WHERE u.id IN (
                     SELECT user2_id FROM follow WHERE user1_id = :userId AND state = 'accepted'
@@ -38,7 +38,7 @@ class Friend {
 
     public static function getFriendsWithUnread($userId) {
         $pdo = Database::getConnection();
-        $sql = 'SELECT u.id, u.pseudo,
+        $sql = 'SELECT u.id, u.pseudo, u.avatar,
             (SELECT COUNT(*) FROM message m 
             JOIN user_message um ON m.id = um.message_id 
             WHERE um.sender_id = u.id AND um.receiver_id = :uid AND m.state = "sent") as unread_count
