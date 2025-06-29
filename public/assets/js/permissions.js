@@ -465,4 +465,109 @@ let permissionManager;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('PermissionManager: DOMContentLoaded - Le script principal démarre.');
     permissionManager = new PermissionManager();
-}); 
+});
+
+// Fonction pour ouvrir le modal de modification des points
+function openPointsModal(userId, currentPoints, username) {
+    document.getElementById('pointsModal').style.display = 'flex';
+    document.getElementById('pointsUserId').value = userId;
+    document.getElementById('pointsCurrentPoints').textContent = currentPoints;
+    document.getElementById('pointsNewPoints').value = currentPoints;
+    document.getElementById('pointsUsername').textContent = username;
+    document.getElementById('pointsReason').value = '';
+}
+
+// Fonction pour fermer le modal de modification des points
+function closePointsModal() {
+    document.getElementById('pointsModal').style.display = 'none';
+}
+
+// Fonction pour sauvegarder les points
+async function savePoints() {
+    const userId = document.getElementById('pointsUserId').value;
+    const newPoints = parseInt(document.getElementById('pointsNewPoints').value);
+    const reason = document.getElementById('pointsReason').value.trim();
+    
+    if (newPoints < 0) {
+        showNotification('Les points ne peuvent pas être négatifs', 'error');
+        return;
+    }
+    
+    if (reason === '') {
+        showNotification('Veuillez indiquer une raison pour la modification', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/admin/users/${userId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                points: newPoints,
+                reason: reason
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            showNotification('Points mis à jour avec succès', 'success');
+            closePointsModal();
+            // Recharger la liste des utilisateurs
+            loadUsers();
+        } else {
+            showNotification(result.error || 'Erreur lors de la mise à jour des points', 'error');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur de connexion', 'error');
+    }
+}
+
+// Fonction pour afficher l'historique des points
+async function showPointsHistory(userId, username) {
+    try {
+        const response = await fetch(`/admin/users/${userId}/points-history`);
+        const result = await response.json();
+        
+        if (response.ok) {
+            let historyHtml = '<div class="space-y-3">';
+            
+            if (result.history && result.history.length > 0) {
+                result.history.forEach(entry => {
+                    const change = entry.new_points - entry.old_points;
+                    const changeText = change > 0 ? `+${change}` : change.toString();
+                    const changeColor = change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-gray-400';
+                    
+                    historyHtml += `
+                        <div class="bg-gray-700 rounded-lg p-3">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-sm text-gray-300">${entry.created_at}</span>
+                                <span class="text-sm font-semibold ${changeColor}">${changeText}</span>
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                <div>Ancien: ${entry.old_points} → Nouveau: ${entry.new_points}</div>
+                                <div class="mt-1">Raison: ${entry.reason || 'Aucune raison spécifiée'}</div>
+                                <div class="mt-1 text-xs">Par: ${entry.admin_name || 'Admin'}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                historyHtml += '<p class="text-gray-400 text-center py-4">Aucun historique disponible</p>';
+            }
+            
+            historyHtml += '</div>';
+            
+            // Afficher dans un modal
+            showModal(`Historique des points - ${username}`, historyHtml);
+        } else {
+            showNotification(result.error || 'Erreur lors du chargement de l\'historique', 'error');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur de connexion', 'error');
+    }
+} 

@@ -31,7 +31,8 @@ $routes = [
     '/post/create' => ['controller' => 'PostController', 'action' => 'create'],
 
     '/reward' => ['controller' => 'RewardController', 'action' => 'index'],
-    '/reward/unlock' => ['controller' => 'RewardController', 'action' => 'unlock'],
+    '/reward/unlock/([0-9]+)' => ['controller' => 'RewardController', 'action' => 'unlock'],
+    '/reward/equip/([0-9]+)' => ['controller' => 'RewardController', 'action' => 'equip'],
 
     '/avatar' => ['controller' => 'AvatarController', 'action' => 'index'],
 
@@ -41,6 +42,7 @@ $routes = [
     '/admin/maintenance' => ['controller' => 'AdminController', 'action' => 'maintenance'],
     '/admin/users' => ['controller' => 'AdminController', 'action' => 'users'],
     '/admin/reports' => ['controller' => 'AdminController', 'action' => 'reports'],
+    '/admin/rewards' => ['controller' => 'AdminController', 'action' => 'rewards'],
 
     '/api' => ['controller' => 'ApiController', 'action' => 'index'],
 
@@ -51,6 +53,10 @@ $routes = [
     '/api/bookmark' => ['controller' => 'ApiController', 'action' => 'bookmark'],
     '/api/captcha' => ['controller' => 'ApiController', 'action' => 'captcha'],
 
+    // Routes API pour les récompenses
+    '/reward/api/unlock' => ['controller' => 'RewardController', 'action' => 'apiUnlock'],
+    '/reward/api/equip' => ['controller' => 'RewardController', 'action' => 'apiEquip'],
+
     // Routes API d'administration
     '/api/admin/stats' => ['controller' => 'AdminController', 'action' => 'apiStats'],
     '/api/admin/activity' => ['controller' => 'AdminController', 'action' => 'apiActivity'],
@@ -59,10 +65,19 @@ $routes = [
     '/api/admin/rank-permissions' => ['controller' => 'AdminController', 'action' => 'apiRankPermissions'],
     '/api/admin/user-permissions' => ['controller' => 'AdminController', 'action' => 'apiUserPermissions'],
     '/api/admin/maintenance' => ['controller' => 'AdminController', 'action' => 'apiMaintenance'],
+    '/api/admin/maintenance-quick-all' => ['controller' => 'AdminController', 'action' => 'apiMaintenanceQuickAll'],
     '/api/admin/page-permissions' => ['controller' => 'AdminController', 'action' => 'apiPagePermissions'],
+    '/api/admin/page-permissions-clear' => ['controller' => 'AdminController', 'action' => 'apiPagePermissionsClear'],
     '/api/admin/users' => ['controller' => 'AdminController', 'action' => 'apiUsers'],
     '/api/admin/users/([0-9]+)' => ['controller' => 'AdminController', 'action' => 'apiUser'],
     '/api/admin/users/([0-9]+)/toggle-status' => ['controller' => 'AdminController', 'action' => 'apiToggleUserStatus'],
+    '/api/admin/users/([0-9]+)/points-history' => ['controller' => 'AdminController', 'action' => 'apiUserPointsHistory'],
+    '/api/admin/rewards/([0-9]+)' => ['controller' => 'AdminController', 'action' => 'apiReward'],
+
+    // Routes d'administration des récompenses
+    '/admin/rewards/create' => ['controller' => 'AdminController', 'action' => 'createReward'],
+    '/admin/rewards/edit/([0-9]+)' => ['controller' => 'AdminController', 'action' => 'editReward'],
+    '/admin/rewards/delete/([0-9]+)' => ['controller' => 'AdminController', 'action' => 'deleteReward'],
 
     '/403' => ['controller' => 'ErrorController', 'action' => 'error403'],
     '/404' => ['controller' => 'ErrorController', 'action' => 'error404'],

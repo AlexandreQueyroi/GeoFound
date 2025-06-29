@@ -81,7 +81,7 @@ class EmailSender {
                     </div>
                     <div class='content'>
                         <h2>Bonjour $username,</h2>
-                        <p>Merci de vous être inscrit sur GeoFound ! Pour activer votre compte et commencer à explorer le monde, veuillez cliquer sur le bouton ci-dessous :</p>
+                        <p>Merci de vous être inscrit sur GeoFound ! Pour activer votre compte et commencer votre aventure, veuillez cliquer sur le bouton ci-dessous :</p>
                         
                         <div style='text-align: center;'>
                             <a href='$verificationUrl' class='button'>✅ Valider mon compte</a>
@@ -109,7 +109,7 @@ class EmailSender {
             
             Bonjour $username,
             
-            Merci de vous être inscrit sur GeoFound ! Pour activer votre compte et commencer à explorer le monde, veuillez cliquer sur le lien ci-dessous :
+            Merci de vous être inscrit sur GeoFound ! Pour activer votre compte et commencer votre aventure, veuillez cliquer sur le lien ci-dessous :
             
             $verificationUrl
             
@@ -169,7 +169,7 @@ class EmailSender {
                         
                         <ul>
                             <li>📱 Créer des posts pour partager vos découvertes</li>
-                            <li>🗺️ Explorer les posts des autres utilisateurs</li>
+                            <li>📖 Découvrir les posts des autres utilisateurs</li>
                             <li>💬 Commenter et interagir avec la communauté</li>
                             <li>👥 Ajouter des amis et échanger en privé</li>
                             <li>🏆 Débloquer des récompenses</li>
@@ -199,7 +199,7 @@ class EmailSender {
             Votre compte GeoFound a été validé avec succès. Vous pouvez maintenant :
             
             - Créer des posts pour partager vos découvertes
-            - Explorer les posts des autres utilisateurs
+            - Découvrir les posts des autres utilisateurs
             - Commenter et interagir avec la communauté
             - Ajouter des amis et échanger en privé
             - Débloquer des récompenses

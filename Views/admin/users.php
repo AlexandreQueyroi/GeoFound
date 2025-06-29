@@ -51,6 +51,9 @@
                             Rang
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Points
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                             Statut
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -137,6 +140,52 @@
     </div>
 </div>
 
+<!-- Modal Modification Points -->
+<div id="edit-points-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-white">Modifier les Points</h3>
+                <button onclick="closePointsModal()" class="text-gray-400 hover:text-white">
+                    <iconify-icon icon="tabler:x" width="24"></iconify-icon>
+                </button>
+            </div>
+            <form id="edit-points-form">
+                <input type="hidden" id="edit-points-user-id">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Utilisateur</label>
+                    <div id="edit-points-username" class="bg-gray-700 text-white px-3 py-2 rounded-lg font-semibold"></div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Points actuels</label>
+                    <div id="edit-points-current" class="bg-gray-700 text-white px-3 py-2 rounded-lg"></div>
+                </div>
+                <div class="mb-4">
+                    <label for="edit-points-new" class="block text-sm font-medium text-gray-300 mb-2">Nouveaux points</label>
+                    <input type="number" id="edit-points-new" name="points" required min="0" 
+                           class="w-full bg-gray-700 text-white px-3 py-2 rounded-lg">
+                </div>
+                <div class="mb-6">
+                    <label for="edit-points-reason" class="block text-sm font-medium text-gray-300 mb-2">Raison (optionnel)</label>
+                    <textarea id="edit-points-reason" name="reason" rows="3" 
+                              class="w-full bg-gray-700 text-white px-3 py-2 rounded-lg"
+                              placeholder="Raison de la modification..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closePointsModal()" 
+                            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Overlay de chargement -->
 <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-gray-800 rounded-lg p-6">
@@ -178,10 +227,23 @@ function setupEventListeners() {
     // Formulaire d'édition
     document.getElementById('edit-user-form').addEventListener('submit', saveUser);
     
+    // Formulaire de modification des points
+    document.getElementById('edit-points-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        savePoints();
+    });
+    
     // Fermer la modal en cliquant à l'extérieur
     document.getElementById('edit-user-modal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeEditModal();
+        }
+    });
+    
+    // Fermer la modal de points en cliquant à l'extérieur
+    document.getElementById('edit-points-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePointsModal();
         }
     });
 }
@@ -276,6 +338,17 @@ function renderUsers() {
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 ${rankDisplay}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center space-x-2">
+                    <span class="text-lg font-bold text-yellow-400">${user.point || 0}</span>
+                    <button onclick="openPointsModal(${user.id}, '${user.pseudo}', ${user.point || 0})" 
+                            class="text-green-400 hover:text-green-300 transition-colors px-2 py-1 border border-green-400 rounded text-xs"
+                            title="Modifier les points">
+                        <iconify-icon icon="tabler:edit" class="mr-1"></iconify-icon>
+                        Modifier
+                    </button>
+                </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center space-x-2">
@@ -669,6 +742,71 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         toast.remove();
     }, 3000);
+}
+
+// === FONCTIONS POUR LA GESTION DES POINTS ===
+
+function openPointsModal(userId, username, currentPoints) {
+    document.getElementById('edit-points-user-id').value = userId;
+    document.getElementById('edit-points-username').textContent = username;
+    document.getElementById('edit-points-current').textContent = currentPoints.toLocaleString();
+    document.getElementById('edit-points-new').value = currentPoints;
+    document.getElementById('edit-points-reason').value = '';
+    document.getElementById('edit-points-modal').classList.remove('hidden');
+}
+
+function closePointsModal() {
+    document.getElementById('edit-points-modal').classList.add('hidden');
+}
+
+async function savePoints() {
+    try {
+        showLoading(true);
+        
+        const userId = document.getElementById('edit-points-user-id').value;
+        const newPoints = parseInt(document.getElementById('edit-points-new').value);
+        const reason = document.getElementById('edit-points-reason').value.trim();
+        
+        if (newPoints < 0) {
+            showNotification('Les points ne peuvent pas être négatifs', 'error');
+            return;
+        }
+        
+        if (reason === '') {
+            showNotification('Veuillez indiquer une raison pour la modification', 'error');
+            return;
+        }
+        
+        const response = await fetch(`/api/admin/users/${userId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                points: newPoints,
+                reason: reason
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.success) {
+            showNotification('Points mis à jour avec succès', 'success');
+            closePointsModal();
+            loadUsers(); // Recharger la liste des utilisateurs
+        } else {
+            showNotification(data.error || 'Erreur lors de la mise à jour des points', 'error');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur lors de la mise à jour des points: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
+    }
 }
 </script>
 

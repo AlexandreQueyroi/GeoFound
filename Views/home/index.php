@@ -4,10 +4,9 @@
     <div class="max-w-2xl w-full text-center">
         <img src="/assets/img/logo.png" alt="GeoFound Logo" class="mx-auto w-24 h-24 mb-6 drop-shadow-lg animate-bounce">
         <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4 drop-shadow">Bienvenue sur <span class="text-blue-400">GeoFound</span></h1>
-        <p class="text-lg md:text-xl text-gray-300 mb-8">La plateforme communautaire pour partager, explorer et découvrir les meilleurs spots autour de vous !</p>
+        <p class="text-lg md:text-xl text-gray-300 mb-8">La plateforme communautaire pour partager et découvrir les meilleurs spots autour de vous !</p>
         <div class="flex flex-col md:flex-row justify-center gap-4 mb-10">
-            <a href="/explorer" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition text-lg">Explorer la carte</a>
-            <a href="/post" class="bg-white hover:bg-gray-100 text-blue-700 font-semibold px-8 py-3 rounded-lg shadow transition text-lg">Voir les posts</a>
+            <a href="/post" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition text-lg">Voir les posts</a>
             <a href="/reward" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-semibold px-8 py-3 rounded-lg shadow transition text-lg">Récompenses</a>
         </div>
         <div class="flex flex-col md:flex-row justify-center gap-4">

@@ -9,7 +9,7 @@
             Créer votre compte
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Rejoignez la communauté GeoFound et commencez à explorer le monde !
+            Rejoignez la communauté GeoFound et commencez votre aventure !
         </p>
     </div>
 

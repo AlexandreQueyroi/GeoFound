@@ -747,7 +747,7 @@ class AdminController {
             
             // Récupérer les utilisateurs avec pagination
             $query = "
-                SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected, u.email_verified,
+                SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected, u.email_verified, u.point,
                        r.id as rank_id, r.name as rank_name, r.display_name as rank_display_name, 
                        r.color as rank_color, r.background_color as rank_bg_color,
                        COUNT(up.id) as permissions_count
@@ -755,7 +755,7 @@ class AdminController {
                 LEFT JOIN ranks r ON u.user_rank = r.name 
                 LEFT JOIN user_permissions up ON u.id = up.user_id
                 $whereClause
-                GROUP BY u.id, u.pseudo, u.email, u.desactivated, u.connected, u.email_verified, 
+                GROUP BY u.id, u.pseudo, u.email, u.desactivated, u.connected, u.email_verified, u.point,
                          r.id, r.name, r.display_name, r.color, r.background_color
                 ORDER BY r.priority DESC, u.pseudo ASC 
                 LIMIT $limit OFFSET $offset
@@ -894,88 +894,109 @@ class AdminController {
                     // Validation de l'email
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         http_response_code(400);
-                        echo json_encode(['error' => 'Format d\'email invalide']);
+                        echo json_encode(['error' => 'Email invalide']);
                         exit;
                     }
                     
-                    // Vérifier si le pseudo existe déjà (sauf pour cet utilisateur)
-                    $stmt = $db->prepare("SELECT id FROM users WHERE pseudo = ? AND id != ?");
-                    $stmt->execute([$pseudo, $userId]);
-                    if ($stmt->fetch()) {
-                        http_response_code(400);
-                        echo json_encode(['error' => 'Ce nom d\'utilisateur est déjà utilisé']);
-                        exit;
-                    }
-                    
-                    // Vérifier si l'email existe déjà (sauf pour cet utilisateur)
+                    // Vérifier si l'email existe déjà pour un autre utilisateur
                     $stmt = $db->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
                     $stmt->execute([$email, $userId]);
                     if ($stmt->fetch()) {
                         http_response_code(400);
-                        echo json_encode(['error' => 'Cet email est déjà utilisé']);
+                        echo json_encode(['error' => 'Cet email est déjà utilisé par un autre utilisateur']);
                         exit;
                     }
                     
-                    // Vérifier si le rang existe (si fourni)
-                    if (!empty($rankName)) {
-                        $stmt = $db->prepare("SELECT name FROM ranks WHERE name = ?");
-                        $stmt->execute([$rankName]);
-                        $rank = $stmt->fetch();
-                        if (!$rank) {
+                    // Vérifier si le pseudo existe déjà pour un autre utilisateur
+                    $stmt = $db->prepare("SELECT id FROM users WHERE pseudo = ? AND id != ?");
+                    $stmt->execute([$pseudo, $userId]);
+                    if ($stmt->fetch()) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Ce nom d\'utilisateur est déjà utilisé par un autre utilisateur']);
+                        exit;
+                    }
+                    
+                    // Convertir le statut texte en numérique
+                    $statusNum = 0; // Actif par défaut
+                    switch ($status) {
+                        case 'banned':
+                            $statusNum = 1;
+                            break;
+                        case 'inactive':
+                            $statusNum = 2;
+                            break;
+                        case 'active':
+                        default:
+                            $statusNum = 0;
+                            break;
+                    }
+                    
+                    // Mettre à jour l'utilisateur
+                    $stmt = $db->prepare("
+                        UPDATE users 
+                        SET pseudo = ?, email = ?, user_rank = ?, desactivated = ?
+                        WHERE id = ?
+                    ");
+                    $stmt->execute([$pseudo, $email, $rankName, $statusNum, $userId]);
+                    
+                    // Mettre à jour les permissions
+                    $stmt = $db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
+                    $stmt->execute([$userId]);
+                    
+                    if (!empty($permissions)) {
+                        $stmt = $db->prepare("INSERT INTO user_permissions (user_id, permission_id) VALUES (?, ?)");
+                        foreach ($permissions as $permissionId) {
+                            $stmt->execute([$userId, $permissionId]);
+                        }
+                    }
+                    
+                    echo json_encode(['success' => true, 'message' => 'Utilisateur mis à jour avec succès']);
+                    break;
+                    
+                case 'PATCH':
+                    // Mise à jour partielle (pour les points)
+                    $input = file_get_contents('php://input');
+                    $data = json_decode($input, true);
+                    
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Données JSON invalides']);
+                        exit;
+                    }
+                    
+                    // Si c'est une mise à jour des points
+                    if (isset($data['points'])) {
+                        $newPoints = intval($data['points']);
+                        $reason = trim($data['reason'] ?? '');
+                        
+                        if ($newPoints < 0) {
                             http_response_code(400);
-                            echo json_encode(['error' => 'Grade invalide']);
+                            echo json_encode(['error' => 'Les points ne peuvent pas être négatifs']);
                             exit;
                         }
-                    }
-                    
-                    $db->beginTransaction();
-                    
-                    try {
-                        // Mettre à jour l'utilisateur
-                        $stmt = $db->prepare("
-                            UPDATE users 
-                            SET pseudo = ?, email = ?, user_rank = ?, desactivated = ?
-                            WHERE id = ?
-                        ");
                         
-                        // Convertir le statut en valeur numérique
-                        $desactivated = 0; // actif par défaut
-                        switch ($status) {
-                            case 'banned':
-                                $desactivated = 1; // banni
-                                break;
-                            case 'inactive':
-                                $desactivated = 2; // inactif
-                                break;
-                            case 'active':
-                            default:
-                                $desactivated = 0; // actif
-                                break;
-                        }
-                        
-                        $stmt->execute([$pseudo, $email, $rankName, $desactivated, $userId]);
-                        
-                        // Supprimer les anciennes permissions
-                        $stmt = $db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
+                        // Récupérer les points actuels
+                        $stmt = $db->prepare("SELECT point FROM users WHERE id = ?");
                         $stmt->execute([$userId]);
+                        $currentPoints = $stmt->fetchColumn();
                         
-                        // Ajouter les nouvelles permissions
-                        if (!empty($permissions)) {
-                            $stmt = $db->prepare("
-                                INSERT INTO user_permissions (user_id, permission_id, created_by) 
-                                VALUES (?, ?, ?)
-                            ");
-                            foreach ($permissions as $permissionId) {
-                                $stmt->execute([$userId, $permissionId, $_SESSION['user_id']]);
-                            }
-                        }
+                        // Mettre à jour les points
+                        $stmt = $db->prepare("UPDATE users SET point = ? WHERE id = ?");
+                        $stmt->execute([$newPoints, $userId]);
                         
-                        $db->commit();
-                        echo json_encode(['success' => true, 'message' => 'Utilisateur mis à jour']);
-                    } catch (\Exception $e) {
-                        $db->rollBack();
-                        throw $e;
+                        // Logger le changement
+                        $stmt = $db->prepare("
+                            INSERT INTO point_history (user_id, old_points, new_points, reason, admin_id, created_at)
+                            VALUES (?, ?, ?, ?, ?, NOW())
+                        ");
+                        $stmt->execute([$userId, $currentPoints, $newPoints, $reason, $_SESSION['user_id']]);
+                        
+                        echo json_encode(['success' => true, 'message' => 'Points mis à jour avec succès']);
+                        break;
                     }
+                    
+                    http_response_code(400);
+                    echo json_encode(['error' => 'Action non reconnue']);
                     break;
                     
                 case 'DELETE':
@@ -1012,7 +1033,7 @@ class AdminController {
                 default:
                     http_response_code(405);
                     echo json_encode(['error' => 'Méthode non autorisée']);
-                    exit;
+                    break;
             }
         } catch (\Exception $e) {
             // Log manuel de l'erreur
@@ -1158,101 +1179,287 @@ class AdminController {
         include __DIR__ . '/../Views/admin/report_detail.php';
     }
     
-    public function handleReportAction()
-    {
-        // Vérification permission admin
-        if (!isset($_SESSION['user_id']) || !in_array('admin.reports', $_SESSION['permissions'] ?? []) && !in_array('*', $_SESSION['permissions'] ?? [])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Permission refusée']);
+    public function handleReportAction() {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.reports')) {
+            header('Location: /error/403');
             exit;
         }
-        
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /admin/reports');
+            exit;
+        }
+
         $reportId = $_POST['report_id'] ?? null;
-        $action = $_POST['action'] ?? null;
-        $sanctionType = $_POST['sanction_type'] ?? null;
-        $sanctionReason = $_POST['sanction_reason'] ?? null;
-        $sanctionDetails = $_POST['sanction_details'] ?? '';
-        
+        $action = $_POST['action'] ?? '';
+        $reason = $_POST['reason'] ?? '';
+
         if (!$reportId || !$action) {
-            echo json_encode(['success' => false, 'message' => 'Paramètres manquants']);
+            $_SESSION['error'] = "Action invalide.";
+            header('Location: /admin/reports');
             exit;
         }
+
+        try {
+            $db = Database::getConnection();
+            
+            // Marquer le rapport comme traité
+            $stmt = $db->prepare("UPDATE reports SET status = ?, admin_notes = ?, resolved_at = NOW() WHERE id = ?");
+            $stmt->execute([$action, $reason, $reportId]);
+
+            $_SESSION['success'] = "Rapport traité avec succès.";
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Erreur lors du traitement du rapport: " . $e->getMessage();
+        }
+
+        header('Location: /admin/reports');
+        exit;
+    }
+
+    // === GESTION DES RÉCOMPENSES ===
+    
+    public function rewards() {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.rewards')) {
+            header('Location: /error/403');
+            exit;
+        }
+
+        // Récupérer les statistiques
+        $db = Database::getConnection();
         
-        $db = \App\Helpers\Database::getConnection();
+        // Total des récompenses
+        $stmt = $db->prepare("SELECT COUNT(*) FROM rewards");
+        $stmt->execute();
+        $totalRewards = $stmt->fetchColumn();
+        
+        // Total des déblocages
+        $stmt = $db->prepare("SELECT COUNT(*) FROM user_rewards");
+        $stmt->execute();
+        $totalUnlocks = $stmt->fetchColumn();
+        
+        // Récompenses physiques
+        $stmt = $db->prepare("SELECT COUNT(*) FROM rewards WHERE type = 'physical'");
+        $stmt->execute();
+        $physicalRewards = $stmt->fetchColumn();
+        
+        // Total des points distribués
+        $stmt = $db->prepare("
+            SELECT COALESCE(SUM(r.points_value), 0) 
+            FROM rewards r 
+            JOIN user_rewards ur ON r.id = ur.reward_id
+        ");
+        $stmt->execute();
+        $totalPoints = $stmt->fetchColumn();
+        
+        // Récupérer toutes les récompenses avec statistiques
+        $stmt = $db->prepare("
+            SELECT r.*, 
+                   COUNT(ur.user_id) as unlock_count,
+                   (SELECT COUNT(*) FROM users) as total_users
+            FROM rewards r
+            LEFT JOIN user_rewards ur ON r.id = ur.reward_id
+            GROUP BY r.id
+            ORDER BY r.required_level ASC, r.name ASC
+        ");
+        $stmt->execute();
+        $rewards = $stmt->fetchAll();
+        
+        require __DIR__ . '/../Views/admin/rewards.php';
+    }
+    
+    public function createReward() {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.rewards')) {
+            header('Location: /error/403');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /admin/rewards');
+            exit;
+        }
+
+        try {
+            $data = [
+                'name' => trim($_POST['name']),
+                'description' => trim($_POST['description']),
+                'type' => $_POST['type'],
+                'icon' => trim($_POST['icon']),
+                'required_level' => intval($_POST['required_level']),
+                'rarity' => $_POST['rarity'],
+                'points_value' => intval($_POST['points_value'])
+            ];
+
+            // Validation
+            if (empty($data['name']) || empty($data['description'])) {
+                throw new \Exception("Le nom et la description sont requis.");
+            }
+
+            // Ajouter les champs spécifiques aux récompenses physiques
+            if ($data['type'] === 'physical') {
+                $data['price'] = floatval($_POST['price'] ?? 0);
+                $data['stock'] = intval($_POST['stock'] ?? 0);
+            }
+
+            \App\Models\Reward::create($data);
+            $_SESSION['success'] = "Récompense créée avec succès.";
+        } catch (\Exception $e) {
+            $_SESSION['error'] = "Erreur lors de la création: " . $e->getMessage();
+        }
+
+        header('Location: /admin/rewards');
+        exit;
+    }
+    
+    public function editReward($id) {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.rewards')) {
+            header('Location: /error/403');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /admin/rewards');
+            exit;
+        }
+
+        try {
+            $data = [
+                'name' => trim($_POST['name']),
+                'description' => trim($_POST['description']),
+                'type' => $_POST['type'],
+                'icon' => trim($_POST['icon']),
+                'required_level' => intval($_POST['required_level']),
+                'rarity' => $_POST['rarity'],
+                'points_value' => intval($_POST['points_value'])
+            ];
+
+            // Validation
+            if (empty($data['name']) || empty($data['description'])) {
+                throw new \Exception("Le nom et la description sont requis.");
+            }
+
+            // Ajouter les champs spécifiques aux récompenses physiques
+            if ($data['type'] === 'physical') {
+                $data['price'] = floatval($_POST['price'] ?? 0);
+                $data['stock'] = intval($_POST['stock'] ?? 0);
+            }
+
+            \App\Models\Reward::update($id, $data);
+            $_SESSION['success'] = "Récompense mise à jour avec succès.";
+        } catch (\Exception $e) {
+            $_SESSION['error'] = "Erreur lors de la mise à jour: " . $e->getMessage();
+        }
+
+        header('Location: /admin/rewards');
+        exit;
+    }
+    
+    public function deleteReward($id) {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.rewards')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Méthode non autorisée']);
+            return;
+        }
+
+        try {
+            \App\Models\Reward::delete($id);
+            echo json_encode(['success' => true]);
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    // === API POUR LES RÉCOMPENSES ===
+    
+    public function apiReward($id) {
+        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.rewards')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Méthode non autorisée']);
+            return;
+        }
+
+        try {
+            $reward = \App\Models\Reward::getById($id);
+            if ($reward) {
+                echo json_encode(['success' => true, 'reward' => $reward]);
+            } else {
+                echo json_encode(['error' => 'Récompense introuvable']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function apiUserPointsHistory($userId) {
+        // Capturer toutes les erreurs et les rediriger vers JSON
+        set_error_handler(function($severity, $message, $file, $line) {
+            if (!(error_reporting() & $severity)) {
+                return;
+            }
+            
+            // Log l'erreur
+            $errorMessage = date('[d/m/Y H:i:s] ') . "Erreur PHP: $message dans $file ligne $line\n";
+            file_put_contents(__DIR__ . '/../storage/logs/php_errors.log', $errorMessage, FILE_APPEND);
+            
+            // Retourner une réponse JSON d'erreur
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Erreur serveur interne', 'details' => $message]);
+            exit;
+        });
+        
+        // S'assurer que la sortie est en JSON
+        header('Content-Type: application/json');
+        
+        // Désactiver l'affichage des erreurs pour cette requête
+        ini_set('display_errors', 0);
         
         try {
-            $db->beginTransaction();
-            
-            // Récupérer le signalement
-            $stmt = $db->prepare("SELECT * FROM reports WHERE id = ?");
-            $stmt->execute([$reportId]);
-            $report = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$report) {
-                throw new Exception('Signalement non trouvé');
+            if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
+                http_response_code(403);
+                echo json_encode(['error' => 'Accès refusé']);
+                exit;
             }
             
-            // Mettre à jour le statut du signalement
-            $newStatus = 'reviewed';
-            if ($action === 'sanction') {
-                $newStatus = 'sanctioned';
-            } elseif ($action === 'reject') {
-                $newStatus = 'rejected';
-            }
+            $db = \App\Helpers\Database::getConnection();
             
+            // Récupérer l'historique des points
             $stmt = $db->prepare("
-                UPDATE reports 
-                SET status = ?, reviewed_by = ?, reviewed_at = NOW() 
-                WHERE id = ?
+                SELECT ph.*, u.pseudo as admin_name
+                FROM point_history ph
+                LEFT JOIN users u ON ph.admin_id = u.id
+                WHERE ph.user_id = ?
+                ORDER BY ph.created_at DESC
+                LIMIT 50
             ");
-            $stmt->execute([$newStatus, $_SESSION['user_id'], $reportId]);
+            $stmt->execute([$userId]);
+            $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            // Si sanction, créer une sanction
-            if ($action === 'sanction' && $sanctionType) {
-                // Récupérer l'utilisateur à sanctionner
-                $userId = null;
-                if ($report['type'] === 'post') {
-                    $stmt = $db->prepare("SELECT user_id FROM posts WHERE id = ?");
-                    $stmt->execute([$report['target_id']]);
-                    $userId = $stmt->fetchColumn();
-                } elseif ($report['type'] === 'message') {
-                    $stmt = $db->prepare("SELECT user_id FROM messages WHERE id = ?");
-                    $stmt->execute([$report['target_id']]);
-                    $userId = $stmt->fetchColumn();
-                }
-                
-                if ($userId) {
-                    $stmt = $db->prepare("
-                        INSERT INTO sanctions (user_id, report_id, type, reason, details, admin_id) 
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    ");
-                    $stmt->execute([$userId, $reportId, $sanctionType, $sanctionReason, $sanctionDetails, $_SESSION['user_id']]);
-                    
-                    // Appliquer la sanction
-                    if ($sanctionType === 'ban') {
-                        $stmt = $db->prepare("UPDATE users SET desactivated = 1 WHERE id = ?");
-                        $stmt->execute([$userId]);
-                    }
-                }
-            }
+            echo json_encode(['history' => $history]);
+        } catch (\Exception $e) {
+            // Log manuel de l'erreur
+            $logMessage = date('[d/m/Y H:i:s] ') . 'Erreur récupération historique points : ' . $e->getMessage() . "\n";
+            file_put_contents(__DIR__ . '/../storage/logs/log_28-06-2025.txt', $logMessage, FILE_APPEND);
             
-            // Si suppression de contenu
-            if ($action === 'delete_content') {
-                if ($report['type'] === 'post') {
-                    $stmt = $db->prepare("DELETE FROM posts WHERE id = ?");
-                    $stmt->execute([$report['target_id']]);
-                } elseif ($report['type'] === 'message') {
-                    $stmt = $db->prepare("DELETE FROM messages WHERE id = ?");
-                    $stmt->execute([$report['target_id']]);
-                }
-            }
-            
-            $db->commit();
-            echo json_encode(['success' => true, 'message' => 'Action effectuée avec succès']);
-            
-        } catch (Exception $e) {
-            $db->rollBack();
-            echo json_encode(['success' => false, 'message' => 'Erreur: ' . $e->getMessage()]);
+            http_response_code(500);
+            echo json_encode([
+                'error' => 'Erreur lors de la récupération de l\'historique des points', 
+                'details' => $e->getMessage()
+            ]);
+        } finally {
+            // Restaurer le gestionnaire d'erreur par défaut
+            restore_error_handler();
         }
     }
 } 

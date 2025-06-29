@@ -105,6 +105,16 @@
                 </button>
                 <?php endif; ?>
 
+                <?php if (in_array('admin.rewards', $userPermissions) || in_array('*', $userPermissions)): ?>
+                <button onclick="window.location.href='/admin/rewards'" class="w-full flex items-center justify-between p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">
+                    <div class="flex items-center">
+                        <iconify-icon icon="tabler:trophy" class="text-yellow-400 mr-3" width="20" height="20"></iconify-icon>
+                        <span class="text-white">Gérer les récompenses</span>
+                    </div>
+                    <iconify-icon icon="tabler:chevron-right" class="text-gray-400" width="16" height="16"></iconify-icon>
+                </button>
+                <?php endif; ?>
+
                 <button onclick="toggleQuickActions()" class="w-full flex items-center justify-between p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">
                     <div class="flex items-center">
                         <iconify-icon icon="tabler:bolt" class="text-purple-400 mr-3" width="20" height="20"></iconify-icon>
@@ -200,12 +210,28 @@
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-red-500 transition cursor-pointer" onclick="window.location.href='/admin/reports'">
             <div class="flex items-center mb-4">
                 <div class="p-3 rounded-full bg-red-500 bg-opacity-20">
-                    <iconify-icon icon="tabler:alert-triangle" class="text-red-400" width="24" height="24"></iconify-icon>
+                    <iconify-icon icon="tabler:flag" class="text-red-400" width="24" height="24"></iconify-icon>
                 </div>
-                <h3 class="text-lg font-semibold text-white ml-3">Signalements & Sanctions</h3>
+                <h3 class="text-lg font-semibold text-white ml-3">Signalements</h3>
             </div>
-            <p class="text-gray-400 text-sm mb-4">Consultez et traitez les signalements des utilisateurs, posts, commentaires et messages privés.</p>
+            <p class="text-gray-400 text-sm mb-4">Gérez les signalements et modérez le contenu de la plateforme.</p>
             <div class="flex items-center text-red-400 text-sm">
+                <span>Accéder</span>
+                <iconify-icon icon="tabler:arrow-right" class="ml-2" width="16" height="16"></iconify-icon>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if (in_array('admin.rewards', $userPermissions) || in_array('*', $userPermissions)): ?>
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-yellow-500 transition cursor-pointer" onclick="window.location.href='/admin/rewards'">
+            <div class="flex items-center mb-4">
+                <div class="p-3 rounded-full bg-yellow-500 bg-opacity-20">
+                    <iconify-icon icon="tabler:trophy" class="text-yellow-400" width="24" height="24"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-semibold text-white ml-3">Gestion des Récompenses</h3>
+            </div>
+            <p class="text-gray-400 text-sm mb-4">Créez et gérez les récompenses, badges et objets physiques.</p>
+            <div class="flex items-center text-yellow-400 text-sm">
                 <span>Accéder</span>
                 <iconify-icon icon="tabler:arrow-right" class="ml-2" width="16" height="16"></iconify-icon>
             </div>

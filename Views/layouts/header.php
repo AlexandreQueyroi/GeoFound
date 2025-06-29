@@ -179,14 +179,13 @@ if (isset($_SESSION['user_id'])) {
                             <!-- Menu Administration -->
                             <li><a href="/admin" class="hover:text-blue-400 transition">Dashboard</a></li>
                             <li><a href="/admin/users" class="hover:text-blue-400 transition">Utilisateurs</a></li>
-                            <li><a href="/admin/ranks" class="hover:text-blue-400 transition">Grades</a></li>
+                            <li><a href="/admin/rank" class="hover:text-blue-400 transition">Grades</a></li>
                             <li><a href="/admin/permissions" class="hover:text-blue-400 transition">Permissions</a></li>
                             <li><a href="/admin/reports" class="hover:text-blue-400 transition">Signalements</a></li>
                             <li><a href="/admin/maintenance" class="hover:text-blue-400 transition">Maintenance</a></li>
                         <?php else: ?>
                             <!-- Menu Front-end -->
                             <li><a href="/" class="hover:text-blue-400 transition">Accueil</a></li>
-                            <li><a href="/explorer" class="hover:text-blue-400 transition">Explorer</a></li>
                             <li><a href="/post" class="hover:text-blue-400 transition">Posts</a></li>
                             <li><a href="/reward" class="hover:text-blue-400 transition">Récompenses</a></li>
                             <?php if (isset($_SESSION['user'])): ?>
