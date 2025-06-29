@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$input = json_decode(file_get_contents('php://input'), true);
+$input = json_decode(file_get_contents('php:
 $avatar = $input['avatar'] ?? null;
 if (!$avatar) {
     echo json_encode(['success' => false, 'message' => 'Aucun avatar reçu']);

@@ -3,7 +3,7 @@
 
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-4xl mx-auto px-4">
-        <!-- Bouton retour -->
+        
         <div class="mb-6">
             <a href="/post" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                 <iconify-icon icon="tabler:arrow-left" width="20" height="20"></iconify-icon>
@@ -11,9 +11,9 @@
             </a>
         </div>
 
-        <!-- Post individuel -->
+        
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <!-- Header du post -->
+            
             <div class="flex items-center p-6 border-b border-gray-100 dark:border-gray-700">
                 <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
                     <?php echo strtoupper(substr($post['username'] ?? 'U', 0, 1)); ?>
@@ -31,7 +31,7 @@
                 </button>
             </div>
 
-            <!-- Image du post -->
+            
             <?php if (!empty($post['content'])): ?>
                 <div class="relative bg-gray-100 dark:bg-gray-700">
                     <img src="data:image/jpeg;base64,<?php echo $post['content']; ?>" 
@@ -40,9 +40,9 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Contenu du post -->
+            
             <div class="p-6">
-                <!-- Actions -->
+                
                 <div class="flex items-center space-x-6 mb-6">
                     <?php 
                     $isLiked = $userReaction && $userReaction['state'] === 'like';
@@ -66,7 +66,7 @@
                     </button>
                 </div>
 
-                <!-- Titre et description -->
+                
                 <div class="mb-6">
                     <h1 class="font-bold text-gray-900 dark:text-white text-2xl mb-3">
                         <?php echo htmlspecialchars($post['name']); ?>
@@ -76,7 +76,7 @@
                     </p>
                 </div>
 
-                <!-- Métadonnées -->
+                
                 <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4">
                     <?php if (!empty($post['latitude']) && !empty($post['longitude'])): ?>
                         <div class="flex items-center space-x-1">
@@ -163,9 +163,7 @@ function sharePost(postId) {
             text: 'Regardez ce post intéressant !',
             url: postUrl
         }).then(() => {
-            console.log('Post partagé avec succès');
         }).catch((error) => {
-            console.log('Erreur lors du partage:', error);
             fallbackShare(postUrl);
         });
     } else {

@@ -10,13 +10,10 @@ class Permission {
         self::$db = Database::getConnection();
     }
 
-    /**
-     * Vérifie si un utilisateur a une permission spécifique
-     */
     public static function hasPermission($userId, $permissionName) {
         self::init();
         
-        // Vérifier d'abord les permissions directes de l'utilisateur
+        
         $stmt = self::$db->prepare("
             SELECT p.name 
             FROM user_permissions up
@@ -32,7 +29,7 @@ class Permission {
             }
         }
         
-        // Vérifier les permissions du rang de l'utilisateur
+        
         $stmt = self::$db->prepare("
             SELECT r.permissions 
             FROM users u
@@ -54,16 +51,10 @@ class Permission {
         return false;
     }
 
-    /**
-     * Vérifie si un utilisateur a la permission administrateur (*)
-     */
     public static function isAdmin($userId) {
         return self::hasPermission($userId, '*');
     }
 
-    /**
-     * Vérifie si un utilisateur peut accéder à une page spécifique
-     */
     public static function canAccessPage($userId, $pagePath) {
         
         if (self::isAdmin($userId)) {
@@ -109,9 +100,6 @@ class Permission {
         return $stmt->fetch() !== false;
     }
 
-    /**
-     * Récupère toutes les permissions
-     */
     public static function getAllPermissions() {
         self::init();
         $stmt = self::$db->prepare("SELECT * FROM permissions ORDER BY name");
@@ -119,9 +107,6 @@ class Permission {
         return $stmt->fetchAll();
     }
 
-    /**
-     * Récupère tous les rangs
-     */
     public static function getAllRanks() {
         self::init();
         $stmt = self::$db->prepare("SELECT * FROM ranks ORDER BY name");
@@ -129,9 +114,6 @@ class Permission {
         return $stmt->fetchAll();
     }
 
-    /**
-     * Récupère les permissions d'un rang
-     */
     public static function getRankPermissions($rankId) {
         self::init();
         $stmt = self::$db->prepare("
@@ -143,13 +125,10 @@ class Permission {
         return $stmt->fetchAll();
     }
 
-    /**
-     * Récupère les permissions d'un utilisateur
-     */
     public static function getUserPermissions($userId) {
         self::init();
         
-        // Récupérer les permissions directes de l'utilisateur
+        
         $stmt = self::$db->prepare("
             SELECT p.*, up.expires_at, up.created_at as granted_at
             FROM permissions p
@@ -160,7 +139,7 @@ class Permission {
         $stmt->execute([$userId]);
         $userPermissions = $stmt->fetchAll();
         
-        // Récupérer les permissions du rang de l'utilisateur
+        
         $stmt = self::$db->prepare("
             SELECT r.permissions 
             FROM users u
@@ -175,26 +154,23 @@ class Permission {
             $permissionNames = json_decode($rank['permissions'], true);
             if (is_array($permissionNames)) {
                 foreach ($permissionNames as $permName) {
-                    // Récupérer les détails de la permission
+                    
                     $stmt = self::$db->prepare("SELECT * FROM permissions WHERE name = ?");
                     $stmt->execute([$permName]);
                     $perm = $stmt->fetch();
                     if ($perm) {
-                        $perm['granted_at'] = null; // Permission du rang
-                        $perm['expires_at'] = null; // Permission permanente du rang
+                        $perm['granted_at'] = null; 
+                        $perm['expires_at'] = null; 
                         $rankPermissions[] = $perm;
                     }
                 }
             }
         }
         
-        // Combiner les permissions
+        
         return array_merge($userPermissions, $rankPermissions);
     }
 
-    /**
-     * Ajoute une permission à un rang
-     */
     public static function addPermissionToRank($rankId, $permissionId) {
         self::init();
         try {
@@ -208,9 +184,6 @@ class Permission {
         }
     }
 
-    /**
-     * Supprime une permission d'un rang
-     */
     public static function removePermissionFromRank($rankId, $permissionId) {
         self::init();
         $stmt = self::$db->prepare("
@@ -220,9 +193,6 @@ class Permission {
         return $stmt->execute([$rankId, $permissionId]);
     }
 
-    /**
-     * Ajoute une permission temporaire à un utilisateur
-     */
     public static function addPermissionToUser($userId, $permissionId, $expiresAt = null, $createdBy = null) {
         self::init();
         try {
@@ -237,9 +207,6 @@ class Permission {
         }
     }
 
-    /**
-     * Supprime une permission d'un utilisateur
-     */
     public static function removePermissionFromUser($userId, $permissionId) {
         self::init();
         $stmt = self::$db->prepare("
@@ -249,9 +216,6 @@ class Permission {
         return $stmt->execute([$userId, $permissionId]);
     }
 
-    /**
-     * Crée un nouveau rang
-     */
     public static function createRank($name, $color) {
         self::init();
         try {
@@ -264,9 +228,6 @@ class Permission {
         }
     }
 
-    /**
-     * Met à jour un rang
-     */
     public static function updateRank($rankId, $name, $color) {
         self::init();
         $stmt = self::$db->prepare("
@@ -275,18 +236,12 @@ class Permission {
         return $stmt->execute([$name, $color, $rankId]);
     }
 
-    /**
-     * Supprime un rang
-     */
     public static function deleteRank($rankId) {
         self::init();
         $stmt = self::$db->prepare("DELETE FROM ranks WHERE id = ?");
         return $stmt->execute([$rankId]);
     }
 
-    /**
-     * Gère la maintenance d'une page
-     */
     public static function setPageMaintenance($pagePath, $pageName, $isMaintenance, $message = null) {
         self::init();
         try {
@@ -304,9 +259,6 @@ class Permission {
         }
     }
 
-    /**
-     * Récupère l'état de maintenance d'une page
-     */
     public static function getPageMaintenance($pagePath) {
         self::init();
         $stmt = self::$db->prepare("
@@ -316,9 +268,6 @@ class Permission {
         return $stmt->fetch();
     }
 
-    /**
-     * Ajoute une permission requise pour une page
-     */
     public static function addPagePermission($pagePath, $permissionId) {
         self::init();
         try {
@@ -332,9 +281,6 @@ class Permission {
         }
     }
 
-    /**
-     * Supprime une permission d'une page
-     */
     public static function removePagePermission($pagePath, $permissionId) {
         self::init();
         $stmt = self::$db->prepare("
@@ -344,9 +290,6 @@ class Permission {
         return $stmt->execute([$pagePath, $permissionId]);
     }
 
-    /**
-     * Récupère toutes les pages en maintenance
-     */
     public static function getMaintenancePages() {
         self::init();
         try {
@@ -368,9 +311,6 @@ class Permission {
         }
     }
 
-    /**
-     * Supprime la maintenance d'une page
-     */
     public static function deletePageMaintenance($pagePath) {
         self::init();
         $stmt = self::$db->prepare("
@@ -379,9 +319,6 @@ class Permission {
         return $stmt->execute([$pagePath]);
     }
 
-    /**
-     * Met toutes les pages en maintenance ou les désactive
-     */
     public static function setAllPagesMaintenance($isMaintenance) {
         self::init();
         try {
@@ -394,9 +331,6 @@ class Permission {
         }
     }
 
-    /**
-     * Supprime toutes les permissions d'une page
-     */
     public static function clearPagePermissions($pagePath) {
         self::init();
         $stmt = self::$db->prepare("
@@ -404,10 +338,6 @@ class Permission {
         ");
         return $stmt->execute([$pagePath]);
     }
-
-    /**
-     * Nettoie les permissions expirées
-     */
     public static function cleanExpiredPermissions() {
         self::init();
         $stmt = self::$db->prepare("

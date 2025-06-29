@@ -14,17 +14,17 @@ class AuthController {
             $pseudoOrEmail = $_POST['pseudo'] ?? '';
             $password = $_POST['password'] ?? '';
             
-            // Auth::login retourne maintenant le tableau utilisateur ou false
+            
             $user = Auth::login($pseudoOrEmail, $password);
             
             if ($user) {
-                // Vérifier si l'email est vérifié (optionnel pour le moment)
+                
                 if (!$user['email_verified']) {
-                    // Log pour debug
+                    
                     Logger::info("Connexion compte non vérifié: {$user['pseudo']}", 'AuthController::login');
                 }
                 
-                // Vérifier le statut
+                
                 if ($user['desactivated'] == 1) {
                     $_SESSION['login_error'] = "🚫 Accès refusé : Votre compte a été banni par l'administration.";
                     $_SESSION['show_login_modal'] = true;
@@ -32,22 +32,22 @@ class AuthController {
                     exit;
                 }
                 
-                // Réactiver l'utilisateur s'il était inactif
+                
                 if ($user['desactivated'] == 2) {
                     \App\Helpers\UserStatusManager::reactivateUserOnLogin($user['id']);
                 }
                 
-                // Mettre à jour la date de dernière connexion
+                
                 \App\Helpers\UserStatusManager::updateLastConnection($user['id']);
                 
-                // Mettre en session
+                
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user'] = $user['pseudo'];
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['user_rank'] = $user['user_rank'];
                 $_SESSION['permissions'] = Permission::getUserPermissions($user['id']);
                 
-                // Rediriger vers la page précédente ou l'accueil
+                
                 $redirect = $_SESSION['last_url'] ?? '/';
                 unset($_SESSION['last_url']);
                 header('Location: ' . $redirect);
@@ -70,7 +70,7 @@ class AuthController {
             $password = $_POST['newpass'] ?? '';
             $confirmPassword = $_POST['confirmpass'] ?? '';
             
-            // Validation des données
+            
             $errors = [];
             
             if (empty($username)) {
@@ -97,12 +97,12 @@ class AuthController {
                 $errors[] = "Les mots de passe ne correspondent pas";
             }
             
-            // Validation du captcha
+            
             $captchaAnswer = trim($_POST['captcha-answer'] ?? '');
             if (empty($captchaAnswer)) {
                 $errors[] = "Veuillez répondre au captcha";
             } else {
-                // Vérifier la réponse du captcha
+                
                 $db = \App\Helpers\Database::getConnection();
                 $stmt = $db->prepare("SELECT response FROM captcha WHERE enabled = 1 AND LOWER(response) = LOWER(?)");
                 $stmt->execute([$captchaAnswer]);
@@ -111,7 +111,7 @@ class AuthController {
                 }
             }
             
-            // Vérifier si l'utilisateur ou l'email existe déjà
+            
             $db = \App\Helpers\Database::getConnection();
             
             $stmt = $db->prepare("SELECT id FROM users WHERE pseudo = ?");
@@ -133,7 +133,7 @@ class AuthController {
                 exit;
             }
             
-            // Créer l'utilisateur
+            
             try {
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
                 
@@ -145,10 +145,10 @@ class AuthController {
                 
                 $userId = $db->lastInsertId();
                 
-                // Générer le token de validation
+                
                 $token = EmailVerification::generateToken($userId);
                 
-                // Envoyer l'email de validation
+                
                 $emailSent = false;
                 try {
                     $emailSent = EmailSender::sendVerificationEmail($email, $username, $token);
@@ -161,7 +161,7 @@ class AuthController {
                 } else {
                     $_SESSION['register_success'] = "✅ Compte créé avec succès ! L'email de validation n'a pas pu être envoyé, mais votre compte est actif. Vous pouvez vous connecter directement.";
                     
-                    // Activer directement le compte si l'email échoue
+                    
                     $stmt = $db->prepare("UPDATE users SET email_verified = TRUE WHERE id = ?");
                     $stmt->execute([$userId]);
                 }
@@ -179,7 +179,7 @@ class AuthController {
             }
         }
         
-        // Affichage du formulaire
+        
         require __DIR__ . '/../Views/auth/register.php';
     }
     
@@ -195,14 +195,14 @@ class AuthController {
         $userId = EmailVerification::validateToken($token);
         
         if ($userId) {
-            // Récupérer les informations de l'utilisateur
+            
             $db = \App\Helpers\Database::getConnection();
             $stmt = $db->prepare("SELECT pseudo, email FROM users WHERE id = ?");
             $stmt->execute([$userId]);
             $user = $stmt->fetch();
             
             if ($user) {
-                // Envoyer l'email de bienvenue
+                
                 EmailSender::sendWelcomeEmail($user['email'], $user['pseudo']);
                 
                 $_SESSION['verification_success'] = "🎉 Votre compte a été validé avec succès ! Vous pouvez maintenant vous connecter.";
@@ -243,10 +243,10 @@ class AuthController {
                 exit;
             }
             
-            // Générer un nouveau token
+            
             $token = EmailVerification::generateToken($user['id']);
             
-            // Envoyer l'email
+            
             if (EmailSender::sendVerificationEmail($email, $user['pseudo'], $token)) {
                 $_SESSION['resend_success'] = "Un nouvel email de validation a été envoyé à $email.";
             } else {

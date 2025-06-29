@@ -4,7 +4,7 @@
     <div class="bg-gray-900 rounded-lg shadow-lg p-6">
         <h1 class="text-3xl font-bold text-white mb-8">Gestion des Permissions</h1>
         
-        <!-- Onglets -->
+        
         <div class="border-b border-gray-700 mb-6">
             <nav class="-mb-px flex space-x-8">
                 <button class="tab-button active text-blue-400 border-b-2 border-blue-400 py-2 px-1 text-sm font-medium" data-tab="permissions">
@@ -22,7 +22,7 @@
             </nav>
         </div>
 
-        <!-- Onglet Permissions -->
+        
         <div id="permissions-tab" class="tab-content">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-semibold text-white">Liste des Permissions</h2>
@@ -42,13 +42,13 @@
                         </tr>
                     </thead>
                     <tbody id="permissions-list" class="bg-gray-800 divide-y divide-gray-700">
-                        <!-- Les permissions seront chargées ici -->
+                        
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Onglet Rangs -->
+        
         <div id="ranks-tab" class="tab-content hidden">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-semibold text-white">Gestion des Rangs</h2>
@@ -58,15 +58,15 @@
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Liste des rangs -->
+                
                 <div class="bg-gray-800 rounded-lg p-6">
                     <h3 class="text-lg font-medium text-white mb-4">Rangs existants</h3>
                     <div id="ranks-list" class="space-y-3">
-                        <!-- Les rangs seront chargés ici -->
+                        
                     </div>
                 </div>
                 
-                <!-- Permissions du rang sélectionné -->
+                
                 <div class="bg-gray-800 rounded-lg p-6">
                     <h3 class="text-lg font-medium text-white mb-4">Permissions du rang</h3>
                     <div id="rank-permissions" class="space-y-3">
@@ -76,7 +76,7 @@
             </div>
         </div>
 
-        <!-- Onglet Permissions Utilisateurs -->
+        
         <div id="users-tab" class="tab-content hidden">
             <div class="mb-6">
                 <h2 class="text-xl font-semibold text-white mb-4">Permissions Utilisateurs</h2>
@@ -93,7 +93,7 @@
             </div>
         </div>
 
-        <!-- Onglet Maintenance -->
+        
         <div id="maintenance-tab" class="tab-content hidden">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-semibold text-white">Gestion de la Maintenance</h2>
@@ -114,7 +114,7 @@
                         </tr>
                     </thead>
                     <tbody id="maintenance-list" class="bg-gray-800 divide-y divide-gray-700">
-                        <!-- Les pages en maintenance seront chargées ici -->
+                        
                     </tbody>
                 </table>
             </div>
@@ -122,7 +122,7 @@
     </div>
 </div>
 
-<!-- Modal Ajout Permission -->
+
 <div id="permission-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
@@ -149,7 +149,7 @@
     </div>
 </div>
 
-<!-- Modal Ajout Rang -->
+
 <div id="rank-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
@@ -176,7 +176,7 @@
     </div>
 </div>
 
-<!-- Modal Maintenance -->
+
 <div id="maintenance-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">

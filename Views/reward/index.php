@@ -2,12 +2,12 @@
 <?php include_once __DIR__ . '/../layouts/modal.php'; ?>
 
 <div class="container mx-auto px-4 py-8">
-    <!-- En-tête de la page -->
+    
     <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-white mb-4">🏆 Centre de Récompenses</h1>
         <p class="text-xl text-gray-300 mb-6">Débloquez des récompenses en progressant dans votre aventure GeoFound</p>
         
-        <!-- Statistiques de l'utilisateur -->
+        
         <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-white">
                 <div class="text-center">
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <!-- Messages de succès/erreur -->
+    
     <?php if (isset($_SESSION['success'])): ?>
         <div class="bg-green-600 text-white p-4 rounded-lg mb-6 flex items-center">
             <iconify-icon icon="tabler:check" class="mr-2"></iconify-icon>
@@ -47,7 +47,7 @@
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
-    <!-- Filtres -->
+    
     <div class="flex flex-wrap gap-4 mb-8 justify-center">
         <button class="filter-btn active bg-blue-600 text-white px-4 py-2 rounded-lg transition" data-filter="all">
             Toutes
@@ -63,7 +63,7 @@
         </button>
     </div>
 
-    <!-- Grille des récompenses -->
+    
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <?php foreach ($rewardsWithStatus as $rewardData): ?>
             <?php 
@@ -72,7 +72,7 @@
             $userReward = $rewardData['user_reward'];
             $canUnlock = $rewardData['can_unlock'];
             
-            // Déterminer la classe CSS selon le statut
+            
             $cardClass = 'bg-gray-800 border-2';
             $iconClass = 'text-gray-400';
             
@@ -91,7 +91,7 @@
                 $iconClass = 'text-gray-500';
             }
             
-            // Classe de filtrage
+            
             $filterClass = 'reward-card';
             if ($userHas) {
                 $filterClass .= ' unlocked';
@@ -103,13 +103,13 @@
             ?>
             
             <div class="<?php echo $cardClass; ?> rounded-lg p-6 transition-all duration-300 hover:scale-105 <?php echo $filterClass; ?>">
-                <!-- Icône de la récompense -->
+                
                 <div class="text-center mb-4">
                     <div class="text-4xl mb-2 <?php echo $iconClass; ?>">
                         <?php echo $reward['icon'] ?? '🏆'; ?>
                     </div>
                     
-                    <!-- Badge de rareté -->
+                    
                     <?php if ($reward['rarity']): ?>
                         <span class="inline-block px-2 py-1 text-xs rounded-full 
                             <?php 
@@ -126,11 +126,11 @@
                     <?php endif; ?>
                 </div>
 
-                <!-- Nom et description -->
+                
                 <h3 class="text-xl font-bold text-white mb-2 text-center"><?php echo htmlspecialchars($reward['name']); ?></h3>
                 <p class="text-gray-300 text-sm mb-4 text-center"><?php echo htmlspecialchars($reward['description']); ?></p>
 
-                <!-- Informations -->
+                
                 <div class="space-y-2 mb-4">
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-400">Niveau requis:</span>
@@ -150,10 +150,10 @@
                     <?php endif; ?>
                 </div>
 
-                <!-- Actions -->
+                
                 <div class="space-y-2">
                     <?php if ($userHas): ?>
-                        <!-- Récompense débloquée -->
+                        
                         <button 
                             onclick="toggleEquip(<?php echo $reward['id']; ?>)"
                             class="w-full py-2 px-4 rounded-lg transition-colors <?php echo ($userReward && $userReward['is_equipped']) ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-600 hover:bg-gray-700 text-white'; ?>"
@@ -167,7 +167,7 @@
                             <?php endif; ?>
                         </button>
                     <?php elseif ($canUnlock): ?>
-                        <!-- Récompense disponible -->
+                        
                         <button 
                             onclick="unlockReward(<?php echo $reward['id']; ?>)"
                             class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
@@ -176,7 +176,7 @@
                             Débloquer
                         </button>
                     <?php else: ?>
-                        <!-- Récompense verrouillée -->
+                        
                         <div class="w-full py-2 px-4 bg-gray-700 text-gray-400 rounded-lg text-center">
                             <iconify-icon icon="tabler:lock" class="mr-1"></iconify-icon>
                             Verrouillée
@@ -187,7 +187,7 @@
         <?php endforeach; ?>
     </div>
 
-    <!-- Message si aucune récompense -->
+    
     <?php if (empty($rewardsWithStatus)): ?>
         <div class="text-center py-12">
             <div class="text-6xl mb-4">🎯</div>
@@ -197,7 +197,7 @@
     <?php endif; ?>
 </div>
 
-<!-- Script pour les récompenses -->
+
 <script src="/assets/js/rewards.js?v=<?php echo time(); ?>"></script>
 
 <?php include_once __DIR__ . '/../layouts/footer.php'; ?> 

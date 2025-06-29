@@ -12,17 +12,14 @@ class EmailVerification {
         }
     }
     
-    /**
-     * Génère un token de validation pour un utilisateur
-     */
     public static function generateToken($userId) {
         self::init();
         
-        // Supprimer les anciens tokens pour cet utilisateur
+        
         $stmt = self::$db->prepare("DELETE FROM email_verification_tokens WHERE user_id = ?");
         $stmt->execute([$userId]);
         
-        // Générer un nouveau token
+        
         $token = bin2hex(random_bytes(32));
         $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
         
@@ -35,9 +32,6 @@ class EmailVerification {
         return $token;
     }
     
-    /**
-     * Valide un token et marque l'email comme vérifié
-     */
     public static function validateToken($token) {
         self::init();
         
@@ -53,20 +47,17 @@ class EmailVerification {
             return false;
         }
         
-        // Marquer l'email comme vérifié
+        
         $stmt = self::$db->prepare("UPDATE users SET email_verified = TRUE WHERE id = ?");
         $stmt->execute([$result['user_id']]);
         
-        // Supprimer le token utilisé
+        
         $stmt = self::$db->prepare("DELETE FROM email_verification_tokens WHERE token = ?");
         $stmt->execute([$token]);
         
         return $result['user_id'];
     }
     
-    /**
-     * Vérifie si un utilisateur a un token de validation en cours
-     */
     public static function hasValidToken($userId) {
         self::init();
         
@@ -79,9 +70,6 @@ class EmailVerification {
         return $stmt->fetchColumn() > 0;
     }
     
-    /**
-     * Supprime les tokens expirés
-     */
     public static function cleanupExpiredTokens() {
         self::init();
         

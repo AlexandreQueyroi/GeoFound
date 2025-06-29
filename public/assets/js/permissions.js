@@ -1,25 +1,14 @@
 class PermissionManager {
     constructor() {
         this.currentPage = window.location.pathname;
-        console.log('PermissionManager: Constructeur appelé pour la page:', this.currentPage);
         this.init();
     }
 
     init() {
-        console.log('PermissionManager: Initialisation...');
-        console.log('PermissionManager: window.userPermissions =', window.userPermissions);
-        console.log('PermissionManager: Type de userPermissions =', typeof window.userPermissions);
-        console.log('PermissionManager: Est un array?', Array.isArray(window.userPermissions));
-        
         if (window.userPermissions && Array.isArray(window.userPermissions) && 
             (window.userPermissions.includes('*') || window.userPermissions.includes('admin.access'))) {
-            console.log('PermissionManager: Permissions OK, préparation de la modale.');
             this.addPermissionButtons();
             this.setupModal();
-        } else {
-            console.log('PermissionManager: Permissions insuffisantes, la modale ne sera pas initialisée.');
-            console.log('PermissionManager: userPermissions.includes("*") =', window.userPermissions ? window.userPermissions.includes('*') : 'userPermissions est null/undefined');
-            console.log('PermissionManager: userPermissions.includes("admin.access") =', window.userPermissions ? window.userPermissions.includes('admin.access') : 'userPermissions est null/undefined');
         }
     }
 
@@ -89,7 +78,6 @@ class PermissionManager {
     }
 
     setupModal() {
-        console.log('PermissionManager: setupModal() - Configuration de la modale.');
         const modal = document.getElementById('permission-maintenance-modal');
         document.getElementById('close-permission-modal')?.addEventListener('click', () => modal.classList.add('hidden'));
         modal.addEventListener('click', (e) => {
@@ -101,14 +89,12 @@ class PermissionManager {
     }
 
     setupTabs() {
-        console.log('PermissionManager: setupTabs() - Configuration des onglets.');
         const tabButtons = document.querySelectorAll('[data-tab]');
         const tabContents = document.querySelectorAll('[id$="-tab"]');
         
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const tabName = button.dataset.tab;
-                console.log(`PermissionManager: Clic sur l'onglet : ${tabName}`);
                 tabButtons.forEach(btn => btn.classList.remove('active', 'text-blue-400', 'border-blue-400'));
                 button.classList.add('active', 'text-blue-400', 'border-blue-400');
                 tabContents.forEach(content => content.classList.add('hidden'));
@@ -117,33 +103,26 @@ class PermissionManager {
             });
         });
 
-        // Charger l'onglet par défaut
-        console.log("PermissionManager: Chargement initial des données de l'onglet 'maintenance'.");
         this.loadTabData('maintenance');
     }
 
     loadTabData(tabName) {
-        console.log(`PermissionManager: loadTabData() - Chargement des données pour '${tabName}'.`);
         if (tabName === 'maintenance') this.loadMaintenanceData();
         if (tabName === 'permissions') this.loadPermissionsData();
         if (tabName === 'quick-actions') this.loadQuickActionsData();
     }
 
     async loadMaintenanceData() {
-        console.log('PermissionManager: loadMaintenanceData() - Début du chargement.');
         try {
             const pages = await this.apiFetch('/api/admin/maintenance');
-            console.log('PermissionManager: Données de maintenance reçues :', pages);
             const container = document.getElementById('maintenance-list');
             container.innerHTML = '';
             
             if (!Array.isArray(pages) || pages.length === 0) {
-                console.log('PermissionManager: Aucune donnée de maintenance à afficher.');
                 container.innerHTML = '<p class="text-gray-400 text-sm">Aucune page en maintenance</p>';
                 return;
             }
             
-            console.log(`PermissionManager: Affichage de ${pages.length} éléments de maintenance.`);
             pages.forEach(page => {
                 const div = this.createMaintenanceItem(page);
                 container.appendChild(div);
@@ -155,10 +134,8 @@ class PermissionManager {
     }
 
     async loadPermissionsData() {
-        console.log('PermissionManager: loadPermissionsData() - Début du chargement.');
         try {
             const permissions = await this.apiFetch('/api/admin/permissions');
-            console.log('PermissionManager: Permissions reçues :', permissions);
             const select = document.getElementById('permission-select');
             select.innerHTML = '<option value="">Sélectionner une permission</option>';
             if (Array.isArray(permissions)) {
@@ -172,20 +149,16 @@ class PermissionManager {
     }
 
     async loadPagePermissions() {
-        console.log('PermissionManager: loadPagePermissions() - Début du chargement.');
         try {
             const pagePermissions = await this.apiFetch('/api/admin/page-permissions');
-            console.log('PermissionManager: Permissions de page reçues :', pagePermissions);
             const container = document.getElementById('page-permissions-list');
             container.innerHTML = '';
 
             if (!Array.isArray(pagePermissions) || pagePermissions.length === 0) {
-                console.log('PermissionManager: Aucune permission de page à afficher.');
                 container.innerHTML = '<p class="text-gray-400 text-sm">Aucune permission de page configurée</p>';
                 return;
             }
             
-            console.log(`PermissionManager: Affichage de ${pagePermissions.length} permissions de page.`);
             pagePermissions.forEach(pp => {
                 const div = this.createPermissionItem(pp);
                 container.appendChild(div);
@@ -463,11 +436,10 @@ class PermissionManager {
 
 let permissionManager;
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('PermissionManager: DOMContentLoaded - Le script principal démarre.');
-    permissionManager = new PermissionManager();
+    new PermissionManager();
 });
 
-// Fonction pour ouvrir le modal de modification des points
+
 function openPointsModal(userId, currentPoints, username) {
     document.getElementById('pointsModal').style.display = 'flex';
     document.getElementById('pointsUserId').value = userId;
@@ -477,12 +449,12 @@ function openPointsModal(userId, currentPoints, username) {
     document.getElementById('pointsReason').value = '';
 }
 
-// Fonction pour fermer le modal de modification des points
+
 function closePointsModal() {
     document.getElementById('pointsModal').style.display = 'none';
 }
 
-// Fonction pour sauvegarder les points
+
 async function savePoints() {
     const userId = document.getElementById('pointsUserId').value;
     const newPoints = parseInt(document.getElementById('pointsNewPoints').value);
@@ -515,7 +487,7 @@ async function savePoints() {
         if (response.ok) {
             showNotification('Points mis à jour avec succès', 'success');
             closePointsModal();
-            // Recharger la liste des utilisateurs
+            
             loadUsers();
         } else {
             showNotification(result.error || 'Erreur lors de la mise à jour des points', 'error');
@@ -526,7 +498,7 @@ async function savePoints() {
     }
 }
 
-// Fonction pour afficher l'historique des points
+
 async function showPointsHistory(userId, username) {
     try {
         const response = await fetch(`/admin/users/${userId}/points-history`);
@@ -561,7 +533,7 @@ async function showPointsHistory(userId, username) {
             
             historyHtml += '</div>';
             
-            // Afficher dans un modal
+            
             showModal(`Historique des points - ${username}`, historyHtml);
         } else {
             showNotification(result.error || 'Erreur lors du chargement de l\'historique', 'error');

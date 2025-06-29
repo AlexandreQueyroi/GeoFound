@@ -16,7 +16,7 @@
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow-xl rounded-lg sm:px-10 border border-gray-200 dark:border-gray-700">
             
-            <!-- Messages d'erreur -->
+            
             <?php if (isset($_SESSION['register_errors'])): ?>
                 <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                     <div class="flex">
@@ -38,7 +38,7 @@
                 <?php unset($_SESSION['register_errors']); ?>
             <?php endif; ?>
 
-            <!-- Messages de succès -->
+            
             <?php if (isset($_SESSION['register_success'])): ?>
                 <div class="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                     <div class="flex">
@@ -56,7 +56,7 @@
                 <?php unset($_SESSION['register_success']); ?>
             <?php endif; ?>
 
-            <!-- Messages d'avertissement -->
+            
             <?php if (isset($_SESSION['register_warning'])): ?>
                 <div class="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                     <div class="flex">
@@ -74,7 +74,7 @@
                 <?php unset($_SESSION['register_warning']); ?>
             <?php endif; ?>
 
-            <!-- Messages de renvoi -->
+            
             <?php if (isset($_SESSION['resend_success'])): ?>
                 <div class="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                     <div class="flex">
@@ -109,7 +109,7 @@
                 <?php unset($_SESSION['resend_error']); ?>
             <?php endif; ?>
 
-            <!-- Formulaire de création de compte -->
+            
             <form class="space-y-6" action="/auth/register" method="POST" id="registerForm">
                 <div>
                     <label for="newuser" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -174,7 +174,7 @@
                     </label>
                 </div>
 
-                <!-- Captcha -->
+                
                 <div>
                     <label for="captcha-answer" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Captcha - Résolvez la question ci-dessous *
@@ -203,7 +203,7 @@
                 </div>
             </form>
 
-            <!-- Formulaire de renvoi d'email -->
+            
             <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                     Vous n'avez pas reçu l'email de validation ?
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const password = document.getElementById('newpass');
     const confirmPassword = document.getElementById('confirmpass');
     
-    // Validation en temps réel des mots de passe
+    
     function validatePasswords() {
         if (password.value !== confirmPassword.value) {
             confirmPassword.setCustomValidity('Les mots de passe ne correspondent pas');
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
     password.addEventListener('input', validatePasswords);
     confirmPassword.addEventListener('input', validatePasswords);
     
-    // Validation du nom d'utilisateur
+    
     const username = document.getElementById('newuser');
     username.addEventListener('input', function() {
         const value = this.value;
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Système de captcha
+    
     let correctAnswer = "";
     let validCaptcha = false;
     
@@ -304,13 +304,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Initialiser le captcha au chargement de la page
+    
     fetchCaptcha();
     
-    // Événement pour le bouton de validation du captcha
+    
     document.getElementById("check-captcha").addEventListener("click", checkCaptcha);
     
-    // Validation du formulaire avant soumission
+    
     form.addEventListener("submit", function(event) {
         if (!validCaptcha) {
             event.preventDefault();

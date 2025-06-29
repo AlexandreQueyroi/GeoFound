@@ -9,7 +9,7 @@
         </button>
     </div>
 
-    <!-- Messages de succès/erreur -->
+    
     <?php if (isset($_SESSION['success'])): ?>
         <div class="bg-green-600 text-white p-4 rounded-lg mb-6 flex items-center">
             <iconify-icon icon="tabler:check" class="mr-2"></iconify-icon>
@@ -26,7 +26,7 @@
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
-    <!-- Statistiques -->
+    
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-blue-600 rounded-lg p-6 text-white">
             <div class="text-3xl font-bold"><?php echo $totalRewards; ?></div>
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <!-- Filtres -->
+    
     <div class="flex flex-wrap gap-4 mb-6">
         <select id="typeFilter" class="bg-gray-700 text-white px-4 py-2 rounded-lg">
             <option value="">Tous les types</option>
@@ -65,7 +65,7 @@
         <input type="text" id="searchFilter" placeholder="Rechercher..." class="bg-gray-700 text-white px-4 py-2 rounded-lg">
     </div>
 
-    <!-- Tableau des récompenses -->
+    
     <div class="bg-gray-800 rounded-lg overflow-hidden">
         <table class="w-full text-white">
             <thead class="bg-gray-700">
@@ -158,7 +158,7 @@
     </div>
 </div>
 
-<!-- Modal de création/édition -->
+
 <div id="rewardModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-gray-800 rounded-lg p-6 w-full max-w-2xl mx-4">
         <div class="flex justify-between items-center mb-6">
@@ -223,7 +223,7 @@
                               class="w-full bg-gray-700 text-white px-3 py-2 rounded"></textarea>
                 </div>
                 
-                <!-- Champs spécifiques aux récompenses physiques -->
+                
                 <div id="physicalFields" class="md:col-span-2 hidden">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -271,7 +271,7 @@ function editReward(rewardId) {
     document.getElementById('modalTitle').textContent = 'Modifier la Récompense';
     document.getElementById('rewardForm').action = '/admin/rewards/edit/' + rewardId;
     
-    // Charger les données de la récompense
+    
     fetch('/api/admin/rewards/' + rewardId)
         .then(response => response.json())
         .then(data => {
@@ -285,7 +285,7 @@ function editReward(rewardId) {
                 document.getElementById('rewardPoints').value = reward.points_value;
                 document.getElementById('rewardDescription').value = reward.description;
                 
-                // Afficher les champs physiques si nécessaire
+                
                 if (reward.type === 'physical') {
                     document.getElementById('physicalFields').classList.remove('hidden');
                     if (reward.price) document.getElementById('rewardPrice').value = reward.price;
@@ -315,7 +315,7 @@ function deleteReward(rewardId) {
     }
 }
 
-// Gestion des filtres
+
 document.getElementById('typeFilter').addEventListener('change', filterRewards);
 document.getElementById('rarityFilter').addEventListener('change', filterRewards);
 document.getElementById('searchFilter').addEventListener('input', filterRewards);
@@ -340,7 +340,7 @@ function filterRewards() {
     });
 }
 
-// Gestion du type de récompense
+
 document.getElementById('rewardType').addEventListener('change', function() {
     const physicalFields = document.getElementById('physicalFields');
     if (this.value === 'physical') {

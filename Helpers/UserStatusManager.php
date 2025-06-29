@@ -3,17 +3,12 @@
 namespace App\Helpers;
 
 class UserStatusManager {
-    
-    /**
-     * Vérifie et met à jour automatiquement les statuts des utilisateurs
-     * - Désactive les utilisateurs inactifs depuis plus d'1 jour
-     * - Envoie des emails de notification
-     */
+
     public static function checkAndUpdateUserStatuses() {
         try {
             $db = Database::getConnection();
             
-            // Désactiver les utilisateurs inactifs depuis plus d'1 jour
+            
             $stmt = $db->prepare("
                 UPDATE users 
                 SET desactivated = 2 
@@ -24,7 +19,7 @@ class UserStatusManager {
             $stmt->execute();
             $inactiveCount = $stmt->rowCount();
             
-            // Envoyer des emails aux utilisateurs désactivés
+            
             if ($inactiveCount > 0) {
                 $stmt = $db->prepare("
                     SELECT id, pseudo, email 
@@ -41,7 +36,7 @@ class UserStatusManager {
                 }
             }
             
-            // Log des actions
+            
             if ($inactiveCount > 0) {
                 $logMessage = date('[d/m/Y H:i:s] ') . "Gestion automatique: $inactiveCount utilisateur(s) désactivé(s) pour inactivité\n";
                 file_put_contents(__DIR__ . '/../storage/logs/user_status.log', $logMessage, FILE_APPEND);
@@ -56,9 +51,6 @@ class UserStatusManager {
         }
     }
     
-    /**
-     * Envoie un email de notification pour compte inactif
-     */
     private static function sendInactiveNotificationEmail($user) {
         $to = $user['email'];
         $subject = "Votre compte GeoFound a été désactivé";
@@ -86,10 +78,6 @@ class UserStatusManager {
         mail($to, $subject, $message, $headers);
     }
     
-    /**
-     * Vérifie si un utilisateur peut se connecter
-     * Retourne true si l'utilisateur peut se connecter, false sinon
-     */
     public static function canUserLogin($userId) {
         try {
             $db = Database::getConnection();
@@ -102,7 +90,7 @@ class UserStatusManager {
                 return false;
             }
             
-            // Les utilisateurs bannis (desactivated = 1) ne peuvent pas se connecter
+            
             return $user['desactivated'] != 1;
             
         } catch (\Exception $e) {
@@ -110,9 +98,6 @@ class UserStatusManager {
         }
     }
     
-    /**
-     * Réactive un utilisateur inactif lors de sa connexion
-     */
     public static function reactivateUserOnLogin($userId) {
         try {
             $db = Database::getConnection();
@@ -131,9 +116,6 @@ class UserStatusManager {
         }
     }
     
-    /**
-     * Met à jour la date de dernière connexion
-     */
     public static function updateLastConnection($userId) {
         try {
             $db = Database::getConnection();
@@ -148,9 +130,6 @@ class UserStatusManager {
         }
     }
     
-    /**
-     * Obtient le texte du statut
-     */
     public static function getStatusText($statusCode) {
         switch ($statusCode) {
             case 0:
@@ -164,9 +143,6 @@ class UserStatusManager {
         }
     }
     
-    /**
-     * Obtient la classe CSS pour le statut
-     */
     public static function getStatusClass($statusCode) {
         switch ($statusCode) {
             case 0:

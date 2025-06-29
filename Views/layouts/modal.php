@@ -1,4 +1,4 @@
-<!-- <script src="assets/js/modal.js"></script> -->
+
 <div id="authentication-modal" tabindex="-1" aria-hidden="true"
     class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/50 flex items-center justify-center">
     <div class="relative w-full max-w-md max-h-full">
@@ -10,7 +10,7 @@
                 <button type="button"
                     class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                     data-modal-hide="authentication-modal">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http:
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                     </svg>
@@ -18,7 +18,7 @@
                 </button>
             </div>
             <div class="p-4 md:p-5">
-                <!-- Zone d'affichage des erreurs -->
+                
                 <?php if (isset($_SESSION['login_error'])): ?>
                 <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
                     <div class="flex items-center">
@@ -70,7 +70,7 @@
     </div>
 </div>
 
-<!-- Modale ajout ami pour la messagerie -->
+
 <div id="add-friend-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-md max-h-full">
         <div class="relative bg-[
@@ -91,7 +91,7 @@
     </div>
 </div>
 
-<!-- Modale demandes d'amis pour la messagerie -->
+
 <div id="friend-requests-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-md max-h-full">
         <div class="relative bg-[
@@ -117,11 +117,11 @@
     </div>
 </div>
 
-<!-- Modal de création de post -->
+
 <div id="post-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-900 rounded-xl shadow-2xl w-full max-w-2xl border border-gray-700 transform transition-all duration-300 scale-95 opacity-0" id="post-modal-content">
-            <!-- Header -->
+            
             <div class="flex items-center justify-between p-6 border-b border-gray-700">
                 <div class="flex items-center space-x-3">
                     <div class="p-2 bg-blue-500 bg-opacity-20 rounded-lg">
@@ -134,7 +134,7 @@
                 </button>
             </div>
             
-            <!-- Body -->
+            
             <div class="p-6 space-y-6">
                 <form id="postForm" enctype="multipart/form-data">
                     <div class="space-y-4">
@@ -174,7 +174,7 @@
                 </form>
             </div>
             
-            <!-- Footer -->
+            
             <div class="flex justify-end space-x-3 p-6 border-t border-gray-700">
                 <button onclick="hidePostModal()" 
                         class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium">
@@ -190,14 +190,14 @@
     </div>
 </div>
 
-<!-- Container pour les notifications -->
+
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
-<!-- Modal de gestion des permissions et maintenance -->
+
 <div id="permission-maintenance-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <!-- Header -->
+            
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-medium text-white">Gestion des Permissions & Maintenance</h3>
                 <button id="close-permission-modal" class="text-gray-400 hover:text-white">
@@ -205,7 +205,7 @@
                 </button>
             </div>
 
-            <!-- Onglets -->
+            
             <div class="border-b border-gray-700 mb-6">
                 <nav class="-mb-px flex space-x-8">
                     <button class="tab-button active text-blue-400 border-b-2 border-blue-400 py-2 px-1 text-sm font-medium" data-tab="maintenance">
@@ -220,12 +220,12 @@
                 </nav>
             </div>
 
-            <!-- Onglet Maintenance -->
+            
             <div id="maintenance-tab" class="tab-content">
                 <div class="mb-6">
                     <h4 class="text-lg font-semibold text-white mb-4">Gestion de la Maintenance</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Formulaire d'ajout/modification -->
+                        
                         <div class="bg-gray-700 rounded-lg p-4">
                             <h5 class="text-white font-medium mb-3">Configuration de la page</h5>
                             <form id="maintenance-form">
@@ -261,7 +261,7 @@
                             </form>
                         </div>
 
-                        <!-- Liste des pages en maintenance -->
+                        
                         <div class="bg-gray-700 rounded-lg p-4">
                             <h5 class="text-white font-medium mb-3">Pages en maintenance</h5>
                             <div id="maintenance-list" class="space-y-2 max-h-64 overflow-y-auto">
@@ -272,12 +272,12 @@
                 </div>
             </div>
 
-            <!-- Onglet Permissions -->
+            
             <div id="permissions-tab" class="tab-content hidden">
                 <div class="mb-6">
                     <h4 class="text-lg font-semibold text-white mb-4">Permissions de Page</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Formulaire d'ajout de permission -->
+                        
                         <div class="bg-gray-700 rounded-lg p-4">
                             <h5 class="text-white font-medium mb-3">Ajouter une permission</h5>
                             <form id="page-permission-form">
@@ -308,7 +308,7 @@
                             </form>
                         </div>
 
-                        <!-- Liste des permissions de page -->
+                        
                         <div class="bg-gray-700 rounded-lg p-4">
                             <h5 class="text-white font-medium mb-3">Permissions configurées</h5>
                             <div id="page-permissions-list" class="space-y-2 max-h-64 overflow-y-auto">
@@ -319,12 +319,12 @@
                 </div>
             </div>
 
-            <!-- Onglet Actions Rapides -->
+            
             <div id="quick-actions-tab" class="tab-content hidden">
                 <div class="mb-6">
                     <h4 class="text-lg font-semibold text-white mb-4">Actions Rapides</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Actions de maintenance -->
+                        
                         <div class="bg-gray-700 rounded-lg p-4">
                             <div class="space-y-3">
                                 <h5 class="text-white font-medium mb-3">Maintenance</h5>
@@ -340,7 +340,7 @@
                             </div>
                         </div>
 
-                        <!-- Actions de permissions -->
+                        
                         <div class="bg-gray-700 rounded-lg p-4">
                             <div class="space-y-3">
                                 <h5 class="text-white font-medium mb-3">Permissions</h5>
@@ -363,11 +363,11 @@
 </div>
 <script src="/assets/js/permissions.js"></script>
 
-<!-- Modal de signalement -->
+
 <div id="report-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-900 rounded-xl shadow-2xl w-full max-w-md border border-gray-700 transform transition-all duration-300 scale-95 opacity-0" id="report-modal-content">
-            <!-- Header -->
+            
             <div class="flex items-center justify-between p-6 border-b border-gray-700">
                 <div class="flex items-center space-x-3">
                     <div class="p-2 bg-red-500 bg-opacity-20 rounded-lg">
@@ -380,7 +380,7 @@
                 </button>
             </div>
             
-            <!-- Body -->
+            
             <div class="p-6 space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-3">Motif du signalement *</label>
@@ -405,7 +405,7 @@
                 </div>
             </div>
             
-            <!-- Footer -->
+            
             <div class="flex justify-end space-x-3 p-6 border-t border-gray-700">
                 <button onclick="hideReportModal()" 
                         class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium">
@@ -422,7 +422,7 @@
 </div>
 
 <script>
-// Animation pour la modal de signalement
+
 function showReportModal() {
     const modal = document.getElementById('report-modal');
     const content = document.getElementById('report-modal-content');
@@ -445,14 +445,14 @@ function hideReportModal() {
         content.classList.add('scale-95', 'opacity-0');
         setTimeout(() => {
             modal.classList.add('hidden');
-            // Réinitialiser le formulaire
+            
             document.getElementById('report-reason').value = '';
             document.getElementById('report-details').value = '';
         }, 300);
     }
 }
 
-// Remplacer les anciennes fonctions par les nouvelles
+
 function openReportModal(type, targetId) {
     const modal = document.getElementById('report-modal');
     if (modal) {

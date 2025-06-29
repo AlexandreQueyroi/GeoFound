@@ -1,13 +1,13 @@
 <?php include_once __DIR__ . '/../layouts/header.php'; ?>
 
 <div class="container mx-auto px-4 py-8">
-    <!-- En-tête de la page -->
+    
     <div class="mb-8">
         <h1 class="text-4xl font-bold text-white mb-2">Gestion des utilisateurs</h1>
         <p class="text-gray-400">Gérez les comptes utilisateurs, les rangs et les permissions</p>
     </div>
 
-    <!-- Filtres et recherche -->
+    
     <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <!-- Tableau des utilisateurs -->
+    
     <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full">
@@ -68,13 +68,13 @@
                     </tr>
                 </thead>
                 <tbody id="users-list" class="bg-gray-800 divide-y divide-gray-700">
-                    <!-- Les utilisateurs seront chargés ici -->
+                    
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Pagination -->
+    
     <div class="mt-6 flex justify-between items-center">
         <div class="text-gray-400 text-sm">
             Affichage de <span id="showing-start">1</span> à <span id="showing-end">10</span> sur <span id="total-users">0</span> utilisateurs
@@ -90,7 +90,7 @@
     </div>
 </div>
 
-<!-- Modal Édition Utilisateur -->
+
 <div id="edit-user-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-2xl">
@@ -109,7 +109,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Rang</label>
                         <select id="edit-rank" class="w-full bg-gray-700 text-white px-3 py-2 rounded-lg">
-                            <!-- Les rangs seront chargés ici -->
+                            
                         </select>
                     </div>
                     <div>
@@ -124,7 +124,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Permissions individuelles</label>
                     <div id="edit-permissions" class="bg-gray-700 rounded-lg p-3 max-h-40 overflow-y-auto">
-                        <!-- Les permissions seront chargées ici -->
+                        
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3">
@@ -140,7 +140,7 @@
     </div>
 </div>
 
-<!-- Modal Modification Points -->
+
 <div id="edit-points-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
@@ -186,7 +186,7 @@
     </div>
 </div>
 
-<!-- Overlay de chargement -->
+
 <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-gray-800 rounded-lg p-6">
         <div class="flex items-center">
@@ -196,20 +196,16 @@
     </div>
 </div>
 
-<!-- Container pour les notifications -->
+
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
 <script>
-console.log('=== SCRIPT ADMIN USERS CHARGÉ ===');
-console.log('Session user_id:', <?php echo $_SESSION['user_id'] ?? 'null'; ?>);
 
 let currentPage = 1;
 let totalPages = 1;
 let users = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== DOMContentLoaded TRIGGERED ===');
-    console.log('ID de session actuel:', <?php echo $_SESSION['user_id'] ?? 'null'; ?>);
     loadUsers();
     loadRanks();
     loadPermissions();
@@ -217,30 +213,30 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupEventListeners() {
-    // Recherche en temps réel
+    
     document.getElementById('search-user').addEventListener('input', debounce(loadUsers, 300));
     
-    // Filtres
+    
     document.getElementById('filter-rank').addEventListener('change', loadUsers);
     document.getElementById('filter-status').addEventListener('change', loadUsers);
     
-    // Formulaire d'édition
+    
     document.getElementById('edit-user-form').addEventListener('submit', saveUser);
     
-    // Formulaire de modification des points
+    
     document.getElementById('edit-points-form').addEventListener('submit', function(e) {
         e.preventDefault();
         savePoints();
     });
     
-    // Fermer la modal en cliquant à l'extérieur
+    
     document.getElementById('edit-user-modal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeEditModal();
         }
     });
     
-    // Fermer la modal de points en cliquant à l'extérieur
+    
     document.getElementById('edit-points-modal').addEventListener('click', function(e) {
         if (e.target === this) {
             closePointsModal();
@@ -261,18 +257,14 @@ async function loadUsers() {
             status: status
         });
         
-        console.log('Chargement des utilisateurs avec params:', params.toString());
         
         const response = await fetch(`/api/admin/users?${params}`);
-        console.log('Réponse API status:', response.status);
         
         const data = await response.json();
-        console.log('Données API reçues:', data);
         
         if (data.success) {
             users = data.users;
             totalPages = data.total_pages;
-            console.log('Utilisateurs chargés:', users.length);
             renderUsers();
             updatePagination();
         } else {
@@ -289,16 +281,13 @@ function renderUsers() {
     const tbody = document.getElementById('users-list');
     tbody.innerHTML = '';
     
-    console.log('Rendu de', users.length, 'utilisateurs');
-    console.log('ID de session actuel:', <?php echo $_SESSION['user_id'] ?? 'null'; ?>);
     
     users.forEach((user, index) => {
-        console.log(`Utilisateur ${index + 1}:`, user);
         
         const row = document.createElement('tr');
         row.className = 'hover:bg-gray-700';
         
-        // Préparer l'affichage du grade
+        
         let rankDisplay = '';
         if (user.rank_display_name) {
             rankDisplay = `
@@ -316,9 +305,8 @@ function renderUsers() {
         }
         
         const currentUserId = <?php echo $_SESSION['user_id'] ?? 'null'; ?>;
-        const isOwnAccount = false; // Permettre l'auto-édition
+        const isOwnAccount = false; 
         
-        console.log(`User ID ${user.id} vs Current User ID ${currentUserId}:`, isOwnAccount ? 'PROPRE COMPTE' : 'AUTRE UTILISATEUR');
         
         row.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap">
@@ -439,7 +427,7 @@ async function loadRanks() {
         const filterSelect = document.getElementById('filter-rank');
         const editSelect = document.getElementById('edit-rank');
         
-        // Vider les selects d'abord
+        
         filterSelect.innerHTML = '<option value="">Tous les grades</option>';
         editSelect.innerHTML = '<option value="">Aucun grade</option>';
         
@@ -459,7 +447,7 @@ async function loadPermissions() {
         const permissions = await response.json();
         
         const container = document.getElementById('edit-permissions');
-        container.innerHTML = ''; // Vider le conteneur d'abord
+        container.innerHTML = ''; 
         
         permissions.forEach(permission => {
             const div = document.createElement('div');
@@ -477,7 +465,6 @@ async function loadPermissions() {
 
 async function editUser(userId) {
     try {
-        console.log('Chargement de l\'utilisateur:', userId);
         
         const response = await fetch(`/api/admin/users/${userId}`);
         if (!response.ok) {
@@ -486,7 +473,6 @@ async function editUser(userId) {
         }
         
         const user = await response.json();
-        console.log('Données utilisateur reçues:', user);
         
         if (user.error) {
             throw new Error(user.error);
@@ -497,9 +483,8 @@ async function editUser(userId) {
         document.getElementById('edit-email').value = user.email;
         document.getElementById('edit-rank').value = user.rank_name || '';
         
-        console.log('Grade sélectionné:', user.rank_name);
         
-        // Gérer les 3 statuts
+        
         let statusValue = 'active';
         if (user.status == 1) {
             statusValue = 'banned';
@@ -508,7 +493,7 @@ async function editUser(userId) {
         }
         document.getElementById('edit-status').value = statusValue;
         
-        // Cocher les permissions de l'utilisateur
+        
         const checkboxes = document.querySelectorAll('#edit-permissions input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
             checkbox.checked = user.permissions && user.permissions.some(p => p.id == checkbox.value);
@@ -523,9 +508,9 @@ async function editUser(userId) {
 
 function closeEditModal() {
     document.getElementById('edit-user-modal').classList.add('hidden');
-    // Réinitialiser le formulaire
+    
     document.getElementById('edit-user-form').reset();
-    // Décocher toutes les permissions
+    
     const checkboxes = document.querySelectorAll('#edit-permissions input[type="checkbox"]');
     checkboxes.forEach(checkbox => checkbox.checked = false);
 }
@@ -548,7 +533,7 @@ async function saveUser(e) {
         const userId = document.getElementById('edit-user-id').value;
         const currentUserId = <?php echo $_SESSION['user_id'] ?? 'null'; ?>;
         
-        // Empêcher la modification de son propre compte
+        
         if (userId == currentUserId) {
             showNotification('Vous ne pouvez pas modifier votre propre compte', 'error');
             return;
@@ -561,7 +546,7 @@ async function saveUser(e) {
         const permissions = Array.from(document.querySelectorAll('#edit-permissions input[type="checkbox"]:checked'))
             .map(cb => cb.value);
         
-        // Validations côté client
+        
         if (!pseudo) {
             showNotification('Le nom d\'utilisateur est requis', 'error');
             return;
@@ -692,7 +677,7 @@ async function viewUserPermissions(userId) {
             permissionsList = 'Aucune permission individuelle';
         }
         
-        // Utiliser une modale plus moderne au lieu d'alert
+        
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         modal.innerHTML = `
@@ -708,7 +693,7 @@ async function viewUserPermissions(userId) {
         `;
         document.body.appendChild(modal);
         
-        // Fermer la modale en cliquant à l'extérieur
+        
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.remove();
@@ -744,7 +729,7 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// === FONCTIONS POUR LA GESTION DES POINTS ===
+
 
 function openPointsModal(userId, username, currentPoints) {
     document.getElementById('edit-points-user-id').value = userId;
@@ -797,7 +782,7 @@ async function savePoints() {
         if (data.success) {
             showNotification('Points mis à jour avec succès', 'success');
             closePointsModal();
-            loadUsers(); // Recharger la liste des utilisateurs
+            loadUsers(); 
         } else {
             showNotification(data.error || 'Erreur lors de la mise à jour des points', 'error');
         }

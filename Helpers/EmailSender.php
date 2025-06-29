@@ -11,18 +11,15 @@ use PHPMailer\PHPMailer\Exception;
 
 class EmailSender {
     
-    /**
-     * Configure et retourne une instance PHPMailer
-     */
     private static function getMailer() {
         $mail = new PHPMailer(true);
         
         try {
-            // Charger la configuration
+            
             $config = include __DIR__ . '/../config/email.php';
             $smtp = $config['smtp'];
             
-            // Configuration du serveur SMTP
+            
             $mail->isSMTP();
             $mail->Host = $smtp['host'];
             $mail->SMTPAuth = true;
@@ -32,7 +29,7 @@ class EmailSender {
             $mail->Port = $smtp['port'];
             $mail->CharSet = 'UTF-8';
             
-            // Configuration de l'expéditeur
+            
             $mail->setFrom($smtp['from_email'], $smtp['from_name']);
             $mail->addReplyTo($smtp['from_email'], $smtp['from_name']);
             
@@ -42,24 +39,21 @@ class EmailSender {
         }
     }
     
-    /**
-     * Envoie un email de validation de compte
-     */
     public static function sendVerificationEmail($email, $username, $token) {
         try {
             $mail = self::getMailer();
             
-            // Destinataire
+            
             $mail->addAddress($email, $username);
             
-            // Sujet
+            
             $mail->Subject = "GeoFound - Validation de votre compte";
             
-            // URL de validation
-            $host = $_SERVER['HTTP_HOST'] ?? 'geofound.fr';
-            $verificationUrl = "https://" . $host . "/auth/verify?token=" . $token;
             
-            // Corps du message HTML
+            $host = $_SERVER['HTTP_HOST'] ?? 'geofound.fr';
+            $verificationUrl = "https:
+            
+            
             $mail->isHTML(true);
             $mail->Body = "
             <html>
@@ -103,7 +97,7 @@ class EmailSender {
             </html>
             ";
             
-            // Version texte
+            
             $mail->AltBody = "
             Bienvenue sur GeoFound !
             
@@ -120,7 +114,7 @@ class EmailSender {
             © 2024 GeoFound - Découvrez le monde qui vous entoure
             ";
             
-            // Envoi
+            
             $mail->send();
             return true;
             
@@ -130,20 +124,17 @@ class EmailSender {
         }
     }
     
-    /**
-     * Envoie un email de bienvenue après validation
-     */
     public static function sendWelcomeEmail($email, $username) {
         try {
             $mail = self::getMailer();
             
-            // Destinataire
+            
             $mail->addAddress($email, $username);
             
-            // Sujet
+            
             $mail->Subject = "GeoFound - Votre compte est maintenant actif !";
             
-            // Corps du message HTML
+            
             $mail->isHTML(true);
             $mail->Body = "
             <html>
@@ -176,7 +167,7 @@ class EmailSender {
                         </ul>
                         
                         <div style='text-align: center;'>
-                            <a href='http://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "' class='button'>🚀 Commencer l'exploration</a>
+                            <a href='http:
                         </div>
                         
                         <p>Bonne exploration sur GeoFound !</p>
@@ -190,7 +181,7 @@ class EmailSender {
             </html>
             ";
             
-            // Version texte
+            
             $mail->AltBody = "
             Votre compte est maintenant actif !
             
@@ -204,14 +195,14 @@ class EmailSender {
             - Ajouter des amis et échanger en privé
             - Débloquer des récompenses
             
-            Commencez l'exploration : http://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "
+            Commencez l'exploration : http:
             
             Bonne exploration sur GeoFound !
             
             © 2024 GeoFound - Découvrez le monde qui vous entoure
             ";
             
-            // Envoi
+            
             $mail->send();
             return true;
             

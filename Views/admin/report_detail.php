@@ -10,7 +10,7 @@
     <h1 class="text-3xl font-bold text-white mb-6">Détail du signalement #<?php echo $report['id']; ?></h1>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Informations du signalement -->
+        
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h2 class="text-xl font-semibold text-white mb-4">Informations du signalement</h2>
             <div class="space-y-3">
@@ -49,7 +49,7 @@
             </div>
         </div>
         
-        <!-- Contenu signalé -->
+        
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h2 class="text-xl font-semibold text-white mb-4">Contenu signalé</h2>
             <?php if ($content): ?>
@@ -76,24 +76,24 @@
         </div>
     </div>
     
-    <!-- Actions admin -->
+    
     <?php if ($report['status'] === 'pending'): ?>
     <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mt-6">
         <h2 class="text-xl font-semibold text-white mb-4">Actions</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Rejeter le signalement -->
+            
             <button onclick="handleReportAction(<?php echo $report['id']; ?>, 'reject')" 
                     class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition">
                 Rejeter le signalement
             </button>
             
-            <!-- Supprimer le contenu -->
+            
             <button onclick="handleReportAction(<?php echo $report['id']; ?>, 'delete_content')" 
                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
                 Supprimer le contenu
             </button>
             
-            <!-- Sanctionner -->
+            
             <button onclick="showSanctionModal()" 
                     class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition">
                 Sanctionner l'utilisateur
@@ -102,7 +102,7 @@
     </div>
     <?php endif; ?>
     
-    <!-- Historique des sanctions -->
+    
     <?php if (!empty($sanctions)): ?>
     <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mt-6">
         <h2 class="text-xl font-semibold text-white mb-4">Historique des sanctions</h2>
@@ -140,7 +140,7 @@
     <?php endif; ?>
 </div>
 
-<!-- Modal de sanction -->
+
 <div id="sanction-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">

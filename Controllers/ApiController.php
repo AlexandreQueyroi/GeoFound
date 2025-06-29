@@ -161,7 +161,7 @@ class ApiController {
     }
 
     public function add_friend() {
-        // Désactiver l'affichage des erreurs pour éviter les réponses HTML
+        
         ini_set('display_errors', 0);
         ini_set('display_startup_errors', 0);
         error_reporting(E_ALL);
@@ -404,7 +404,7 @@ class ApiController {
 
     public function createReport()
     {
-        // Vérifier que l'utilisateur est connecté
+        
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['success' => false, 'message' => 'Vous devez être connecté']);
@@ -421,13 +421,13 @@ class ApiController {
             exit;
         }
         
-        // Vérifier que le type est valide
+        
         if (!in_array($type, ['post', 'comment', 'message', 'user'])) {
             echo json_encode(['success' => false, 'message' => 'Type de signalement invalide']);
             exit;
         }
         
-        // Vérifier que l'utilisateur n'a pas déjà signalé ce contenu
+        
         $db = \App\Helpers\Database::getConnection();
         $stmt = $db->prepare("
             SELECT id FROM reports 
@@ -440,7 +440,7 @@ class ApiController {
             exit;
         }
         
-        // Vérifier que le contenu existe
+        
         $contentExists = false;
         if ($type === 'post') {
             $stmt = $db->prepare("SELECT id FROM posts WHERE id = ?");
@@ -465,7 +465,7 @@ class ApiController {
             exit;
         }
         
-        // Créer le signalement
+        
         try {
             $stmt = $db->prepare("
                 INSERT INTO reports (type, target_id, reporter_id, reason, details) 

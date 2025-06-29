@@ -36,7 +36,6 @@
     height: 24px;
 }
 
-/* Styles spécifiques pour les émotes au survol */
 .post-image-container {
     position: relative !important;
     aspect-ratio: 1 !important;
@@ -101,7 +100,7 @@
 </style>
 
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Header de la page -->
+    
     <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div class="max-w-6xl mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
@@ -118,7 +117,7 @@
         </div>
     </div>
 
-    <!-- Grille des posts -->
+    
     <div class="py-8">
         <div id="posts-container" class="posts-grid"></div>
         <div id="loading" class="text-center py-4 text-gray-500 hidden">Chargement...</div>
@@ -135,7 +134,7 @@ let allLoaded = false;
 window.isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
 
 function renderPost(post) {
-    const isLiked = false; // À remplacer par la logique utilisateur si besoin
+    const isLiked = false; 
     const likeCount = post.like_count ?? 0;
     const commentCount = post.comment_count ?? 0;
     return `
@@ -273,7 +272,7 @@ function likePost(postId) {
             alert('Erreur: ' + data.error);
             return;
         }
-        // Met à jour le compteur de likes
+        
         const likeCount = document.querySelector(`.like-count-${postId}`);
         if (likeCount) {
             let count = parseInt(likeCount.textContent) || 0;
@@ -281,7 +280,7 @@ function likePost(postId) {
             if (data.action === 'removed') count = Math.max(0, count - 1);
             likeCount.textContent = count;
         }
-        // Met à jour la couleur du bouton
+        
         const btns = document.querySelectorAll(`button[onclick="likePost(${postId})"]`);
         btns.forEach(btn => {
             if (data.action === 'added') {
@@ -296,7 +295,6 @@ function likePost(postId) {
 }
 
 function commentPost(postId) {
-    console.log('Comment post:', postId);
     
 }
 
@@ -311,9 +309,7 @@ function sharePost(postId) {
             text: 'Regardez ce post intéressant !',
             url: postUrl
         }).then(() => {
-            console.log('Post partagé avec succès');
         }).catch((error) => {
-            console.log('Erreur lors du partage:', error);
             fallbackShare(postUrl);
         });
     } else {
@@ -367,7 +363,7 @@ function toggleComments(postId) {
     const commentsDiv = document.getElementById(`comments-${postId}`);
     if (!commentsDiv) return;
     if (commentsDiv.classList.contains('hidden')) {
-        // Charger les commentaires
+        
         fetch(`/api/comments?post_id=${postId}`)
             .then(res => res.json())
             .then(data => {
@@ -412,7 +408,7 @@ function submitComment(postId) {
             return;
         }
         input.value = '';
-        // Recharge dynamiquement les commentaires
+        
         fetch(`/api/comments?post_id=${postId}`)
             .then(res => res.json())
             .then(data => {
@@ -481,7 +477,7 @@ function toggleBookmark(button, postId) {
 
 const favorites = {};
 function favoritePost(postId) {
-    // Toggle l'état local
+    
     favorites[postId] = !favorites[postId];
     const star = document.getElementById('fav-star-' + postId);
     if (favorites[postId]) {
@@ -511,7 +507,7 @@ function reportPost(postId) {
         return;
     }
     
-    // Afficher le modal de signalement avec animation
+    
     openReportModal('post', postId);
 }
 
@@ -556,7 +552,7 @@ function hideReportModal() {
     const modal = document.getElementById('report-modal');
     if (modal) {
         modal.classList.add('hidden');
-        // Réinitialiser le formulaire
+        
         document.getElementById('report-reason').value = '';
         document.getElementById('report-details').value = '';
     }

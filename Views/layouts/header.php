@@ -32,11 +32,11 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geofound</title>
-    <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https:
+    <link href="https:
     <link rel="icon" type="image/x-icon" href="/assets/img/logo.png">
     <link rel="stylesheet" href="/assets/css/style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https:
     <script>
         tailwind.config = {
             theme: {
@@ -120,7 +120,6 @@ if (isset($_SESSION['user_id'])) {
             transition: opacity 0.5s;
         }
         
-        /* Styles pour le bouton Manager */
         .manager-button {
             opacity: 0;
             transform: translateY(-10px);
@@ -139,22 +138,15 @@ if (isset($_SESSION['user_id'])) {
     <script src="/assets/js/post-modal.js?v=<?php echo time(); ?>" defer></script>
     
     <script>
-        console.log('Header: Test de chargement du script');
         window.addEventListener('load', function() {
-            console.log('Header: Page chargée, test de la fonction openPostModal');
             if (typeof openPostModal === 'function') {
-                console.log('Header: Fonction openPostModal disponible');
             } else {
-                console.log('Header: Fonction openPostModal NON disponible');
             }
         });
     </script>
     
     <script>
         window.userPermissions = <?php echo json_encode($userPermissions); ?>;
-        console.log('Permissions transmises au JS:', window.userPermissions);
-        console.log('Utilisateur connecté:', <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>);
-        console.log('User ID:', <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>);
     </script>
 </head>
 <body class="flex flex-col min-h-screen bg-[#0A0A23]">
@@ -176,7 +168,7 @@ if (isset($_SESSION['user_id'])) {
                 <nav>
                     <ul class="flex flex-wrap gap-6 text-lg font-semibold items-center">
                         <?php if (strpos($_SERVER['REQUEST_URI'], '/admin') === 0): ?>
-                            <!-- Menu Administration -->
+                            
                             <li><a href="/admin" class="hover:text-blue-400 transition">Dashboard</a></li>
                             <li><a href="/admin/users" class="hover:text-blue-400 transition">Utilisateurs</a></li>
                             <li><a href="/admin/rank" class="hover:text-blue-400 transition">Grades</a></li>
@@ -184,7 +176,7 @@ if (isset($_SESSION['user_id'])) {
                             <li><a href="/admin/reports" class="hover:text-blue-400 transition">Signalements</a></li>
                             <li><a href="/admin/maintenance" class="hover:text-blue-400 transition">Maintenance</a></li>
                         <?php else: ?>
-                            <!-- Menu Front-end -->
+                            
                             <li><a href="/" class="hover:text-blue-400 transition">Accueil</a></li>
                             <li><a href="/post" class="hover:text-blue-400 transition">Posts</a></li>
                             <li><a href="/reward" class="hover:text-blue-400 transition">Récompenses</a></li>
@@ -208,7 +200,7 @@ if (isset($_SESSION['user_id'])) {
                             <iconify-icon icon="tabler:chevron-down" width="20" height="20"></iconify-icon>
                         </button>
                         
-                        <!-- Bouton Manager (visible au survol) -->
+                        
                         <?php if (in_array('admin.access', $userPermissions) || in_array('*', $userPermissions)): ?>
                         <button 
                             onclick="window.location.href='/admin'" 
@@ -254,7 +246,7 @@ if (isset($_SESSION['user_id'])) {
     </button>
     <?php endif; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="https:
     
     <?php
     if (!isset($_SESSION['user']) && isset($_SESSION['show_login_modal']) && $_SESSION['show_login_modal']) {
@@ -273,7 +265,7 @@ if (isset($_SESSION['user_id'])) {
     ?>
 
     <script>
-        // Fonction pour ouvrir le modal de post (utilisée par le bouton flottant)
+        
         function openPostModal() {
             const modal = document.getElementById('post-modal');
             if (modal) {

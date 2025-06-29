@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<!-- Modal pour ajouter un ami -->
+
 <div id="add-friend-modal" class="modal">
     <div class="modal-content">
         <h3>Ajouter un ami</h3>
@@ -40,7 +40,7 @@
     </div>
 </div>
 
-<!-- Modal pour les demandes d'amis -->
+
 <div id="friend-requests-modal" class="modal">
     <div class="modal-content">
         <h3>Demandes d'amis</h3>

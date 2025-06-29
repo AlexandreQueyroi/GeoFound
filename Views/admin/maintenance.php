@@ -5,15 +5,15 @@
         <h1 class="text-3xl font-bold text-white mb-8">Gestion de la Maintenance</h1>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Pages en maintenance -->
+            
             <div class="bg-gray-800 rounded-lg p-6">
                 <h2 class="text-xl font-semibold text-white mb-4">Pages en Maintenance</h2>
                 <div id="maintenance-pages" class="space-y-3">
-                    <!-- Les pages en maintenance seront chargées ici -->
+                    
                 </div>
             </div>
             
-            <!-- Ajouter une page -->
+            
             <div class="bg-gray-800 rounded-lg p-6">
                 <h2 class="text-xl font-semibold text-white mb-4">Ajouter une Page</h2>
                 <form id="add-page-form" class="space-y-4">
@@ -45,15 +45,12 @@
 </div>
 
 <script>
-console.log('SCRIPT MAINTENANCE: Script chargé - v1.1');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('SCRIPT MAINTENANCE: DOMContentLoaded déclenché');
     loadMaintenancePages();
     
     
     document.getElementById('add-page-form').addEventListener('submit', function(e) {
-        console.log('SCRIPT MAINTENANCE: Formulaire soumis');
         e.preventDefault();
         
         const pagePath = document.getElementById('page-path').value;
@@ -61,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isMaintenance = document.getElementById('is-maintenance').checked;
         const message = document.getElementById('maintenance-message').value;
 
-        // LOG DEBUG
+        
         console.debug('DEBUG ENVOI:', {
             page_path: pagePath,
             page_name: pageName,

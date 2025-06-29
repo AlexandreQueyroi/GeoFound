@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    console.log("Messagerie.js chargé");
     let currentFriendId = null;
     let refreshIntervalId = null;
 
@@ -19,9 +18,7 @@ $(document).ready(function() {
     }
 
     function refreshFriends() {
-        console.log("Rafraîchissement de la liste d'amis");
         $.get('/message/friends', function(data) {
-            console.log("Données reçues:", data);
             let friends = typeof data === 'string' ? JSON.parse(data) : data;
             let list = '';
             friends.forEach(f => {
@@ -35,10 +32,10 @@ $(document).ready(function() {
                         ${unreadBadge}
                     </li>`;
             });
-            $('
+            $('#friends-list').html(list);
             if (currentFriendId) {
-                let pseudo = $(`
-                $('
+                let pseudo = $('#friends-list li[data-id="' + currentFriendId + '"]').data('pseudo');
+                $('#current-friend').text(pseudo);
             }
         }).fail(function(err) {
             console.error("Erreur lors du chargement des amis:", err);
@@ -46,9 +43,7 @@ $(document).ready(function() {
     }
 
     function refreshRequests() {
-        console.log("Rafraîchissement des demandes d'amis");
         $.get('/friend/requests', function(data) {
-            console.log("Demandes reçues:", data);
             let reqs = typeof data === 'string' ? JSON.parse(data) : data;
             let rec = reqs.received.map(r => `
                 <li class="flex items-center justify-between p-2.5 bg-secondary rounded-lg">
@@ -65,59 +60,57 @@ $(document).ready(function() {
                     <span class="text-gray-400 text-sm">En attente</span>
                 </li>
             `).join('');
-            $('
-            $('
+            $('#received-requests').html(rec);
+            $('#sent-requests').html(sent);
         }).fail(function(err) {
             console.error("Erreur lors du chargement des demandes:", err);
         });
     }
 
-    $('
-        console.log("Ouverture du modal d'ajout d'ami");
-        const modal = $('
+    $('#add-friend-btn').click(function() {
+        const modal = $('#add-friend-modal');
         modal.removeClass('hidden').addClass('show');
     });
 
-    $('
-        const modal = $('
+    $('#close-add-friend').click(function() {
+        const modal = $('#add-friend-modal');
         modal.removeClass('show');
         setTimeout(() => modal.addClass('hidden'), 300);
-        $('
+        $('#friend-pseudo').val('');
     });
 
-    $('
-        let pseudo = $('
+    $('#add-friend-form').submit(function(e) {
+        e.preventDefault();
+        let pseudo = $('#friend-pseudo').val().trim();
         if (!pseudo.trim()) {
-            $('
+            $('#friend-error').text('Le pseudo est requis').show();
             return;
         }
-        console.log("Envoi d'une demande d'ami à", pseudo);
         $.post('/friend/add', {pseudo}, function(resp) {
-            $('
+            $('#friend-error').hide();
             refreshRequests();
-            $('
+            $('#add-friend-modal').removeClass('show').addClass('hidden');
+            $('#friend-pseudo').val('');
         }).fail(function(err) {
             console.error("Erreur lors de l'envoi de la demande:", err);
-            $('
+            $('#friend-error').text('Erreur lors de l\'envoi de la demande').show();
         });
     });
 
-    $('
-        console.log("Ouverture du modal des demandes d'amis");
+    $('#requests-btn').click(function() {
         refreshRequests();
-        const modal = $('
+        const modal = $('#requests-modal');
         modal.removeClass('hidden').addClass('show');
     });
 
-    $('
-        const modal = $('
+    $('#close-requests').click(function() {
+        const modal = $('#requests-modal');
         modal.removeClass('show');
         setTimeout(() => modal.addClass('hidden'), 300);
     });
 
     $(document).on('click', '.accept', function() {
         let id = $(this).data('id');
-        console.log("Acceptation de la demande", id);
         $.post('/friend/accept', {id}, function() {
             refreshFriends();
             refreshRequests();
@@ -128,7 +121,6 @@ $(document).ready(function() {
 
     $(document).on('click', '.refuse', function() {
         let id = $(this).data('id');
-        console.log("Refus de la demande", id);
         $.post('/friend/refuse', {id}, function() {
             refreshRequests();
         }).fail(function(err) {
@@ -136,26 +128,24 @@ $(document).ready(function() {
         });
     });
 
-    $(document).on('click', '
+    $(document).on('click', '#friends-list li', function() {
         stopAutoRefresh();
         let id = $(this).data('id');
         let pseudo = $(this).data('pseudo');
-        console.log("Sélection de la conversation avec", pseudo, "(ID:", id, ")");
         currentFriendId = id;
-        $('
-        $('
+        $('#current-friend').text(pseudo);
+        $('#message-area').removeClass('hidden');
         startAutoRefresh(id);
         $(this).find('.bg-red-500').remove();
     });
 
-    $('
+    $('#message-form').submit(function(e) {
         e.preventDefault();
-        let msg = $('
+        let msg = $('#message-input').val().trim();
         if (!msg.trim() || !currentFriendId) return;
         
-        console.log("Envoi d'un message à", currentFriendId, ":", msg);
         $.post('/message/send', {to: currentFriendId, message: msg}, function() {
-            $('
+            $('#message-input').val('');
             loadMessages(currentFriendId);
         }).fail(function(err) {
             console.error("Erreur lors de l'envoi du message:", err);
@@ -179,14 +169,12 @@ $(document).ready(function() {
     }
 
     function loadMessages(friendId) {
-        console.log("Chargement des messages avec", friendId);
         $.ajax({
             url: '/message/conversation',
             method: 'GET',
             data: { friend_id: friendId },
             success: function(response) {
-                console.log("Messages reçus:", response);
-                $('
+                $('#messages-container').empty();
                 let messages = typeof response === 'string' ? JSON.parse(response) : response;
                 messages.forEach(function(m) {
                     const messageClasses = m.sent ? 
@@ -196,9 +184,9 @@ $(document).ready(function() {
                     let content = $('<div>').addClass('text-white mb-1').text(m.content);
                     let time = $('<div>').addClass('text-xs text-gray-300 text-right').text(formatMessageTime(m.time));
                     div.append(content).append(time);
-                    $('
+                    $('#messages-container').append(div);
                 });
-                $('
+                $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
                 refreshFriends();
             },
             error: function(xhr, status, error) {
@@ -211,7 +199,6 @@ $(document).ready(function() {
         stopAutoRefresh();
     });
 
-    console.log("Initialisation de la messagerie");
     refreshFriends();
 
     $(document).on('click', '.modal', function(e) {

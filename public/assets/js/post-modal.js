@@ -1,4 +1,4 @@
-// Fonctions pour gérer le modal de post
+
 function showPostModal() {
     const modal = document.getElementById('post-modal');
     const content = document.getElementById('post-modal-content');
@@ -21,14 +21,13 @@ function hidePostModal() {
         content.classList.add('scale-95', 'opacity-0');
         setTimeout(() => {
             modal.classList.add('hidden');
-            // Réinitialiser le formulaire
+            
             document.getElementById('postForm').reset();
         }, 300);
     }
 }
 
 function submitPostForm() {
-    console.log('PostModal: Soumission du formulaire...');
     const form = document.getElementById('postForm');
     
     if (!form) {
@@ -37,7 +36,7 @@ function submitPostForm() {
         return;
     }
     
-    // Validation des champs requis
+    
     const title = form.querySelector('#title').value.trim();
     const content = form.querySelector('#content').value.trim();
     const address = form.querySelector('#address').value.trim();
@@ -65,19 +64,13 @@ function submitPostForm() {
     
     const formData = new FormData(form);
     
-    // Coordonnées par défaut (Paris) si non définies
+    
     if (!formData.get('latitude') || !formData.get('longitude')) {
-        console.log('PostModal: Coordonnées manquantes, utilisation de coordonnées par défaut (Paris)');
         formData.set('latitude', '48.8566');
         formData.set('longitude', '2.3522');
     }
     
-    console.log('PostModal: Données du formulaire:');
-    for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}: ${value}`);
-    }
     
-    // Afficher un indicateur de chargement
     const submitBtn = document.querySelector('button[onclick="submitPostForm()"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<iconify-icon icon="tabler:loader-2" class="animate-spin" width="16" height="16"></iconify-icon><span>Création...</span>';
@@ -91,13 +84,10 @@ function submitPostForm() {
         }
     })
     .then(response => {
-        console.log('PostModal: Réponse reçue:', response.status);
         return response.json();
     })
     .then(data => {
-        console.log('PostModal: Données reçues:', data);
         
-        // Restaurer le bouton
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
         
@@ -105,7 +95,7 @@ function submitPostForm() {
             showSuccessMessage(data.message || 'Post créé avec succès !');
             hidePostModal();
             
-            // Recharger la page après un délai
+            
             setTimeout(() => {
                 window.location.reload();
             }, 2000);
@@ -116,7 +106,7 @@ function submitPostForm() {
     .catch(error => {
         console.error('PostModal: Erreur:', error);
         
-        // Restaurer le bouton
+        
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
         
@@ -137,12 +127,12 @@ function showSuccessMessage(message) {
     
     toastContainer.appendChild(toast);
     
-    // Animation d'entrée
+    
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
     
-    // Animation de sortie
+    
     setTimeout(() => {
         toast.classList.add('translate-x-full');
         setTimeout(() => {
@@ -166,12 +156,12 @@ function showErrorMessage(message) {
     
     toastContainer.appendChild(toast);
     
-    // Animation d'entrée
+    
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
     
-    // Animation de sortie
+    
     setTimeout(() => {
         toast.classList.add('translate-x-full');
         setTimeout(() => {
@@ -182,19 +172,19 @@ function showErrorMessage(message) {
     }, 5000);
 }
 
-// Initialisation au chargement de la page
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Remplacer la fonction openPostModal du header
+    
     window.openPostModal = showPostModal;
     
-    // Ajouter des écouteurs d'événements pour la fermeture du modal
+    
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             hidePostModal();
         }
     });
     
-    // Fermer le modal en cliquant à l'extérieur
+    
     document.getElementById('post-modal').addEventListener('click', function(e) {
         if (e.target === this) {
             hidePostModal();

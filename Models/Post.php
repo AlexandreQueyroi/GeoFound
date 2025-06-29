@@ -20,7 +20,6 @@ class Post {
         try {
             $pdo = Database::getConnection();
 
-            // Vérifier qu'une image a été uploadée
             if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
                 \App\Helpers\Logger::error('Aucune image valide reçue', 'Post::create');
                 return false;
@@ -29,13 +28,11 @@ class Post {
             $image_data = file_get_contents($image_tmp);
             $image_base64 = base64_encode($image_data);
 
-            // Insérer l'image dans post_content
             $sqlContent = "INSERT INTO post_content (content) VALUES (?)";
             $stmtContent = $pdo->prepare($sqlContent);
             $stmtContent->execute([$image_base64]);
             $content_id = $pdo->lastInsertId();
 
-            // Insérer le post
             $sql = "INSERT INTO post (user, content_id, name, description, latitude, longitude, date) 
                     VALUES (:user, :content_id, :name, :description, :latitude, :longitude, :date)";
             $stmt = $pdo->prepare($sql);

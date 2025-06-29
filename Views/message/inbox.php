@@ -3,7 +3,7 @@
 <div class="container mx-auto mt-4 mb-8">
     <div class="flex flex-col md:flex-row h-[75vh] gap-4">
 
-        <!-- Colonne de gauche : Liste des amis -->
+        
         <div class="w-full md:w-1/3 lg:w-1/4 bg-secondary rounded-lg flex flex-col">
             <div class="p-4 border-b border-gray-700">
                 <h2 class="text-white text-xl font-bold">Messagerie</h2>
@@ -39,16 +39,16 @@
                     <?php endif; ?>
                 </ul>
             </div>
-            <!-- Boutons d'action -->
+            
             <div class="p-4 border-t border-gray-700 space-y-2">
                 <button id="add-friend-btn" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2">Ajouter un ami</button>
                 <button id="friend-requests-btn" class="w-full text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2">Demandes d'amis</button>
             </div>
         </div>
 
-        <!-- Colonne de droite : Conversation -->
+        
         <div class="w-full md:w-2/3 lg:w-3/4 bg-secondary rounded-lg flex flex-col">
-            <!-- Header de la conversation -->
+            
             <div id="conversation-header-container" class="p-4 border-b border-gray-700" style="display: none;">
                 <div class="flex items-center">
                     <div id="conversation-avatar" class="relative mr-3">
@@ -63,7 +63,7 @@
                 </div>
             </div>
             
-            <!-- Messages -->
+            
             <div id="conversation-container" class="flex-1 p-4 overflow-y-auto message-list">
                 <div id="messages-area" class="space-y-4">
                      <div class="text-center text-gray-400 pt-16">
@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            <!-- Formulaire d'envoi -->
+            
             <div id="message-form" class="p-4 border-t border-gray-700" style="display: none;">
                 <form id="send-message-form" class="flex items-center gap-3">
                     <input type="text" id="message-input" class="flex-1 bg-gray-800 border border-gray-700 text-white rounded-full px-4 py-2 focus:outline-none focus:border-accent" placeholder="Écrivez un message..." autocomplete="off">
@@ -89,13 +89,13 @@
     </div>
 </div>
 
-<!-- Ajout des modaux Flowbite -->
-<!-- Modal Ajouter un ami -->
+
+
 <div id="add-friend-modal" tabindex="-1" class="hidden fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black bg-opacity-50 flex justify-center items-center">
   <div class="relative w-full max-w-md max-h-full">
     <div class="relative bg-secondary rounded-lg shadow dark:bg-gray-700">
       <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center close-add-friend">
-        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http:
         <span class="sr-only">Fermer</span>
       </button>
       <div class="p-6 text-center">
@@ -109,12 +109,12 @@
     </div>
   </div>
 </div>
-<!-- Modal Demandes d'amis -->
+
 <div id="friend-requests-modal" tabindex="-1" class="hidden fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black bg-opacity-50 flex justify-center items-center">
   <div class="relative w-full max-w-md max-h-full">
     <div class="relative bg-secondary rounded-lg shadow dark:bg-gray-700">
       <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center close-friend-requests">
-        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http:
         <span class="sr-only">Fermer</span>
       </button>
       <div class="p-6 text-center">
@@ -133,9 +133,9 @@
     </div>
   </div>
 </div>
-<!-- Flowbite CDN -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+
+<link href="https:
+<script src="https:
 <script>
 let currentFriendId = null;
 
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const bubbleClass = isOwn ? 'bg-accent text-white rounded-br-none' : 'bg-gray-700 text-white rounded-bl-none';
             
-            // Ajouter le bouton de signalement pour les messages reçus
+            
             const reportButton = !isOwn ? `
                 <button onclick="openReportModal('message', ${message.id})" 
                         class="ml-2 text-red-400 hover:text-red-300 transition-colors" 
@@ -264,14 +264,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     }
 
-    // Ouvrir/fermer le modal Ajouter un ami
+    
     document.getElementById('add-friend-btn').addEventListener('click', function() {
         document.getElementById('add-friend-modal').classList.remove('hidden');
     });
     document.querySelectorAll('.close-add-friend').forEach(btn => btn.addEventListener('click', function() {
         document.getElementById('add-friend-modal').classList.add('hidden');
     }));
-    // Ouvrir/fermer le modal Demandes d'amis
+    
     document.getElementById('friend-requests-btn').addEventListener('click', function() {
         document.getElementById('friend-requests-modal').classList.remove('hidden');
         loadFriendRequests();
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.close-friend-requests').forEach(btn => btn.addEventListener('click', function() {
         document.getElementById('friend-requests-modal').classList.add('hidden');
     }));
-    // Soumission du formulaire d'ajout d'ami
+    
     document.getElementById('add-friend-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const pseudo = document.getElementById('add-friend-pseudo').value.trim();
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('add-friend-result').textContent = msg;
         });
     });
-    // Charger les demandes d'amis
+    
     function loadFriendRequests() {
         fetch('/friend/requests')
             .then(r => r.json())
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     li.innerHTML = `<span class="text-white">${req.pseudo}</span>`;
                     sentList.appendChild(li);
                 });
-                // Actions accepter/refuser
+                
                 document.querySelectorAll('.accept-request').forEach(btn => btn.onclick = function() {
                     fetch('/friend/accept', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'id=' + btn.dataset.id })
                         .then(() => loadFriendRequests());

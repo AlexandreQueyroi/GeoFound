@@ -1,16 +1,13 @@
-// Script pour la gestion des récompenses
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialisation des filtres
+    
     initFilters();
     
-    // Initialisation des animations
+    
     initAnimations();
 });
 
-/**
- * Initialise les filtres de récompenses
- */
 function initFilters() {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const rewardCards = document.querySelectorAll('.reward-card');
@@ -19,7 +16,7 @@ function initFilters() {
         btn.addEventListener('click', function() {
             const filter = this.dataset.filter;
             
-            // Mettre à jour les boutons
+            
             filterBtns.forEach(b => {
                 b.classList.remove('active', 'bg-blue-600');
                 b.classList.add('bg-gray-600');
@@ -27,7 +24,7 @@ function initFilters() {
             this.classList.add('active', 'bg-blue-600');
             this.classList.remove('bg-gray-600');
             
-            // Filtrer les cartes avec animation
+            
             rewardCards.forEach(card => {
                 if (filter === 'all' || card.classList.contains(filter)) {
                     card.style.display = 'block';
@@ -47,9 +44,6 @@ function initFilters() {
     });
 }
 
-/**
- * Initialise les animations des cartes
- */
 function initAnimations() {
     const rewardCards = document.querySelectorAll('.reward-card');
     
@@ -65,13 +59,9 @@ function initAnimations() {
     });
 }
 
-/**
- * Débloque une récompense
- * @param {number} rewardId - ID de la récompense
- */
 function unlockReward(rewardId) {
     if (confirm('Êtes-vous sûr de vouloir débloquer cette récompense ?')) {
-        // Afficher un indicateur de chargement
+        
         const button = event.target;
         const originalText = button.innerHTML;
         button.innerHTML = '<iconify-icon icon="tabler:loader-2" class="animate-spin mr-1"></iconify-icon>Déblocage...';
@@ -89,7 +79,7 @@ function unlockReward(rewardId) {
             if (data.success) {
                 showToast(data.message, 'success');
                 
-                // Animation de succès
+                
                 const card = button.closest('.reward-card');
                 card.style.animation = 'rewardUnlock 0.5s ease';
                 
@@ -110,10 +100,6 @@ function unlockReward(rewardId) {
     }
 }
 
-/**
- * Équipe/déséquipe une récompense
- * @param {number} rewardId - ID de la récompense
- */
 function toggleEquip(rewardId) {
     const button = event.target;
     const originalText = button.innerHTML;
@@ -132,7 +118,7 @@ function toggleEquip(rewardId) {
         if (data.success) {
             showToast(data.message, 'success');
             
-            // Animation de changement d'état
+            
             const card = button.closest('.reward-card');
             card.style.animation = 'rewardEquip 0.3s ease';
             
@@ -152,11 +138,6 @@ function toggleEquip(rewardId) {
     });
 }
 
-/**
- * Affiche un toast de notification
- * @param {string} message - Message à afficher
- * @param {string} type - Type de toast (success, error, info)
- */
 function showToast(message, type = 'info') {
     const toastContainer = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -175,12 +156,12 @@ function showToast(message, type = 'info') {
     
     toastContainer.appendChild(toast);
     
-    // Animation d'entrée
+    
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
     
-    // Animation de sortie
+    
     setTimeout(() => {
         toast.classList.add('translate-x-full');
         setTimeout(() => {
@@ -189,16 +170,11 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-/**
- * Affiche les détails d'une récompense
- * @param {number} rewardId - ID de la récompense
- */
 function showRewardDetails(rewardId) {
-    // Ici on pourrait ouvrir un modal avec les détails de la récompense
-    console.log('Afficher les détails de la récompense:', rewardId);
+    
 }
 
-// Styles CSS pour les animations
+
 const style = document.createElement('style');
 style.textContent = `
     @keyframes rewardUnlock {

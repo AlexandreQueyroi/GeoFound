@@ -2,13 +2,13 @@
 <?php include_once __DIR__ . '/../layouts/modal.php'; ?>
 
 <div class="container mx-auto px-4 py-8">
-    <!-- En-tête de la page d'administration -->
+    
     <div class="mb-8">
         <h1 class="text-4xl font-bold text-white mb-2">Tableau de bord d'administration</h1>
         <p class="text-gray-400">Gérez votre plateforme GeoFound depuis ce panneau central</p>
     </div>
 
-    <!-- Statistiques rapides -->
+    
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <div class="flex items-center">
@@ -59,9 +59,9 @@
         </div>
     </div>
 
-    <!-- Actions rapides -->
+    
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <!-- Actions rapides -->
+        
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h2 class="text-xl font-semibold text-white mb-4">Actions rapides</h2>
             <div class="space-y-3">
@@ -125,7 +125,7 @@
             </div>
         </div>
 
-        <!-- Activité récente -->
+        
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h2 class="text-xl font-semibold text-white mb-4">Activité récente</h2>
             <div class="space-y-3" id="recent-activity">
@@ -140,7 +140,7 @@
         </div>
     </div>
 
-    <!-- Sections d'administration -->
+    
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <?php if (in_array('admin.users', $userPermissions) || in_array('*', $userPermissions)): ?>
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-blue-500 transition cursor-pointer" onclick="window.location.href='/admin/users'">
@@ -240,7 +240,7 @@
     </div>
 </div>
 
-<!-- Modal Actions Rapides -->
+
 <div id="quick-actions-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">

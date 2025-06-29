@@ -5,9 +5,6 @@ use App\Helpers\Database;
 
 class Reward {
     
-    /**
-     * Récupère toutes les récompenses
-     */
     public static function getAll() {
         $db = Database::getConnection();
         $stmt = $db->prepare("SELECT * FROM rewards ORDER BY required_level ASC, name ASC");
@@ -15,9 +12,6 @@ class Reward {
         return $stmt->fetchAll();
     }
     
-    /**
-     * Récupère une récompense par son ID
-     */
     public static function getById($id) {
         $db = Database::getConnection();
         $stmt = $db->prepare("SELECT * FROM rewards WHERE id = ?");
@@ -25,9 +19,6 @@ class Reward {
         return $stmt->fetch();
     }
     
-    /**
-     * Récupère les récompenses d'un utilisateur
-     */
     public static function getUserRewards($userId) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
@@ -41,9 +32,6 @@ class Reward {
         return $stmt->fetchAll();
     }
     
-    /**
-     * Vérifie si un utilisateur a une récompense
-     */
     public static function userHasReward($userId, $rewardId) {
         $db = Database::getConnection();
         $stmt = $db->prepare("SELECT COUNT(*) FROM user_rewards WHERE user_id = ? AND reward_id = ?");
@@ -51,30 +39,27 @@ class Reward {
         return $stmt->fetchColumn() > 0;
     }
     
-    /**
-     * Débloque une récompense pour un utilisateur
-     */
     public static function unlockReward($userId, $rewardId) {
         $db = Database::getConnection();
         
-        // Vérifier si la récompense n'est pas déjà débloquée
+        
         if (self::userHasReward($userId, $rewardId)) {
             return false;
         }
         
-        // Vérifier le stock pour les récompenses physiques
+        
         $reward = self::getById($rewardId);
         if ($reward && $reward['type'] === 'physical') {
             if ($reward['stock'] <= 0) {
-                return false; // Plus de stock disponible
+                return false; 
             }
             
-            // Décrémenter le stock
+            
             $stmt = $db->prepare("UPDATE rewards SET stock = stock - 1 WHERE id = ? AND stock > 0");
             $stmt->execute([$rewardId]);
             
             if ($stmt->rowCount() === 0) {
-                return false; // Échec de la mise à jour du stock
+                return false; 
             }
         }
         
@@ -82,18 +67,15 @@ class Reward {
         return $stmt->execute([$userId, $rewardId]);
     }
     
-    /**
-     * Équipe/déséquipe une récompense
-     */
     public static function toggleEquip($userId, $rewardId) {
         $db = Database::getConnection();
         
-        // Vérifier si l'utilisateur a la récompense
+        
         if (!self::userHasReward($userId, $rewardId)) {
             return false;
         }
         
-        // Déséquiper toutes les récompenses du même type
+        
         $reward = self::getById($rewardId);
         if ($reward) {
             $stmt = $db->prepare("
@@ -105,7 +87,7 @@ class Reward {
             $stmt->execute([$userId, $reward['type'], $rewardId]);
         }
         
-        // Basculer l'état d'équipement de la récompense actuelle
+        
         $stmt = $db->prepare("
             UPDATE user_rewards 
             SET is_equipped = NOT is_equipped 
@@ -114,9 +96,6 @@ class Reward {
         return $stmt->execute([$userId, $rewardId]);
     }
     
-    /**
-     * Récupère les récompenses disponibles pour un utilisateur selon son niveau
-     */
     public static function getAvailableRewards($userLevel) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
@@ -129,9 +108,6 @@ class Reward {
         return $stmt->fetchAll();
     }
     
-    /**
-     * Récupère les statistiques des récompenses
-     */
     public static function getStats() {
         $db = Database::getConnection();
         $stmt = $db->prepare("
@@ -150,9 +126,6 @@ class Reward {
         return $stmt->fetchAll();
     }
     
-    /**
-     * Crée une nouvelle récompense (admin)
-     */
     public static function create($data) {
         $db = Database::getConnection();
         
@@ -176,9 +149,6 @@ class Reward {
         return $db->lastInsertId();
     }
     
-    /**
-     * Met à jour une récompense (admin)
-     */
     public static function update($id, $data) {
         $db = Database::getConnection();
         
@@ -204,24 +174,18 @@ class Reward {
         ]);
     }
     
-    /**
-     * Supprime une récompense (admin)
-     */
     public static function delete($id) {
         $db = Database::getConnection();
         
-        // Supprimer d'abord les associations utilisateur
+        
         $stmt = $db->prepare("DELETE FROM user_rewards WHERE reward_id = ?");
         $stmt->execute([$id]);
         
-        // Puis supprimer la récompense
+        
         $stmt = $db->prepare("DELETE FROM rewards WHERE id = ?");
         return $stmt->execute([$id]);
     }
     
-    /**
-     * Récupère les récompenses physiques avec stock
-     */
     public static function getPhysicalRewards() {
         $db = Database::getConnection();
         $stmt = $db->prepare("
@@ -236,9 +200,6 @@ class Reward {
         return $stmt->fetchAll();
     }
     
-    /**
-     * Vérifie la disponibilité d'une récompense physique
-     */
     public static function isPhysicalRewardAvailable($rewardId) {
         $db = Database::getConnection();
         $stmt = $db->prepare("SELECT stock FROM rewards WHERE id = ? AND type = 'physical'");

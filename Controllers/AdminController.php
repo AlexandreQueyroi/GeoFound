@@ -8,19 +8,19 @@ use Exception;
 
 class AdminController {
     public function index() {
-        // Vérification des permissions d'admin
+        
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.access')) {
             header('Location: /error/403');
             exit;
         }
         
-        // Récupérer les vraies permissions de l'utilisateur
+        
         $permissions = Permission::getUserPermissions($_SESSION['user_id']);
         $userPermissions = array_map(function($perm) {
             return $perm['name'];
         }, $permissions);
         
-        // Ajouter les permissions du rang si l'utilisateur en a un
+        
         if (isset($_SESSION['user_id'])) {
             $db = Database::getConnection();
             $stmt = $db->prepare("
@@ -53,7 +53,7 @@ class AdminController {
         
         $db = Database::getConnection();
         
-        // Traitement des actions
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $action = $_POST['action'] ?? '';
             
@@ -70,7 +70,7 @@ class AdminController {
                             'permissions' => isset($_POST['permissions']) ? json_encode($_POST['permissions']) : null
                         ];
                         
-                        // Validation
+                        
                         if (empty($rankData['name']) || empty($rankData['display_name'])) {
                             throw new \Exception("Le nom et le nom d'affichage sont requis.");
                         }
@@ -119,11 +119,11 @@ class AdminController {
             exit;
         }
         
-        // Récupération des données
+        
         $ranks = \App\Models\Rank::getAll();
         $rankStats = \App\Models\Rank::getStats();
         
-        // Récupération des utilisateurs avec leurs grades
+        
         $stmt = $db->prepare("
             SELECT u.id, u.pseudo, u.email, u.user_rank, u.connected, u.desactivated, u.email_verified,
                    r.display_name as rank_display_name, r.color as rank_color, r.background_color as rank_bg_color
@@ -134,7 +134,7 @@ class AdminController {
         $stmt->execute();
         $users = $stmt->fetchAll();
         
-        // Récupération des permissions disponibles
+        
         $stmt = $db->prepare("SELECT id, name, description FROM permissions ORDER BY name");
         $stmt->execute();
         $availablePermissions = $stmt->fetchAll();
@@ -163,7 +163,7 @@ class AdminController {
             exit;
         }
         
-        // Headers pour éviter le cache
+        
         header('Cache-Control: no-cache, no-store, must-revalidate');
         header('Pragma: no-cache');
         header('Expires: 0');
@@ -195,7 +195,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php://input'), true);
+                $data = json_decode(file_get_contents('php:
                 $name = $data['name'] ?? '';
                 $description = $data['description'] ?? '';
                 
@@ -227,7 +227,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php://input'), true);
+                $data = json_decode(file_get_contents('php:
                 
                 try {
                     $rankData = [
@@ -255,7 +255,7 @@ class AdminController {
                 break;
                 
             case 'PUT':
-                $data = json_decode(file_get_contents('php://input'), true);
+                $data = json_decode(file_get_contents('php:
                 $id = $data['id'] ?? 0;
                 
                 try {
@@ -326,7 +326,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php://input'), true);
+                $data = json_decode(file_get_contents('php:
                 $rankId = $data['rank_id'] ?? 0;
                 $permissionId = $data['permission_id'] ?? 0;
                 
@@ -387,7 +387,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php://input'), true);
+                $data = json_decode(file_get_contents('php:
                 $userId = $data['user_id'] ?? 0;
                 $permissionId = $data['permission_id'] ?? 0;
                 $expiresAt = $data['expires_at'] ?? null;
@@ -447,8 +447,8 @@ class AdminController {
                 break;
                 
             case 'POST':
-                // DEBUG LOG
-                $rawInput = file_get_contents('php://input');
+                
+                $rawInput = file_get_contents('php:
                 error_log('DEBUG POST RAW: ' . $rawInput);
                 $data = json_decode($rawInput, true);
                 error_log('DEBUG POST DECODE: ' . print_r($data, true));
@@ -499,7 +499,7 @@ class AdminController {
         header('Content-Type: application/json');
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = json_decode(file_get_contents('php:
             $isMaintenance = $data['is_maintenance'] ?? false;
             
             if (Permission::setAllPagesMaintenance($isMaintenance)) {
@@ -536,7 +536,7 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php://input'), true);
+                $data = json_decode(file_get_contents('php:
                 $pagePath = $data['page_path'] ?? '';
                 $permissionId = $data['permission_id'] ?? '';
                 $description = $data['description'] ?? '';
@@ -602,7 +602,7 @@ class AdminController {
         }
     }
 
-    // API pour les statistiques du tableau de bord
+    
     public function apiStats() {
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.access')) {
             http_response_code(403);
@@ -615,39 +615,39 @@ class AdminController {
         try {
             $db = \App\Helpers\Database::getConnection();
             
-            // Statistiques des utilisateurs
+            
             $stmt = $db->prepare("SELECT COUNT(*) as count FROM users");
             $stmt->execute();
             $users = $stmt->fetch()['count'];
             
-            // Statistiques des posts (vérifier si la table existe)
+            
             $posts = 0;
             try {
                 $stmt = $db->prepare("SELECT COUNT(*) as count FROM post");
                 $stmt->execute();
                 $posts = $stmt->fetch()['count'];
             } catch (\Exception $e) {
-                // Table post n'existe pas, on garde 0
+                
             }
             
-            // Statistiques des messages (vérifier si la table existe)
+            
             $messages = 0;
             try {
                 $stmt = $db->prepare("SELECT COUNT(*) as count FROM messages");
                 $stmt->execute();
                 $messages = $stmt->fetch()['count'];
             } catch (\Exception $e) {
-                // Table messages n'existe pas, on garde 0
+                
             }
             
-            // Pages en maintenance (vérifier si la table existe)
+            
             $maintenance = 0;
             try {
                 $stmt = $db->prepare("SELECT COUNT(*) as count FROM page_maintenance WHERE is_maintenance = 1");
                 $stmt->execute();
                 $maintenance = $stmt->fetch()['count'];
             } catch (\Exception $e) {
-                // Table page_maintenance n'existe pas, on garde 0
+                
             }
             
             echo json_encode([
@@ -662,7 +662,7 @@ class AdminController {
         }
     }
 
-    // API pour l'activité récente
+    
     public function apiActivity() {
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.access')) {
             http_response_code(403);
@@ -675,7 +675,7 @@ class AdminController {
         try {
             $db = \App\Helpers\Database::getConnection();
             
-            // Récupérer les dernières activités (exemple avec les derniers utilisateurs connectés)
+            
             $stmt = $db->prepare("
                 SELECT u.username, u.connected, 'Connexion utilisateur' as description
                 FROM users u 
@@ -686,7 +686,7 @@ class AdminController {
             $stmt->execute();
             $activities = $stmt->fetchAll();
             
-            // Formater les données
+            
             $formattedActivities = array_map(function($activity) {
                 return [
                     'description' => $activity['description'] . ' : ' . $activity['username'],
@@ -701,7 +701,7 @@ class AdminController {
         }
     }
 
-    // API pour la gestion des utilisateurs
+    
     public function apiUsers() {
         header('Content-Type: application/json');
         
@@ -721,7 +721,7 @@ class AdminController {
             $limit = 10;
             $offset = ($page - 1) * $limit;
             
-            // Construire la requête avec filtres
+            
             $whereConditions = [];
             $params = [];
             
@@ -743,7 +743,7 @@ class AdminController {
             
             $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
             
-            // Compter le total d'utilisateurs
+            
             $countQuery = "
                 SELECT COUNT(*) as total 
                 FROM users u 
@@ -755,7 +755,7 @@ class AdminController {
             $stmt->execute($params);
             $total = $stmt->fetch()['total'];
             
-            // Récupérer les utilisateurs avec pagination
+            
             $query = "
                 SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected, u.email_verified, u.point,
                        r.id as rank_id, r.name as rank_name, r.display_name as rank_display_name, 
@@ -788,29 +788,29 @@ class AdminController {
         }
     }
 
-    // API pour récupérer/modifier un utilisateur spécifique
+    
     public function apiUser($userId) {
-        // Capturer toutes les erreurs et les rediriger vers JSON
+        
         set_error_handler(function($severity, $message, $file, $line) {
             if (!(error_reporting() & $severity)) {
                 return;
             }
             
-            // Log l'erreur
+            
             $errorMessage = date('[d/m/Y H:i:s] ') . "Erreur PHP: $message dans $file ligne $line\n";
             file_put_contents(__DIR__ . '/../storage/logs/php_errors.log', $errorMessage, FILE_APPEND);
             
-            // Retourner une réponse JSON d'erreur
+            
             http_response_code(500);
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Erreur serveur interne', 'details' => $message]);
             exit;
         });
         
-        // S'assurer que la sortie est en JSON
+        
         header('Content-Type: application/json');
         
-        // Désactiver l'affichage des erreurs pour cette requête
+        
         ini_set('display_errors', 0);
         
         try {
@@ -824,7 +824,7 @@ class AdminController {
             
             switch ($_SERVER['REQUEST_METHOD']) {
                 case 'GET':
-                    // Récupérer les informations de l'utilisateur
+                    
                     $stmt = $db->prepare("
                         SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected, u.email_verified,
                                r.id as rank_id, r.name as rank_name, r.display_name as rank_display_name,
@@ -842,7 +842,7 @@ class AdminController {
                         exit;
                     }
                     
-                    // Convertir le statut numérique en texte
+                    
                     switch ($user['status']) {
                         case 0:
                             $user['status_text'] = 'active';
@@ -858,7 +858,7 @@ class AdminController {
                             break;
                     }
                     
-                    // Récupérer les permissions de l'utilisateur
+                    
                     $stmt = $db->prepare("
                         SELECT p.id, p.name, p.description
                         FROM user_permissions up
@@ -872,15 +872,15 @@ class AdminController {
                     break;
                     
                 case 'PUT':
-                    // Empêcher la modification de son propre compte
+                    
                     if ($userId == $_SESSION['user_id']) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Vous ne pouvez pas modifier votre propre compte']);
                         exit;
                     }
                     
-                    // Modifier l'utilisateur
-                    $input = file_get_contents('php://input');
+                    
+                    $input = file_get_contents('php:
                     $data = json_decode($input, true);
                     
                     if (json_last_error() !== JSON_ERROR_NONE) {
@@ -901,14 +901,14 @@ class AdminController {
                         exit;
                     }
                     
-                    // Validation de l'email
+                    
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Email invalide']);
                         exit;
                     }
                     
-                    // Vérifier si l'email existe déjà pour un autre utilisateur
+                    
                     $stmt = $db->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
                     $stmt->execute([$email, $userId]);
                     if ($stmt->fetch()) {
@@ -917,7 +917,7 @@ class AdminController {
                         exit;
                     }
                     
-                    // Vérifier si le pseudo existe déjà pour un autre utilisateur
+                    
                     $stmt = $db->prepare("SELECT id FROM users WHERE pseudo = ? AND id != ?");
                     $stmt->execute([$pseudo, $userId]);
                     if ($stmt->fetch()) {
@@ -926,8 +926,8 @@ class AdminController {
                         exit;
                     }
                     
-                    // Convertir le statut texte en numérique
-                    $statusNum = 0; // Actif par défaut
+                    
+                    $statusNum = 0; 
                     switch ($status) {
                         case 'banned':
                             $statusNum = 1;
@@ -941,7 +941,7 @@ class AdminController {
                             break;
                     }
                     
-                    // Mettre à jour l'utilisateur
+                    
                     $stmt = $db->prepare("
                         UPDATE users 
                         SET pseudo = ?, email = ?, user_rank = ?, desactivated = ?
@@ -949,7 +949,7 @@ class AdminController {
                     ");
                     $stmt->execute([$pseudo, $email, $rankName, $statusNum, $userId]);
                     
-                    // Mettre à jour les permissions
+                    
                     $stmt = $db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
                     $stmt->execute([$userId]);
                     
@@ -964,8 +964,8 @@ class AdminController {
                     break;
                     
                 case 'PATCH':
-                    // Mise à jour partielle (pour les points)
-                    $input = file_get_contents('php://input');
+                    
+                    $input = file_get_contents('php:
                     $data = json_decode($input, true);
                     
                     if (json_last_error() !== JSON_ERROR_NONE) {
@@ -974,7 +974,7 @@ class AdminController {
                         exit;
                     }
                     
-                    // Si c'est une mise à jour des points
+                    
                     if (isset($data['points'])) {
                         $newPoints = intval($data['points']);
                         $reason = trim($data['reason'] ?? '');
@@ -985,16 +985,16 @@ class AdminController {
                             exit;
                         }
                         
-                        // Récupérer les points actuels
+                        
                         $stmt = $db->prepare("SELECT point FROM users WHERE id = ?");
                         $stmt->execute([$userId]);
                         $currentPoints = $stmt->fetchColumn();
                         
-                        // Mettre à jour les points
+                        
                         $stmt = $db->prepare("UPDATE users SET point = ? WHERE id = ?");
                         $stmt->execute([$newPoints, $userId]);
                         
-                        // Logger le changement
+                        
                         $stmt = $db->prepare("
                             INSERT INTO point_history (user_id, old_points, new_points, reason, admin_id, created_at)
                             VALUES (?, ?, ?, ?, ?, NOW())
@@ -1010,7 +1010,7 @@ class AdminController {
                     break;
                     
                 case 'DELETE':
-                    // Supprimer l'utilisateur
+                    
                     if ($userId == $_SESSION['user_id']) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Vous ne pouvez pas supprimer votre propre compte']);
@@ -1020,11 +1020,11 @@ class AdminController {
                     $db->beginTransaction();
                     
                     try {
-                        // Supprimer les permissions de l'utilisateur
+                        
                         $stmt = $db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
                         $stmt->execute([$userId]);
                         
-                        // Supprimer l'utilisateur
+                        
                         $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
                         $stmt->execute([$userId]);
                         
@@ -1046,7 +1046,7 @@ class AdminController {
                     break;
             }
         } catch (\Exception $e) {
-            // Log manuel de l'erreur
+            
             $logMessage = date('[d/m/Y H:i:s] ') . 'Erreur modification utilisateur : ' . $e->getMessage() . "\n";
             file_put_contents(__DIR__ . '/../storage/logs/log_28-06-2025.txt', $logMessage, FILE_APPEND);
             
@@ -1056,12 +1056,12 @@ class AdminController {
                 'details' => $e->getMessage()
             ]);
         } finally {
-            // Restaurer le gestionnaire d'erreur par défaut
+            
             restore_error_handler();
         }
     }
 
-    // API pour basculer le statut d'un utilisateur
+    
     public function apiToggleUserStatus($userId) {
         try {
             if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
@@ -1070,7 +1070,7 @@ class AdminController {
                 exit;
             }
             
-            // Empêcher de modifier son propre compte
+            
             if ($userId == $_SESSION['user_id']) {
                 http_response_code(400);
                 echo json_encode(['error' => 'Vous ne pouvez pas modifier votre propre statut']);
@@ -1079,7 +1079,7 @@ class AdminController {
             
             $db = \App\Helpers\Database::getConnection();
             
-            // Récupérer le statut actuel
+            
             $stmt = $db->prepare("SELECT desactivated FROM users WHERE id = ?");
             $stmt->execute([$userId]);
             $user = $stmt->fetch();
@@ -1090,14 +1090,14 @@ class AdminController {
                 exit;
             }
             
-            // Faire circuler les statuts : actif (0) -> banni (1) -> inactif (2) -> actif (0)
+            
             $currentStatus = $user['desactivated'];
             $newStatus = ($currentStatus + 1) % 3;
             
             $stmt = $db->prepare("UPDATE users SET desactivated = ? WHERE id = ?");
             $stmt->execute([$newStatus, $userId]);
             
-            // Déterminer le texte du statut
+            
             $statusText = '';
             switch ($newStatus) {
                 case 0:
@@ -1121,7 +1121,7 @@ class AdminController {
 
     public function reports()
     {
-        // Vérification permission admin
+        
         if (!isset($_SESSION['user_id']) || !in_array('admin.reports', $_SESSION['permissions'] ?? []) && !in_array('*', $_SESSION['permissions'] ?? [])) {
             header('Location: /');
             exit;
@@ -1134,7 +1134,7 @@ class AdminController {
 
     public function viewReport()
     {
-        // Vérification permission admin
+        
         if (!isset($_SESSION['user_id']) || !in_array('admin.reports', $_SESSION['permissions'] ?? []) && !in_array('*', $_SESSION['permissions'] ?? [])) {
             header('Location: /');
             exit;
@@ -1148,7 +1148,7 @@ class AdminController {
         
         $db = \App\Helpers\Database::getConnection();
         
-        // Récupérer le signalement avec les infos utilisateur
+        
         $stmt = $db->prepare("
             SELECT r.*, u.pseudo AS reporter, u.id AS reporter_id
             FROM reports r 
@@ -1163,7 +1163,7 @@ class AdminController {
             exit;
         }
         
-        // Récupérer le contenu signalé selon le type
+        
         $content = null;
         if ($report['type'] === 'post') {
             $stmt = $db->prepare("SELECT * FROM posts WHERE id = ?");
@@ -1175,7 +1175,7 @@ class AdminController {
             $content = $stmt->fetch(PDO::FETCH_ASSOC);
         }
         
-        // Récupérer l'historique des sanctions pour l'utilisateur signalé
+        
         $stmt = $db->prepare("
             SELECT s.*, u.pseudo AS admin_name 
             FROM sanctions s 
@@ -1213,7 +1213,7 @@ class AdminController {
         try {
             $db = Database::getConnection();
             
-            // Marquer le rapport comme traité
+            
             $stmt = $db->prepare("UPDATE reports SET status = ?, admin_notes = ?, resolved_at = NOW() WHERE id = ?");
             $stmt->execute([$action, $reason, $reportId]);
 
@@ -1226,7 +1226,7 @@ class AdminController {
         exit;
     }
 
-    // === GESTION DES RÉCOMPENSES ===
+    
     
     public function rewards() {
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.rewards')) {
@@ -1234,25 +1234,25 @@ class AdminController {
             exit;
         }
 
-        // Récupérer les statistiques
+        
         $db = Database::getConnection();
         
-        // Total des récompenses
+        
         $stmt = $db->prepare("SELECT COUNT(*) FROM rewards");
         $stmt->execute();
         $totalRewards = $stmt->fetchColumn();
         
-        // Total des déblocages
+        
         $stmt = $db->prepare("SELECT COUNT(*) FROM user_rewards");
         $stmt->execute();
         $totalUnlocks = $stmt->fetchColumn();
         
-        // Récompenses physiques
+        
         $stmt = $db->prepare("SELECT COUNT(*) FROM rewards WHERE type = 'physical'");
         $stmt->execute();
         $physicalRewards = $stmt->fetchColumn();
         
-        // Total des points distribués
+        
         $stmt = $db->prepare("
             SELECT COALESCE(SUM(r.points_value), 0) 
             FROM rewards r 
@@ -1261,7 +1261,7 @@ class AdminController {
         $stmt->execute();
         $totalPoints = $stmt->fetchColumn();
         
-        // Récupérer toutes les récompenses avec statistiques
+        
         $stmt = $db->prepare("
             SELECT r.*, 
                    COUNT(ur.user_id) as unlock_count,
@@ -1299,12 +1299,12 @@ class AdminController {
                 'points_value' => intval($_POST['points_value'])
             ];
 
-            // Validation
+            
             if (empty($data['name']) || empty($data['description'])) {
                 throw new \Exception("Le nom et la description sont requis.");
             }
 
-            // Ajouter les champs spécifiques aux récompenses physiques
+            
             if ($data['type'] === 'physical') {
                 $data['price'] = floatval($_POST['price'] ?? 0);
                 $data['stock'] = intval($_POST['stock'] ?? 0);
@@ -1342,12 +1342,12 @@ class AdminController {
                 'points_value' => intval($_POST['points_value'])
             ];
 
-            // Validation
+            
             if (empty($data['name']) || empty($data['description'])) {
                 throw new \Exception("Le nom et la description sont requis.");
             }
 
-            // Ajouter les champs spécifiques aux récompenses physiques
+            
             if ($data['type'] === 'physical') {
                 $data['price'] = floatval($_POST['price'] ?? 0);
                 $data['stock'] = intval($_POST['stock'] ?? 0);
@@ -1384,7 +1384,7 @@ class AdminController {
         }
     }
 
-    // === API POUR LES RÉCOMPENSES ===
+    
     
     public function apiReward($id) {
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.rewards')) {
@@ -1412,27 +1412,27 @@ class AdminController {
     }
 
     public function apiUserPointsHistory($userId) {
-        // Capturer toutes les erreurs et les rediriger vers JSON
+        
         set_error_handler(function($severity, $message, $file, $line) {
             if (!(error_reporting() & $severity)) {
                 return;
             }
             
-            // Log l'erreur
+            
             $errorMessage = date('[d/m/Y H:i:s] ') . "Erreur PHP: $message dans $file ligne $line\n";
             file_put_contents(__DIR__ . '/../storage/logs/php_errors.log', $errorMessage, FILE_APPEND);
             
-            // Retourner une réponse JSON d'erreur
+            
             http_response_code(500);
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Erreur serveur interne', 'details' => $message]);
             exit;
         });
         
-        // S'assurer que la sortie est en JSON
+        
         header('Content-Type: application/json');
         
-        // Désactiver l'affichage des erreurs pour cette requête
+        
         ini_set('display_errors', 0);
         
         try {
@@ -1444,7 +1444,7 @@ class AdminController {
             
             $db = \App\Helpers\Database::getConnection();
             
-            // Récupérer l'historique des points
+            
             $stmt = $db->prepare("
                 SELECT ph.*, u.pseudo as admin_name
                 FROM point_history ph
@@ -1458,7 +1458,7 @@ class AdminController {
             
             echo json_encode(['history' => $history]);
         } catch (\Exception $e) {
-            // Log manuel de l'erreur
+            
             $logMessage = date('[d/m/Y H:i:s] ') . 'Erreur récupération historique points : ' . $e->getMessage() . "\n";
             file_put_contents(__DIR__ . '/../storage/logs/log_28-06-2025.txt', $logMessage, FILE_APPEND);
             
@@ -1468,7 +1468,7 @@ class AdminController {
                 'details' => $e->getMessage()
             ]);
         } finally {
-            // Restaurer le gestionnaire d'erreur par défaut
+            
             restore_error_handler();
         }
     }

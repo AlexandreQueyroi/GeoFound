@@ -3,13 +3,13 @@
 
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
-        <!-- En-tête -->
+        
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-white mb-2">Gestion des Grades</h1>
             <p class="text-gray-400">Créez et gérez les grades avec leurs permissions et couleurs personnalisées</p>
         </div>
 
-        <!-- Messages de succès/erreur -->
+        
         <?php if (isset($_SESSION['admin_success'])): ?>
             <div class="bg-green-600 text-white p-4 rounded-lg mb-6 flex items-center justify-between">
                 <span><?php echo htmlspecialchars($_SESSION['admin_success']); ?></span>
@@ -30,7 +30,7 @@
             <?php unset($_SESSION['admin_error']); ?>
         <?php endif; ?>
 
-        <!-- Statistiques des grades -->
+        
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <?php foreach ($rankStats as $stat): ?>
                 <div class="bg-[#1a2234] rounded-lg p-6 border-l-4" style="border-left-color: <?php echo $stat['color']; ?>">
@@ -48,9 +48,9 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Section Gestion des Grades -->
+            
             <div class="space-y-6">
-                <!-- Créer un nouveau grade -->
+                
                 <div class="bg-[#1a2234] rounded-lg p-6">
                     <h2 class="text-xl font-semibold text-white mb-4">Créer un nouveau grade</h2>
                     <form method="POST" class="space-y-4">
@@ -116,7 +116,7 @@
                     </form>
                 </div>
 
-                <!-- Liste des grades existants -->
+                
                 <div class="bg-[#1a2234] rounded-lg p-6">
                     <h2 class="text-xl font-semibold text-white mb-4">Grades existants</h2>
                     <div class="space-y-3">
@@ -151,7 +151,7 @@
                 </div>
             </div>
 
-            <!-- Section Gestion des Utilisateurs -->
+            
             <div class="bg-[#1a2234] rounded-lg p-6">
                 <h2 class="text-xl font-semibold text-white mb-4">Gestion des utilisateurs</h2>
                 <div class="space-y-3 max-h-96 overflow-y-auto">
@@ -205,7 +205,7 @@
     </div>
 </div>
 
-<!-- Modal d'édition de grade -->
+
 <div id="edit-rank-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-[#1a2234] rounded-lg p-6 w-full max-w-2xl">
@@ -283,7 +283,7 @@ function closeEditModal() {
     document.getElementById('edit-rank-modal').classList.add('hidden');
 }
 
-// Fermer le modal en cliquant à l'extérieur
+
 document.getElementById('edit-rank-modal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeEditModal();

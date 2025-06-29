@@ -2,7 +2,7 @@
 <?php include_once __DIR__ . '/../layouts/modal.php'; ?>
 <style>
 .selected {
-    background-color: #2563eb !important; /* Couleur de sélection (bleu Tailwind) */
+    background-color: #2563eb !important;
 }
 </style>
 <div class="container mx-auto px-2 py-2 md:px-4 md:py-4">
@@ -90,7 +90,7 @@
 <script>
     window.selectedFriendId = null;
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+<script src="https:
 <script src="/assets/js/messagerie.js"></script>
 <script>
 function renderMessages(messages, userId) {
@@ -128,7 +128,7 @@ function loadConversation(friendId, scrollToBottom = true) {
     fetch('/message/conversation?friend_id=' + friendId)
         .then(r => r.json())
         .then(data => {
-            // Accepte les deux formats de réponse
+            
             if (Array.isArray(data)) {
                 renderMessages(data, window.currentUserId);
                 if (scrollToBottom) {
@@ -151,7 +151,7 @@ function setConversationHeader(pseudo) {
 
 document.addEventListener('DOMContentLoaded', function() {
     window.currentUserId = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
-    // Initialisation : tout masquer
+    
     setConversationHeader('');
     document.getElementById('send-message-form').classList.add('hidden');
     document.getElementById('messages-list').innerHTML = '<div class="flex justify-center items-center h-full text-gray-400 text-center">Cliquez sur un utilisateur pour commencer à discuter</div>';
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('send-message-form').classList.remove('hidden');
         });
     });
-    // Envoi de message AJAX
+    
     const form = document.getElementById('send-message-form');
     if (form) {
         form.addEventListener('submit', function(e) {
@@ -190,8 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Gestion des modaux
-    // Ouvrir le modal Ajouter un ami
+    
+    
     document.getElementById('add-friend-btn').addEventListener('click', function() {
         document.getElementById('add-friend-modal').classList.remove('hidden');
     });
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('add-friend-modal').classList.add('hidden');
     });
 
-    // Ouvrir le modal Demandes d'amis
+    
     document.getElementById('friend-requests-btn').addEventListener('click', function() {
         document.getElementById('friend-requests-modal').classList.remove('hidden');
         loadFriendRequests();
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('friend-requests-modal').classList.add('hidden');
     });
 
-    // Envoi de la demande d'ami
+    
     document.getElementById('send-friend-request').addEventListener('click', function() {
         const pseudo = document.getElementById('add-friend-pseudo').value.trim();
         if (!pseudo) return;
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Charger les demandes d'amis
+    
     function loadFriendRequests() {
         fetch('/friend/requests')
             .then(r => r.json())
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     sentList.appendChild(li);
                 });
                 
-                // Actions accepter/refuser
+                
                 document.querySelectorAll('.accept-request').forEach(btn => {
                     btn.onclick = function() {
                         fetch('/friend/accept', { 
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Fermer les modaux en cliquant à l'extérieur
+    
     window.addEventListener('click', function(event) {
         const addFriendModal = document.getElementById('add-friend-modal');
         const friendRequestsModal = document.getElementById('friend-requests-modal');

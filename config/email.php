@@ -1,20 +1,17 @@
 <?php
-/**
- * Configuration des emails
- */
 
 return [
     'smtp' => [
-        'host' => 'smtp.gmail.com', // Serveur SMTP
-        'port' => 587, // Port SMTP
-        'encryption' => 'tls', // Type de chiffrement
-        'username' => 'alexandregeofound@gmail.com', // Email SMTP
-        'password' => 'vtaakhznwkorpknn', // Mot de passe SMTP
-        'from_email' => 'alexandregeofound@gmail.com', // Email d'expédition
-        'from_name' => 'GeoFound', // Nom d'expédition
+        'host' => 'smtp.gmail.com', 
+        'port' => 587, 
+        'encryption' => 'tls', 
+        'username' => 'alexandregeofound@gmail.com', 
+        'password' => 'vtaakhznwkorpknn', 
+        'from_email' => 'alexandregeofound@gmail.com', 
+        'from_name' => 'GeoFound', 
     ],
     
-    // Configuration pour différents fournisseurs
+    
     'providers' => [
         'gmail' => [
             'host' => 'smtp.gmail.com',

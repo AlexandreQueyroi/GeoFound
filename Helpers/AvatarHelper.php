@@ -10,8 +10,8 @@ class AvatarHelper {
             return '/assets/img/avatars/default-avatar.png';
         }
         
-        // Pour l'instant, retourner l'avatar par défaut
-        // Plus tard, on pourra implémenter la logique pour récupérer l'avatar depuis la table avatar
+        
+        
         return '/assets/img/avatars/default-avatar.png';
     }
     

@@ -53,11 +53,11 @@ $routes = [
     '/api/bookmark' => ['controller' => 'ApiController', 'action' => 'bookmark'],
     '/api/captcha' => ['controller' => 'ApiController', 'action' => 'captcha'],
 
-    // Routes API pour les récompenses
+    
     '/reward/api/unlock' => ['controller' => 'RewardController', 'action' => 'apiUnlock'],
     '/reward/api/equip' => ['controller' => 'RewardController', 'action' => 'apiEquip'],
 
-    // Routes API d'administration
+    
     '/api/admin/stats' => ['controller' => 'AdminController', 'action' => 'apiStats'],
     '/api/admin/activity' => ['controller' => 'AdminController', 'action' => 'apiActivity'],
     '/api/admin/permissions' => ['controller' => 'AdminController', 'action' => 'apiPermissions'],
@@ -74,7 +74,7 @@ $routes = [
     '/api/admin/users/([0-9]+)/points-history' => ['controller' => 'AdminController', 'action' => 'apiUserPointsHistory'],
     '/api/admin/rewards/([0-9]+)' => ['controller' => 'AdminController', 'action' => 'apiReward'],
 
-    // Routes d'administration des récompenses
+    
     '/admin/rewards/create' => ['controller' => 'AdminController', 'action' => 'createReward'],
     '/admin/rewards/edit/([0-9]+)' => ['controller' => 'AdminController', 'action' => 'editReward'],
     '/admin/rewards/delete/([0-9]+)' => ['controller' => 'AdminController', 'action' => 'deleteReward'],

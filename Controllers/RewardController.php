@@ -8,37 +8,31 @@ use App\Helpers\PermissionMiddleware;
 class RewardController {
     
     public function __construct() {
-        // Vérifier que l'utilisateur est connecté
-        // Temporairement commenté pour les tests
-        /*
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /auth/login');
-            exit;
-        }
-        */
+        
+      
     }
     
     public function index() {
-        // Si pas d'utilisateur connecté, utiliser un utilisateur de test
+        
         if (!isset($_SESSION['user_id'])) {
-            $userId = 1; // Utiliser l'admin pour les tests
+            $userId = 1; 
         } else {
             $userId = $_SESSION['user_id'];
         }
         
         $user = User::find($userId);
         
-        // Récupérer toutes les récompenses
+        
         $allRewards = Reward::getAll();
         
-        // Récupérer les récompenses de l'utilisateur
+        
         $userRewards = Reward::getUserRewards($userId);
         
-        // Récupérer les récompenses disponibles selon le niveau
+        
         $userLevel = $user['level'] ?? 1;
         $availableRewards = Reward::getAvailableRewards($userLevel);
         
-        // Créer un tableau des récompenses avec leur statut
+        
         $rewardsWithStatus = [];
         foreach ($allRewards as $reward) {
             $userHasReward = Reward::userHasReward($userId, $reward['id']);
@@ -65,16 +59,16 @@ class RewardController {
     }
     
     public function unlock($id) {
-        // Si pas d'utilisateur connecté, utiliser un utilisateur de test
+        
         if (!isset($_SESSION['user_id'])) {
-            $userId = 1; // Utiliser l'admin pour les tests
+            $userId = 1; 
         } else {
             $userId = $_SESSION['user_id'];
         }
         
         $rewardId = $id;
         
-        // Vérifier que la récompense existe
+        
         $reward = Reward::getById($rewardId);
         if (!$reward) {
             $_SESSION['error'] = "Récompense introuvable.";
@@ -82,14 +76,14 @@ class RewardController {
             exit;
         }
         
-        // Vérifier que l'utilisateur n'a pas déjà la récompense
+        
         if (Reward::userHasReward($userId, $rewardId)) {
             $_SESSION['error'] = "Vous avez déjà cette récompense.";
             header('Location: /reward');
             exit;
         }
         
-        // Vérifier le niveau requis
+        
         $user = User::find($userId);
         $userLevel = $user['level'] ?? 1;
         
@@ -99,7 +93,7 @@ class RewardController {
             exit;
         }
         
-        // Débloquer la récompense
+        
         if (Reward::unlockReward($userId, $rewardId)) {
             $_SESSION['success'] = "Récompense débloquée avec succès !";
         } else {
@@ -111,23 +105,23 @@ class RewardController {
     }
     
     public function equip($id) {
-        // Si pas d'utilisateur connecté, utiliser un utilisateur de test
+        
         if (!isset($_SESSION['user_id'])) {
-            $userId = 1; // Utiliser l'admin pour les tests
+            $userId = 1; 
         } else {
             $userId = $_SESSION['user_id'];
         }
         
         $rewardId = $id;
         
-        // Vérifier que l'utilisateur a la récompense
+        
         if (!Reward::userHasReward($userId, $rewardId)) {
             $_SESSION['error'] = "Vous n'avez pas cette récompense.";
             header('Location: /reward');
             exit;
         }
         
-        // Équiper/déséquiper la récompense
+        
         if (Reward::toggleEquip($userId, $rewardId)) {
             $_SESSION['success'] = "Récompense équipée/déséquipée avec succès.";
         } else {
@@ -138,7 +132,7 @@ class RewardController {
         exit;
     }
     
-    // Méthodes API pour AJAX
+    
     public function apiUnlock() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -146,9 +140,9 @@ class RewardController {
             return;
         }
         
-        // Si pas d'utilisateur connecté, utiliser un utilisateur de test
+        
         if (!isset($_SESSION['user_id'])) {
-            $userId = 1; // Utiliser l'admin pour les tests
+            $userId = 1; 
         } else {
             $userId = $_SESSION['user_id'];
         }
@@ -193,9 +187,9 @@ class RewardController {
             return;
         }
         
-        // Si pas d'utilisateur connecté, utiliser un utilisateur de test
+        
         if (!isset($_SESSION['user_id'])) {
-            $userId = 1; // Utiliser l'admin pour les tests
+            $userId = 1; 
         } else {
             $userId = $_SESSION['user_id'];
         }
