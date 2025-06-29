@@ -5,6 +5,8 @@ $routes = [
     '/auth/login' => ['controller' => 'AuthController', 'action' => 'login'],
     '/auth/logout' => ['controller' => 'AuthController', 'action' => 'logout'],
     '/auth/register' => ['controller' => 'AuthController', 'action' => 'register'],
+    '/auth/verify' => ['controller' => 'AuthController', 'action' => 'verify'],
+    '/auth/resend-verification' => ['controller' => 'AuthController', 'action' => 'resendVerification'],
 
     '/user/profile' => ['controller' => 'UserController', 'action' => 'profile'],
     '/user/edit' => ['controller' => 'UserController', 'action' => 'edit'],
@@ -22,6 +24,7 @@ $routes = [
 
     '/post' => ['controller' => 'PostController', 'action' => 'index'],
     '/post/view' => ['controller' => 'PostController', 'action' => 'view'],
+    '/post/create' => ['controller' => 'PostController', 'action' => 'create'],
 
     '/reward' => ['controller' => 'RewardController', 'action' => 'index'],
     '/reward/unlock' => ['controller' => 'RewardController', 'action' => 'unlock'],
@@ -30,8 +33,10 @@ $routes = [
 
     '/admin' => ['controller' => 'AdminController', 'action' => 'index'],
     '/admin/permissions' => ['controller' => 'AdminController', 'action' => 'permissions'],
+    '/admin/rank' => ['controller' => 'AdminController', 'action' => 'rank'],
     '/admin/maintenance' => ['controller' => 'AdminController', 'action' => 'maintenance'],
     '/admin/users' => ['controller' => 'AdminController', 'action' => 'users'],
+    '/admin/reports' => ['controller' => 'AdminController', 'action' => 'reports'],
 
     '/api' => ['controller' => 'ApiController', 'action' => 'index'],
 
@@ -40,6 +45,7 @@ $routes = [
     '/api/comments' => ['controller' => 'ApiController', 'action' => 'comments'],
     '/api/react' => ['controller' => 'ApiController', 'action' => 'react'],
     '/api/bookmark' => ['controller' => 'ApiController', 'action' => 'bookmark'],
+    '/api/captcha' => ['controller' => 'ApiController', 'action' => 'captcha'],
 
     // Routes API d'administration
     '/api/admin/stats' => ['controller' => 'AdminController', 'action' => 'apiStats'],
@@ -61,4 +67,8 @@ $routes = [
     '/me' => ['controller' => 'UserController', 'action' => 'profile'],
     '/me/edit' => ['controller' => 'UserController', 'action' => 'edit'],
     '/me/inbox' => ['controller' => 'UserController', 'action' => 'inbox'],
+
+    '/admin/reports/view' => ['controller' => 'AdminController', 'action' => 'viewReport'],
+    '/admin/reports/action' => ['controller' => 'AdminController', 'action' => 'handleReportAction'],
+    '/api/report' => ['controller' => 'ApiController', 'action' => 'createReport'],
 ]; 

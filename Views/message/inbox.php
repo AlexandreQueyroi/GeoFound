@@ -148,10 +148,22 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const bubbleClass = isOwn ? 'bg-accent text-white rounded-br-none' : 'bg-gray-700 text-white rounded-bl-none';
             
+            // Ajouter le bouton de signalement pour les messages reçus
+            const reportButton = !isOwn ? `
+                <button onclick="openReportModal('message', ${message.id})" 
+                        class="ml-2 text-red-400 hover:text-red-300 transition-colors" 
+                        title="Signaler ce message">
+                    <iconify-icon icon="tabler:flag" width="14" height="14"></iconify-icon>
+                </button>
+            ` : '';
+            
             messageDiv.innerHTML = `
-                <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${bubbleClass}">
-                    <p class="text-sm">${escapeHtml(message.content)}</p>
-                    <p class="text-xs text-gray-400 text-right mt-1">${formatDate(message.posted_at)}</p>
+                <div class="flex items-end">
+                    <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${bubbleClass}">
+                        <p class="text-sm">${escapeHtml(message.content)}</p>
+                        <p class="text-xs text-gray-400 text-right mt-1">${formatDate(message.posted_at)}</p>
+                    </div>
+                    ${reportButton}
                 </div>
             `;
             messagesArea.appendChild(messageDiv);

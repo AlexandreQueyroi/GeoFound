@@ -18,6 +18,18 @@
                 </button>
             </div>
             <div class="p-4 md:p-5">
+                <!-- Zone d'affichage des erreurs -->
+                <?php if (isset($_SESSION['login_error'])): ?>
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="font-medium"><?php echo htmlspecialchars($_SESSION['login_error']); ?></span>
+                    </div>
+                </div>
+                <?php unset($_SESSION['login_error']); endif; ?>
+                
                 <form class="space-y-4" id="connection-form" action="/auth/login" method="POST">
                     <div>
                         <label for="pseudo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -50,107 +62,8 @@
                         connecter</button>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-300 text-center">
                         Pas encore inscrit ?
-                        <a href="#" data-modal-hide="authentication-modal" data-modal-target="modal-createaccount" data-modal-toggle="modal-createaccount" class="text-blue-600 hover:underline dark:text-blue-400">Créer votre compte</a>
+                        <a href="/auth/register" class="text-blue-600 hover:underline dark:text-blue-400">Créer votre compte</a>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div role="dialog" id="modal-createaccount" tabindex="-1" aria-hidden="true"
-    class="hidden modal overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-md max-h-full">
-        <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-            <div
-                class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    Créer un compte
-                </h3>
-                <button type="button"
-                    class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                    data-modal-hide="modal-createaccount">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http:
-                        viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                    </svg>
-                    <span class="sr-only">Fermer la Modal</span>
-                </button>
-            </div>
-            <div class="p-4 md:p-5">
-                <form action="/register" method="POST" class="space-y-4">
-                    <div>
-                        <label for="newuser" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Identifiant
-                        </label>
-                        <input type="text" name="newuser" id="newuser" oninput="checkModalIsValid()"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
-                            placeholder="Identifiant" required />
-                        <label for="newmail" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Adresse Mail
-                        </label>
-                        <input type="text" name="newmail" id="newmail" oninput="checkModalIsValid()"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
-                            placeholder="adresse@adresse.com" required />
-                        <label for="newpass" class="block mt-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Mot de passe
-                        </label>
-                        <div class="relative">
-                            <input type="password" name="newpass" id="newpass" oninput="checkModalIsValid()"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
-                                placeholder="••••••••" required />
-                            <button type="button" onclick="togglePasswordVisibility('newpass','icon-newpass')"
-                                class="absolute top-2 right-2 z-10 px-2 py-1 rounded shadow">
-                                <span id="icon-newpass" class="iconify" data-icon="tabler:eye-closed"></span>
-                            </button>
-                        </div>
-
-                        <label for="newpass_confirm"
-                            class="block mt-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Confirmation du Mot de passe
-                        </label>
-                        <div class="relative">
-                            <input type="password" name="newpass_confirm" id="newpass_confirm"
-                                oninput="checkModalIsValid()"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
-                                placeholder="••••••••" required />
-                            <button type="button"
-                                onclick="togglePasswordVisibility('newpass_confirm','icon-newpass-confirm')"
-                                class="absolute top-2 right-2 z-10 px-2 py-1 rounded shadow">
-                                <span id="icon-newpass-confirm" class="iconify" data-icon="tabler:eye-closed"></span>
-                            </button>
-                        </div>
-                    </div>
-                    <label for="captcha-answer"
-                        class="block mt-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Captcha - Résolvez la question ci-dessous
-                    </label>
-                    <div class="mb-4">
-                        <p id="captcha-question" class="text-sm font-medium text-gray-900 dark:text-white mb-2"></p>
-                        <div class="flex gap-2">
-                            <input type="text" id="captcha-answer" class="w-3/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 
-                                    dark:bg-gray-600 dark:border-gray-500 dark:text-white" placeholder="Votre réponse"
-                                required />
-                            <button type="button" id="check-captcha" class="w-1/4 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none 
-                                    focus:ring-green-300 font-medium rounded-lg text-sm py-2.5
-                                    text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                Valider
-                            </button>
-                        </div>
-                        <p id="response" class="text-sm mt-2 text-red-500 dark:text-red-400"></p>
-                    </div>
-
-                    <script>
-                        fetchCaptcha();
-                        document.getElementById('check-captcha').addEventListener('click', checkCaptcha);
-                    </script>
-                    <button type="submit" id="submitBtn" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none 
-                        focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5
-                        text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        onclick="if (!checkModalIsValidConfirm(event)) return false;">
-                        Créer mon compte
-                    </button>
                 </form>
             </div>
         </div>
@@ -204,52 +117,81 @@
     </div>
 </div>
 
-<!-- Modal Flowbite pour l'ajout de post -->
-<div id="post-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/50 flex items-center justify-center">
-  <div class="relative w-full max-w-2xl max-h-full">
-    <!-- Modal content -->
-    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-      <!-- Modal header -->
-      <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-          Nouveau Post
-        </h3>
-        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="post-modal">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http:
-          <span class="sr-only">Fermer</span>
-        </button>
-      </div>
-      <!-- Modal body -->
-      <div class="p-6 space-y-6">
-        <form id="postForm" enctype="multipart/form-data">
-          <div class="mb-4">
-            <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Titre *</label>
-            <input type="text" id="title" name="title" class="form-control w-full" required>
-          </div>
-          <div class="mb-4">
-            <label for="content" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description *</label>
-            <textarea id="content" name="content" class="form-control w-full" rows="4" required></textarea>
-          </div>
-          <div class="mb-4">
-            <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Adresse *</label>
-            <input type="text" id="address" name="address" class="form-control w-full" placeholder="Entrez une adresse..." required>
-          </div>
-          <div class="mb-4">
-            <label for="image" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image (optionnel)</label>
-            <input type="file" id="image" name="image" class="form-control w-full" accept="image/*">
-          </div>
-          <input type="hidden" id="latitude" name="latitude" value="">
-          <input type="hidden" id="longitude" name="longitude" value="">
-        </form>
-      </div>
-      <!-- Modal footer -->
-      <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-        <button type="button" class="btn btn-secondary" data-modal-hide="post-modal">Annuler</button>
-        <button type="button" class="btn btn-primary" onclick="submitPostForm()">Créer le post</button>
-      </div>
+<!-- Modal de création de post -->
+<div id="post-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-gray-900 rounded-xl shadow-2xl w-full max-w-2xl border border-gray-700 transform transition-all duration-300 scale-95 opacity-0" id="post-modal-content">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-blue-500 bg-opacity-20 rounded-lg">
+                        <iconify-icon icon="tabler:plus" class="text-blue-400" width="20" height="20"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white">Créer un nouveau post</h3>
+                </div>
+                <button onclick="hidePostModal()" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-800 transition-colors">
+                    <iconify-icon icon="tabler:x" width="20" height="20"></iconify-icon>
+                </button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6 space-y-6">
+                <form id="postForm" enctype="multipart/form-data">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Titre *</label>
+                            <input type="text" id="title" name="title" 
+                                   class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                   placeholder="Donnez un titre à votre post..." required>
+                        </div>
+                        
+                        <div>
+                            <label for="content" class="block text-sm font-medium text-gray-300 mb-2">Description *</label>
+                            <textarea id="content" name="content" rows="4" 
+                                      class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
+                                      placeholder="Décrivez votre découverte ou partagez votre expérience..." required></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="address" class="block text-sm font-medium text-gray-300 mb-2">Adresse *</label>
+                            <input type="text" id="address" name="address" 
+                                   class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                   placeholder="Entrez l'adresse du lieu..." required>
+                        </div>
+                        
+                        <div>
+                            <label for="image" class="block text-sm font-medium text-gray-300 mb-2">Image</label>
+                            <div class="relative">
+                                <input type="file" id="image" name="image" accept="image/*"
+                                       class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2">Formats acceptés : JPG, PNG, GIF (max 5MB)</p>
+                        </div>
+                        
+                        <input type="hidden" id="latitude" name="latitude" value="">
+                        <input type="hidden" id="longitude" name="longitude" value="">
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Footer -->
+            <div class="flex justify-end space-x-3 p-6 border-t border-gray-700">
+                <button onclick="hidePostModal()" 
+                        class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium">
+                    Annuler
+                </button>
+                <button onclick="submitPostForm()" 
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center space-x-2">
+                    <iconify-icon icon="tabler:send" width="16" height="16"></iconify-icon>
+                    <span>Créer le post</span>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+
+<!-- Container pour les notifications -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
 <!-- Modal de gestion des permissions et maintenance -->
 <div id="permission-maintenance-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
@@ -419,4 +361,104 @@
         </div>
     </div>
 </div>
-<script src="/assets/js/permissions.js"></script> 
+<script src="/assets/js/permissions.js"></script>
+
+<!-- Modal de signalement -->
+<div id="report-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-gray-900 rounded-xl shadow-2xl w-full max-w-md border border-gray-700 transform transition-all duration-300 scale-95 opacity-0" id="report-modal-content">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-red-500 bg-opacity-20 rounded-lg">
+                        <iconify-icon icon="tabler:flag" class="text-red-400" width="20" height="20"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white">Signaler un contenu</h3>
+                </div>
+                <button onclick="hideReportModal()" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-800 transition-colors">
+                    <iconify-icon icon="tabler:x" width="20" height="20"></iconify-icon>
+                </button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6 space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">Motif du signalement *</label>
+                    <select id="report-reason" class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all">
+                        <option value="">Sélectionnez un motif</option>
+                        <option value="Contenu inapproprié">🚫 Contenu inapproprié</option>
+                        <option value="Spam">📧 Spam</option>
+                        <option value="Harcèlement">😡 Harcèlement</option>
+                        <option value="Violence">⚔️ Violence</option>
+                        <option value="Contenu illégal">🚨 Contenu illégal</option>
+                        <option value="Fausses informations">🤥 Fausses informations</option>
+                        <option value="Autre">❓ Autre</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">Détails supplémentaires</label>
+                    <textarea id="report-details" rows="4" 
+                              placeholder="Décrivez le problème en détail pour nous aider à mieux comprendre la situation..."
+                              class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none"></textarea>
+                    <p class="text-xs text-gray-500 mt-2">Ces informations nous aident à traiter votre signalement plus efficacement.</p>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="flex justify-end space-x-3 p-6 border-t border-gray-700">
+                <button onclick="hideReportModal()" 
+                        class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium">
+                    Annuler
+                </button>
+                <button onclick="submitReport()" 
+                        class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center space-x-2">
+                    <iconify-icon icon="tabler:send" width="16" height="16"></iconify-icon>
+                    <span>Envoyer le signalement</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Animation pour la modal de signalement
+function showReportModal() {
+    const modal = document.getElementById('report-modal');
+    const content = document.getElementById('report-modal-content');
+    
+    if (modal && content) {
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+}
+
+function hideReportModal() {
+    const modal = document.getElementById('report-modal');
+    const content = document.getElementById('report-modal-content');
+    
+    if (modal && content) {
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            // Réinitialiser le formulaire
+            document.getElementById('report-reason').value = '';
+            document.getElementById('report-details').value = '';
+        }, 300);
+    }
+}
+
+// Remplacer les anciennes fonctions par les nouvelles
+function openReportModal(type, targetId) {
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+        modal.dataset.type = type;
+        modal.dataset.targetId = targetId;
+        showReportModal();
+    }
+}
+</script> 

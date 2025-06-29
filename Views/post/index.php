@@ -171,6 +171,9 @@ function renderPost(post) {
                     <button onclick="sharePost(${post.id})" class="post-hover-button">
                         <span class="iconify" data-icon="tabler:share" style="font-size:24px;color:#22c55e"></span>
                     </button>
+                    <button onclick="reportPost(${post.id})" class="post-hover-button">
+                        <span class="iconify" data-icon="tabler:flag" style="font-size:24px;color:#ef4444"></span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -188,6 +191,10 @@ function renderPost(post) {
                 <button onclick="sharePost(${post.id})" class="flex items-center space-x-2 text-white hover:text-green-400 transition-colors duration-200 transform hover:scale-105">
                     <span class="iconify" data-icon="tabler:share" style="font-size:24px;color:#22c55e"></span>
                     <span class="text-lg font-medium">Partager</span>
+                </button>
+                <button onclick="reportPost(${post.id})" class="flex items-center space-x-2 text-white hover:text-red-400 transition-colors duration-200 transform hover:scale-105">
+                    <span class="iconify" data-icon="tabler:flag" style="font-size:24px;color:#ef4444"></span>
+                    <span class="text-lg font-medium">Signaler</span>
                 </button>
                 <div class="flex-1"></div>
                 <button onclick="favoritePost(${post.id})" id="fav-btn-${post.id}" class="text-white hover:text-yellow-400 transition-colors duration-200 transform hover:scale-105">
@@ -497,6 +504,63 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     });
 });
+
+function reportPost(postId) {
+    if (!window.isLoggedIn) {
+        showNotification('Vous devez être connecté pour signaler un post', 'error');
+        return;
+    }
+    
+    // Afficher le modal de signalement avec animation
+    openReportModal('post', postId);
+}
+
+function submitReport() {
+    const modal = document.getElementById('report-modal');
+    const postId = modal.dataset.postId || modal.dataset.targetId;
+    const type = modal.dataset.type || 'post';
+    const reason = document.getElementById('report-reason').value;
+    const details = document.getElementById('report-details').value;
+    
+    if (!reason) {
+        showNotification('Veuillez sélectionner un motif', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('type', type);
+    formData.append('target_id', postId);
+    formData.append('reason', reason);
+    formData.append('details', details);
+    
+    fetch('/api/report', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Signalement envoyé avec succès', 'success');
+            hideReportModal();
+        } else {
+            showNotification('Erreur: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showNotification('Une erreur est survenue', 'error');
+    });
+}
+
+function hideReportModal() {
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        // Réinitialiser le formulaire
+        document.getElementById('report-reason').value = '';
+        document.getElementById('report-details').value = '';
+    }
+}
 </script>
 
 <?php include_once __DIR__ . '/../layouts/footer.php'; ?> 

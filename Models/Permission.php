@@ -16,7 +16,19 @@ class Permission {
     public static function hasPermission($userId, $permissionName) {
         self::init();
         
-        
+        // Vérifier d'abord si l'utilisateur a la permission admin (*)
+        $stmt = self::$db->prepare("
+            SELECT 1 FROM user_permissions up
+            JOIN permissions p ON up.permission_id = p.id
+            WHERE up.user_id = ? AND p.name = '*' 
+            AND (up.expires_at IS NULL OR up.expires_at > NOW())
+        ");
+        $stmt->execute([$userId]);
+        if ($stmt->fetch()) {
+            return true; // L'utilisateur a la permission admin, accès à tout
+        }
+
+        // Vérifier les permissions directes de l'utilisateur
         $stmt = self::$db->prepare("
             SELECT 1 FROM user_permissions up
             JOIN permissions p ON up.permission_id = p.id
@@ -28,10 +40,10 @@ class Permission {
             return true;
         }
 
-        
+        // Vérifier les permissions via le rang de l'utilisateur
         $stmt = self::$db->prepare("
             SELECT 1 FROM users u
-            JOIN ranks r ON u.rank = r.id
+            JOIN ranks r ON u.user_rank = r.name
             JOIN rank_permissions rp ON r.id = rp.rank_id
             JOIN permissions p ON rp.permission_id = p.id
             WHERE u.id = ? AND p.name = ?
@@ -87,7 +99,8 @@ class Permission {
             SELECT 1 FROM page_permissions pp
             JOIN permissions p ON pp.permission_id = p.id
             JOIN rank_permissions rp ON p.id = rp.permission_id
-            JOIN users u ON rp.rank_id = u.rank
+            JOIN ranks r ON rp.rank_id = r.id
+            JOIN users u ON u.user_rank = r.name
             WHERE pp.page_path = ? AND u.id = ?
         ");
         $stmt->execute([$pagePath, $userId]);

@@ -2,21 +2,143 @@
 namespace App\Controllers;
 
 use App\Models\Permission;
+use App\Helpers\Database;
+use PDO;
+use Exception;
 
 class AdminController {
     public function index() {
-        
+        // Vérification des permissions d'admin
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.access')) {
             header('Location: /error/403');
             exit;
         }
+        
+        // Récupérer les vraies permissions de l'utilisateur
+        $permissions = Permission::getUserPermissions($_SESSION['user_id']);
+        $userPermissions = array_map(function($perm) {
+            return $perm['name'];
+        }, $permissions);
+        
+        // Ajouter les permissions du rang si l'utilisateur en a un
+        if (isset($_SESSION['user_id'])) {
+            $db = Database::getConnection();
+            $stmt = $db->prepare("
+                SELECT p.name FROM permissions p
+                JOIN rank_permissions rp ON p.id = rp.permission_id
+                JOIN users u ON rp.rank_id = u.user_rank
+                WHERE u.id = ?
+            ");
+            $stmt->execute([$_SESSION['user_id']]);
+            $rankPermissions = $stmt->fetchAll();
+            foreach ($rankPermissions as $perm) {
+                if (!in_array($perm['name'], $userPermissions)) {
+                    $userPermissions[] = $perm['name'];
+                }
+            }
+        }
+        
         require __DIR__ . '/../Views/admin/index.php';
     }
     public function rank() {
-        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.ranks')) {
-            header('Location: /error/403');
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /');
             exit;
         }
+        
+        if (!Permission::hasPermission($_SESSION['user_id'], 'admin.rank')) {
+            header('Location: /');
+            exit;
+        }
+        
+        $db = Database::getConnection();
+        
+        // Traitement des actions
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $action = $_POST['action'] ?? '';
+            
+            try {
+                switch ($action) {
+                    case 'create_rank':
+                        $rankData = [
+                            'name' => trim($_POST['name']),
+                            'display_name' => trim($_POST['display_name']),
+                            'color' => $_POST['color'],
+                            'background_color' => $_POST['background_color'],
+                            'priority' => intval($_POST['priority']),
+                            'description' => trim($_POST['description']),
+                            'permissions' => isset($_POST['permissions']) ? json_encode($_POST['permissions']) : null
+                        ];
+                        
+                        // Validation
+                        if (empty($rankData['name']) || empty($rankData['display_name'])) {
+                            throw new \Exception("Le nom et le nom d'affichage sont requis.");
+                        }
+                        
+                        \App\Models\Rank::create($rankData);
+                        $_SESSION['admin_success'] = "Grade créé avec succès.";
+                        break;
+                        
+                    case 'update_rank':
+                        $rankId = intval($_POST['rank_id']);
+                        $rankData = [
+                            'name' => trim($_POST['name']),
+                            'display_name' => trim($_POST['display_name']),
+                            'color' => $_POST['color'],
+                            'background_color' => $_POST['background_color'],
+                            'priority' => intval($_POST['priority']),
+                            'description' => trim($_POST['description']),
+                            'permissions' => isset($_POST['permissions']) ? json_encode($_POST['permissions']) : null
+                        ];
+                        
+                        \App\Models\Rank::update($rankId, $rankData);
+                        $_SESSION['admin_success'] = "Grade mis à jour avec succès.";
+                        break;
+                        
+                    case 'delete_rank':
+                        $rankId = intval($_POST['rank_id']);
+                        \App\Models\Rank::delete($rankId);
+                        $_SESSION['admin_success'] = "Grade supprimé avec succès.";
+                        break;
+                        
+                    case 'update_user_rank':
+                        $userId = intval($_POST['user_id']);
+                        $newRank = trim($_POST['rank']);
+                        
+                        if (!empty($newRank)) {
+                            \App\Models\Rank::setUserRank($userId, $newRank);
+                            $_SESSION['admin_success'] = "Grade de l'utilisateur mis à jour avec succès.";
+                        }
+                        break;
+                }
+            } catch (\Exception $e) {
+                $_SESSION['admin_error'] = $e->getMessage();
+            }
+            
+            header('Location: /admin/rank');
+            exit;
+        }
+        
+        // Récupération des données
+        $ranks = \App\Models\Rank::getAll();
+        $rankStats = \App\Models\Rank::getStats();
+        
+        // Récupération des utilisateurs avec leurs grades
+        $stmt = $db->prepare("
+            SELECT u.id, u.pseudo, u.email, u.user_rank, u.connected, u.desactivated, u.email_verified,
+                   r.display_name as rank_display_name, r.color as rank_color, r.background_color as rank_bg_color
+            FROM users u
+            LEFT JOIN ranks r ON u.user_rank = r.name
+            ORDER BY r.priority DESC, u.pseudo ASC
+        ");
+        $stmt->execute();
+        $users = $stmt->fetchAll();
+        
+        // Récupération des permissions disponibles
+        $stmt = $db->prepare("SELECT id, name, description FROM permissions ORDER BY name");
+        $stmt->execute();
+        $availablePermissions = $stmt->fetchAll();
+        
         require __DIR__ . '/../Views/admin/rank.php';
     }
     public function user() {
@@ -54,8 +176,7 @@ class AdminController {
     
     public function apiPermissions() {
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.permissions')) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Accès refusé']);
+            header('Location: /error/403');
             exit;
         }
 
@@ -95,63 +216,82 @@ class AdminController {
         
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
-                $ranks = Permission::getAllRanks();
+                $ranks = \App\Models\Rank::getAll();
                 echo json_encode($ranks);
                 break;
                 
             case 'POST':
                 $data = json_decode(file_get_contents('php://input'), true);
-                $name = $data['name'] ?? '';
-                $color = $data['color'] ?? '';
                 
-                if (empty($name)) {
-                    http_response_code(400);
-                    echo json_encode(['error' => 'Nom de rang requis']);
-                    exit;
-                }
-                
-                if (Permission::createRank($name, $color)) {
-                    echo json_encode(['success' => true, 'message' => 'Rang créé']);
-                } else {
+                try {
+                    $rankData = [
+                        'name' => $data['name'] ?? '',
+                        'display_name' => $data['display_name'] ?? '',
+                        'color' => $data['color'] ?? '#3B82F6',
+                        'background_color' => $data['background_color'] ?? '#1E40AF',
+                        'priority' => intval($data['priority'] ?? 10),
+                        'description' => $data['description'] ?? '',
+                        'permissions' => isset($data['permissions']) ? json_encode($data['permissions']) : null
+                    ];
+                    
+                    if (empty($rankData['name']) || empty($rankData['display_name'])) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Nom et nom d\'affichage requis']);
+                        exit;
+                    }
+                    
+                    \App\Models\Rank::create($rankData);
+                    echo json_encode(['success' => true, 'message' => 'Grade créé']);
+                } catch (\Exception $e) {
                     http_response_code(500);
-                    echo json_encode(['error' => 'Erreur lors de la création du rang']);
+                    echo json_encode(['error' => 'Erreur lors de la création du grade: ' . $e->getMessage()]);
                 }
                 break;
                 
             case 'PUT':
                 $data = json_decode(file_get_contents('php://input'), true);
                 $id = $data['id'] ?? 0;
-                $name = $data['name'] ?? '';
-                $color = $data['color'] ?? '';
                 
-                if (empty($id) || empty($name)) {
-                    http_response_code(400);
-                    echo json_encode(['error' => 'ID et nom de rang requis']);
-                    exit;
-                }
-                
-                if (Permission::updateRank($id, $name, $color)) {
-                    echo json_encode(['success' => true, 'message' => 'Rang mis à jour']);
-                } else {
+                try {
+                    $rankData = [
+                        'name' => $data['name'] ?? '',
+                        'display_name' => $data['display_name'] ?? '',
+                        'color' => $data['color'] ?? '#3B82F6',
+                        'background_color' => $data['background_color'] ?? '#1E40AF',
+                        'priority' => intval($data['priority'] ?? 10),
+                        'description' => $data['description'] ?? '',
+                        'permissions' => isset($data['permissions']) ? json_encode($data['permissions']) : null
+                    ];
+                    
+                    if (empty($id) || empty($rankData['name']) || empty($rankData['display_name'])) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'ID, nom et nom d\'affichage requis']);
+                        exit;
+                    }
+                    
+                    \App\Models\Rank::update($id, $rankData);
+                    echo json_encode(['success' => true, 'message' => 'Grade mis à jour']);
+                } catch (\Exception $e) {
                     http_response_code(500);
-                    echo json_encode(['error' => 'Erreur lors de la mise à jour du rang']);
+                    echo json_encode(['error' => 'Erreur lors de la mise à jour du grade: ' . $e->getMessage()]);
                 }
                 break;
                 
             case 'DELETE':
                 $id = $_GET['id'] ?? 0;
                 
-                if (empty($id)) {
-                    http_response_code(400);
-                    echo json_encode(['error' => 'ID de rang requis']);
-                    exit;
-                }
-                
-                if (Permission::deleteRank($id)) {
-                    echo json_encode(['success' => true, 'message' => 'Rang supprimé']);
-                } else {
+                try {
+                    if (empty($id)) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'ID de grade requis']);
+                        exit;
+                    }
+                    
+                    \App\Models\Rank::delete($id);
+                    echo json_encode(['success' => true, 'message' => 'Grade supprimé']);
+                } catch (\Exception $e) {
                     http_response_code(500);
-                    echo json_encode(['error' => 'Erreur lors de la suppression du rang']);
+                    echo json_encode(['error' => 'Erreur lors de la suppression du grade: ' . $e->getMessage()]);
                 }
                 break;
         }
@@ -282,8 +422,7 @@ class AdminController {
 
     public function apiMaintenance() {
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.maintenance')) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Accès refusé']);
+            header('Location: /error/403');
             exit;
         }
 
@@ -471,20 +610,35 @@ class AdminController {
             $stmt->execute();
             $users = $stmt->fetch()['count'];
             
-            // Statistiques des posts
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM posts");
-            $stmt->execute();
-            $posts = $stmt->fetch()['count'];
+            // Statistiques des posts (vérifier si la table existe)
+            $posts = 0;
+            try {
+                $stmt = $db->prepare("SELECT COUNT(*) as count FROM post");
+                $stmt->execute();
+                $posts = $stmt->fetch()['count'];
+            } catch (\Exception $e) {
+                // Table post n'existe pas, on garde 0
+            }
             
-            // Statistiques des messages
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM messages");
-            $stmt->execute();
-            $messages = $stmt->fetch()['count'];
+            // Statistiques des messages (vérifier si la table existe)
+            $messages = 0;
+            try {
+                $stmt = $db->prepare("SELECT COUNT(*) as count FROM messages");
+                $stmt->execute();
+                $messages = $stmt->fetch()['count'];
+            } catch (\Exception $e) {
+                // Table messages n'existe pas, on garde 0
+            }
             
-            // Pages en maintenance
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM page_maintenance WHERE is_maintenance = 1");
-            $stmt->execute();
-            $maintenance = $stmt->fetch()['count'];
+            // Pages en maintenance (vérifier si la table existe)
+            $maintenance = 0;
+            try {
+                $stmt = $db->prepare("SELECT COUNT(*) as count FROM page_maintenance WHERE is_maintenance = 1");
+                $stmt->execute();
+                $maintenance = $stmt->fetch()['count'];
+            } catch (\Exception $e) {
+                // Table page_maintenance n'existe pas, on garde 0
+            }
             
             echo json_encode([
                 'users' => $users,
@@ -494,7 +648,7 @@ class AdminController {
             ]);
         } catch (\Exception $e) {
             http_response_code(500);
-            echo json_encode(['error' => 'Erreur lors de la récupération des statistiques']);
+            echo json_encode(['error' => 'Erreur lors de la récupération des statistiques', 'details' => $e->getMessage()]);
         }
     }
 
@@ -539,13 +693,13 @@ class AdminController {
 
     // API pour la gestion des utilisateurs
     public function apiUsers() {
+        header('Content-Type: application/json');
+        
         if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
             http_response_code(403);
             echo json_encode(['error' => 'Accès refusé']);
             exit;
         }
-
-        header('Content-Type: application/json');
         
         try {
             $db = \App\Helpers\Database::getConnection();
@@ -568,7 +722,7 @@ class AdminController {
             }
             
             if (!empty($rank)) {
-                $whereConditions[] = "u.rank = ?";
+                $whereConditions[] = "r.name = ?";
                 $params[] = $rank;
             }
             
@@ -579,28 +733,31 @@ class AdminController {
             
             $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
             
-            // Requête pour compter le total
+            // Compter le total d'utilisateurs
             $countQuery = "
                 SELECT COUNT(*) as total 
                 FROM users u 
-                LEFT JOIN ranks r ON u.rank = r.id 
+                LEFT JOIN ranks r ON u.user_rank = r.name 
                 $whereClause
             ";
+            
             $stmt = $db->prepare($countQuery);
             $stmt->execute($params);
             $total = $stmt->fetch()['total'];
             
-            // Requête pour récupérer les utilisateurs
+            // Récupérer les utilisateurs avec pagination
             $query = "
-                SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected,
-                       r.id as rank_id, r.name as rank_name, r.color as rank_color,
+                SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected, u.email_verified,
+                       r.id as rank_id, r.name as rank_name, r.display_name as rank_display_name, 
+                       r.color as rank_color, r.background_color as rank_bg_color,
                        COUNT(up.id) as permissions_count
                 FROM users u 
-                LEFT JOIN ranks r ON u.rank = r.id 
+                LEFT JOIN ranks r ON u.user_rank = r.name 
                 LEFT JOIN user_permissions up ON u.id = up.user_id
                 $whereClause
-                GROUP BY u.id, u.pseudo, u.email, u.desactivated, u.connected, r.id, r.name, r.color
-                ORDER BY u.id DESC 
+                GROUP BY u.id, u.pseudo, u.email, u.desactivated, u.connected, u.email_verified, 
+                         r.id, r.name, r.display_name, r.color, r.background_color
+                ORDER BY r.priority DESC, u.pseudo ASC 
                 LIMIT $limit OFFSET $offset
             ";
             
@@ -623,25 +780,47 @@ class AdminController {
 
     // API pour récupérer/modifier un utilisateur spécifique
     public function apiUser($userId) {
-        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Accès refusé']);
+        // Capturer toutes les erreurs et les rediriger vers JSON
+        set_error_handler(function($severity, $message, $file, $line) {
+            if (!(error_reporting() & $severity)) {
+                return;
+            }
+            
+            // Log l'erreur
+            $errorMessage = date('[d/m/Y H:i:s] ') . "Erreur PHP: $message dans $file ligne $line\n";
+            file_put_contents(__DIR__ . '/../storage/logs/php_errors.log', $errorMessage, FILE_APPEND);
+            
+            // Retourner une réponse JSON d'erreur
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Erreur serveur interne', 'details' => $message]);
             exit;
-        }
-
+        });
+        
+        // S'assurer que la sortie est en JSON
         header('Content-Type: application/json');
         
+        // Désactiver l'affichage des erreurs pour cette requête
+        ini_set('display_errors', 0);
+        
         try {
+            if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
+                http_response_code(403);
+                echo json_encode(['error' => 'Accès refusé']);
+                exit;
+            }
+            
             $db = \App\Helpers\Database::getConnection();
             
             switch ($_SERVER['REQUEST_METHOD']) {
                 case 'GET':
                     // Récupérer les informations de l'utilisateur
                     $stmt = $db->prepare("
-                        SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected,
-                               r.id as rank_id, r.name as rank_name, r.color as rank_color
+                        SELECT u.id, u.pseudo, u.email, u.desactivated as status, u.connected, u.email_verified,
+                               r.id as rank_id, r.name as rank_name, r.display_name as rank_display_name,
+                               r.color as rank_color, r.background_color as rank_bg_color
                         FROM users u 
-                        LEFT JOIN ranks r ON u.rank = r.id 
+                        LEFT JOIN ranks r ON u.user_rank = r.name 
                         WHERE u.id = ?
                     ");
                     $stmt->execute([$userId]);
@@ -651,6 +830,22 @@ class AdminController {
                         http_response_code(404);
                         echo json_encode(['error' => 'Utilisateur non trouvé']);
                         exit;
+                    }
+                    
+                    // Convertir le statut numérique en texte
+                    switch ($user['status']) {
+                        case 0:
+                            $user['status_text'] = 'active';
+                            break;
+                        case 1:
+                            $user['status_text'] = 'banned';
+                            break;
+                        case 2:
+                            $user['status_text'] = 'inactive';
+                            break;
+                        default:
+                            $user['status_text'] = 'active';
+                            break;
                     }
                     
                     // Récupérer les permissions de l'utilisateur
@@ -667,12 +862,26 @@ class AdminController {
                     break;
                     
                 case 'PUT':
+                    // Empêcher la modification de son propre compte
+                    if ($userId == $_SESSION['user_id']) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Vous ne pouvez pas modifier votre propre compte']);
+                        exit;
+                    }
+                    
                     // Modifier l'utilisateur
-                    $data = json_decode(file_get_contents('php://input'), true);
+                    $input = file_get_contents('php://input');
+                    $data = json_decode($input, true);
+                    
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Données JSON invalides']);
+                        exit;
+                    }
                     
                     $pseudo = $data['username'] ?? '';
                     $email = $data['email'] ?? '';
-                    $rankId = $data['rank_id'] ?? null;
+                    $rankName = $data['rank_name'] ?? null;
                     $status = $data['status'] ?? 'active';
                     $permissions = $data['permissions'] ?? [];
                     
@@ -682,17 +891,69 @@ class AdminController {
                         exit;
                     }
                     
+                    // Validation de l'email
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Format d\'email invalide']);
+                        exit;
+                    }
+                    
+                    // Vérifier si le pseudo existe déjà (sauf pour cet utilisateur)
+                    $stmt = $db->prepare("SELECT id FROM users WHERE pseudo = ? AND id != ?");
+                    $stmt->execute([$pseudo, $userId]);
+                    if ($stmt->fetch()) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Ce nom d\'utilisateur est déjà utilisé']);
+                        exit;
+                    }
+                    
+                    // Vérifier si l'email existe déjà (sauf pour cet utilisateur)
+                    $stmt = $db->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+                    $stmt->execute([$email, $userId]);
+                    if ($stmt->fetch()) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Cet email est déjà utilisé']);
+                        exit;
+                    }
+                    
+                    // Vérifier si le rang existe (si fourni)
+                    if (!empty($rankName)) {
+                        $stmt = $db->prepare("SELECT name FROM ranks WHERE name = ?");
+                        $stmt->execute([$rankName]);
+                        $rank = $stmt->fetch();
+                        if (!$rank) {
+                            http_response_code(400);
+                            echo json_encode(['error' => 'Grade invalide']);
+                            exit;
+                        }
+                    }
+                    
                     $db->beginTransaction();
                     
                     try {
                         // Mettre à jour l'utilisateur
                         $stmt = $db->prepare("
                             UPDATE users 
-                            SET pseudo = ?, email = ?, rank = ?, desactivated = ?
+                            SET pseudo = ?, email = ?, user_rank = ?, desactivated = ?
                             WHERE id = ?
                         ");
-                        $desactivated = $status === 'banned' ? 1 : 0;
-                        $stmt->execute([$pseudo, $email, $rankId, $desactivated, $userId]);
+                        
+                        // Convertir le statut en valeur numérique
+                        $desactivated = 0; // actif par défaut
+                        switch ($status) {
+                            case 'banned':
+                                $desactivated = 1; // banni
+                                break;
+                            case 'inactive':
+                                $desactivated = 2; // inactif
+                                break;
+                            case 'active':
+                            default:
+                                $desactivated = 0; // actif
+                                break;
+                        }
+                        
+                        $stmt->execute([$pseudo, $email, $rankName, $desactivated, $userId]);
                         
                         // Supprimer les anciennes permissions
                         $stmt = $db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
@@ -719,29 +980,72 @@ class AdminController {
                     
                 case 'DELETE':
                     // Supprimer l'utilisateur
-                    $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
-                    $stmt->execute([$userId]);
+                    if ($userId == $_SESSION['user_id']) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Vous ne pouvez pas supprimer votre propre compte']);
+                        exit;
+                    }
                     
-                    echo json_encode(['success' => true, 'message' => 'Utilisateur supprimé']);
+                    $db->beginTransaction();
+                    
+                    try {
+                        // Supprimer les permissions de l'utilisateur
+                        $stmt = $db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
+                        $stmt->execute([$userId]);
+                        
+                        // Supprimer l'utilisateur
+                        $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+                        $stmt->execute([$userId]);
+                        
+                        if ($stmt->rowCount() == 0) {
+                            throw new \Exception('Utilisateur non trouvé');
+                        }
+                        
+                        $db->commit();
+                        echo json_encode(['success' => true, 'message' => 'Utilisateur supprimé']);
+                    } catch (\Exception $e) {
+                        $db->rollBack();
+                        throw $e;
+                    }
                     break;
+                    
+                default:
+                    http_response_code(405);
+                    echo json_encode(['error' => 'Méthode non autorisée']);
+                    exit;
             }
         } catch (\Exception $e) {
+            // Log manuel de l'erreur
+            $logMessage = date('[d/m/Y H:i:s] ') . 'Erreur modification utilisateur : ' . $e->getMessage() . "\n";
+            file_put_contents(__DIR__ . '/../storage/logs/log_28-06-2025.txt', $logMessage, FILE_APPEND);
+            
             http_response_code(500);
-            echo json_encode(['error' => 'Erreur lors de l\'opération sur l\'utilisateur']);
+            echo json_encode([
+                'error' => 'Erreur lors de l\'opération sur l\'utilisateur', 
+                'details' => $e->getMessage()
+            ]);
+        } finally {
+            // Restaurer le gestionnaire d'erreur par défaut
+            restore_error_handler();
         }
     }
 
     // API pour basculer le statut d'un utilisateur
     public function apiToggleUserStatus($userId) {
-        if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Accès refusé']);
-            exit;
-        }
-
-        header('Content-Type: application/json');
-        
         try {
+            if (!isset($_SESSION['user_id']) || !Permission::hasPermission($_SESSION['user_id'], 'admin.users')) {
+                http_response_code(403);
+                echo json_encode(['error' => 'Accès refusé']);
+                exit;
+            }
+            
+            // Empêcher de modifier son propre compte
+            if ($userId == $_SESSION['user_id']) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Vous ne pouvez pas modifier votre propre statut']);
+                exit;
+            }
+            
             $db = \App\Helpers\Database::getConnection();
             
             // Récupérer le statut actuel
@@ -755,20 +1059,200 @@ class AdminController {
                 exit;
             }
             
-            // Basculer le statut
-            $newStatus = $user['desactivated'] ? 0 : 1;
+            // Faire circuler les statuts : actif (0) -> banni (1) -> inactif (2) -> actif (0)
+            $currentStatus = $user['desactivated'];
+            $newStatus = ($currentStatus + 1) % 3;
             
             $stmt = $db->prepare("UPDATE users SET desactivated = ? WHERE id = ?");
             $stmt->execute([$newStatus, $userId]);
             
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Statut modifié',
-                'new_status' => $newStatus ? 'banned' : 'active'
-            ]);
+            // Déterminer le texte du statut
+            $statusText = '';
+            switch ($newStatus) {
+                case 0:
+                    $statusText = 'activé';
+                    break;
+                case 1:
+                    $statusText = 'banni';
+                    break;
+                case 2:
+                    $statusText = 'désactivé (inactif)';
+                    break;
+            }
+            
+            echo json_encode(['success' => true, 'message' => "Utilisateur $statusText"]);
+            
         } catch (\Exception $e) {
             http_response_code(500);
-            echo json_encode(['error' => 'Erreur lors de la modification du statut']);
+            echo json_encode(['error' => 'Erreur serveur: ' . $e->getMessage()]);
+        }
+    }
+
+    public function reports()
+    {
+        // Vérification permission admin
+        if (!isset($_SESSION['user_id']) || !in_array('admin.reports', $_SESSION['permissions'] ?? []) && !in_array('*', $_SESSION['permissions'] ?? [])) {
+            header('Location: /');
+            exit;
+        }
+        $db = \App\Helpers\Database::getConnection();
+        $stmt = $db->query("SELECT r.*, u.pseudo AS reporter FROM reports r JOIN users u ON r.reporter_id = u.id ORDER BY r.created_at DESC LIMIT 100");
+        $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        include __DIR__ . '/../Views/admin/reports.php';
+    }
+
+    public function viewReport()
+    {
+        // Vérification permission admin
+        if (!isset($_SESSION['user_id']) || !in_array('admin.reports', $_SESSION['permissions'] ?? []) && !in_array('*', $_SESSION['permissions'] ?? [])) {
+            header('Location: /');
+            exit;
+        }
+        
+        $reportId = $_GET['id'] ?? null;
+        if (!$reportId) {
+            header('Location: /admin/reports');
+            exit;
+        }
+        
+        $db = \App\Helpers\Database::getConnection();
+        
+        // Récupérer le signalement avec les infos utilisateur
+        $stmt = $db->prepare("
+            SELECT r.*, u.pseudo AS reporter, u.id AS reporter_id
+            FROM reports r 
+            JOIN users u ON r.reporter_id = u.id 
+            WHERE r.id = ?
+        ");
+        $stmt->execute([$reportId]);
+        $report = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$report) {
+            header('Location: /admin/reports');
+            exit;
+        }
+        
+        // Récupérer le contenu signalé selon le type
+        $content = null;
+        if ($report['type'] === 'post') {
+            $stmt = $db->prepare("SELECT * FROM posts WHERE id = ?");
+            $stmt->execute([$report['target_id']]);
+            $content = $stmt->fetch(PDO::FETCH_ASSOC);
+        } elseif ($report['type'] === 'message') {
+            $stmt = $db->prepare("SELECT * FROM messages WHERE id = ?");
+            $stmt->execute([$report['target_id']]);
+            $content = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        
+        // Récupérer l'historique des sanctions pour l'utilisateur signalé
+        $stmt = $db->prepare("
+            SELECT s.*, u.pseudo AS admin_name 
+            FROM sanctions s 
+            JOIN users u ON s.admin_id = u.id 
+            WHERE s.user_id = ? 
+            ORDER BY s.created_at DESC
+        ");
+        $stmt->execute([$content['user_id'] ?? 0]);
+        $sanctions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        include __DIR__ . '/../Views/admin/report_detail.php';
+    }
+    
+    public function handleReportAction()
+    {
+        // Vérification permission admin
+        if (!isset($_SESSION['user_id']) || !in_array('admin.reports', $_SESSION['permissions'] ?? []) && !in_array('*', $_SESSION['permissions'] ?? [])) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Permission refusée']);
+            exit;
+        }
+        
+        $reportId = $_POST['report_id'] ?? null;
+        $action = $_POST['action'] ?? null;
+        $sanctionType = $_POST['sanction_type'] ?? null;
+        $sanctionReason = $_POST['sanction_reason'] ?? null;
+        $sanctionDetails = $_POST['sanction_details'] ?? '';
+        
+        if (!$reportId || !$action) {
+            echo json_encode(['success' => false, 'message' => 'Paramètres manquants']);
+            exit;
+        }
+        
+        $db = \App\Helpers\Database::getConnection();
+        
+        try {
+            $db->beginTransaction();
+            
+            // Récupérer le signalement
+            $stmt = $db->prepare("SELECT * FROM reports WHERE id = ?");
+            $stmt->execute([$reportId]);
+            $report = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$report) {
+                throw new Exception('Signalement non trouvé');
+            }
+            
+            // Mettre à jour le statut du signalement
+            $newStatus = 'reviewed';
+            if ($action === 'sanction') {
+                $newStatus = 'sanctioned';
+            } elseif ($action === 'reject') {
+                $newStatus = 'rejected';
+            }
+            
+            $stmt = $db->prepare("
+                UPDATE reports 
+                SET status = ?, reviewed_by = ?, reviewed_at = NOW() 
+                WHERE id = ?
+            ");
+            $stmt->execute([$newStatus, $_SESSION['user_id'], $reportId]);
+            
+            // Si sanction, créer une sanction
+            if ($action === 'sanction' && $sanctionType) {
+                // Récupérer l'utilisateur à sanctionner
+                $userId = null;
+                if ($report['type'] === 'post') {
+                    $stmt = $db->prepare("SELECT user_id FROM posts WHERE id = ?");
+                    $stmt->execute([$report['target_id']]);
+                    $userId = $stmt->fetchColumn();
+                } elseif ($report['type'] === 'message') {
+                    $stmt = $db->prepare("SELECT user_id FROM messages WHERE id = ?");
+                    $stmt->execute([$report['target_id']]);
+                    $userId = $stmt->fetchColumn();
+                }
+                
+                if ($userId) {
+                    $stmt = $db->prepare("
+                        INSERT INTO sanctions (user_id, report_id, type, reason, details, admin_id) 
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    ");
+                    $stmt->execute([$userId, $reportId, $sanctionType, $sanctionReason, $sanctionDetails, $_SESSION['user_id']]);
+                    
+                    // Appliquer la sanction
+                    if ($sanctionType === 'ban') {
+                        $stmt = $db->prepare("UPDATE users SET desactivated = 1 WHERE id = ?");
+                        $stmt->execute([$userId]);
+                    }
+                }
+            }
+            
+            // Si suppression de contenu
+            if ($action === 'delete_content') {
+                if ($report['type'] === 'post') {
+                    $stmt = $db->prepare("DELETE FROM posts WHERE id = ?");
+                    $stmt->execute([$report['target_id']]);
+                } elseif ($report['type'] === 'message') {
+                    $stmt = $db->prepare("DELETE FROM messages WHERE id = ?");
+                    $stmt->execute([$report['target_id']]);
+                }
+            }
+            
+            $db->commit();
+            echo json_encode(['success' => true, 'message' => 'Action effectuée avec succès']);
+            
+        } catch (Exception $e) {
+            $db->rollBack();
+            echo json_encode(['success' => false, 'message' => 'Erreur: ' . $e->getMessage()]);
         }
     }
 } 

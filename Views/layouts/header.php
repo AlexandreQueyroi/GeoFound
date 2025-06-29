@@ -23,6 +23,7 @@ if (isset($_SESSION['user_id'])) {
     $userPermissions = array_map(function($perm) {
         return $perm['name'];
     }, $permissions);
+    $_SESSION['permissions'] = $userPermissions;
 }
 ?>
 <!DOCTYPE html>
@@ -135,6 +136,7 @@ if (isset($_SESSION['user_id'])) {
     <?php if (strpos($_SERVER['REQUEST_URI'], 'message') !== false): ?>
     <script src="/assets/js/messagerie.js?v=<?=time()?>" defer></script>
     <?php endif; ?>
+    <script src="/assets/js/post-modal.js?v=<?php echo time(); ?>" defer></script>
     
     <script>
         console.log('Header: Test de chargement du script');
@@ -158,7 +160,6 @@ if (isset($_SESSION['user_id'])) {
 <body class="flex flex-col min-h-screen bg-[#0A0A23]">
     <?php include_once __DIR__ . '/modal.php'; ?>
     
-    
     <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col space-y-2"></div>
     
     <audio id="notif-sound" preload="auto">
@@ -174,13 +175,24 @@ if (isset($_SESSION['user_id'])) {
                 </a>
                 <nav>
                     <ul class="flex flex-wrap gap-6 text-lg font-semibold items-center">
-                        <li><a href="/" class="hover:text-blue-400 transition">Accueil</a></li>
-                        <li><a href="/explorer" class="hover:text-blue-400 transition">Explorer</a></li>
-                        <li><a href="/post" class="hover:text-blue-400 transition">Posts</a></li>
-                        <li><a href="/reward" class="hover:text-blue-400 transition">Récompenses</a></li>
-                        <?php if (isset($_SESSION['user'])): ?>
-                            <li><a href="/me/inbox" class="hover:text-blue-400 transition">Messages</a></li>
-                            <li><a href="/me" class="hover:text-blue-400 transition">Profil</a></li>
+                        <?php if (strpos($_SERVER['REQUEST_URI'], '/admin') === 0): ?>
+                            <!-- Menu Administration -->
+                            <li><a href="/admin" class="hover:text-blue-400 transition">Dashboard</a></li>
+                            <li><a href="/admin/users" class="hover:text-blue-400 transition">Utilisateurs</a></li>
+                            <li><a href="/admin/ranks" class="hover:text-blue-400 transition">Grades</a></li>
+                            <li><a href="/admin/permissions" class="hover:text-blue-400 transition">Permissions</a></li>
+                            <li><a href="/admin/reports" class="hover:text-blue-400 transition">Signalements</a></li>
+                            <li><a href="/admin/maintenance" class="hover:text-blue-400 transition">Maintenance</a></li>
+                        <?php else: ?>
+                            <!-- Menu Front-end -->
+                            <li><a href="/" class="hover:text-blue-400 transition">Accueil</a></li>
+                            <li><a href="/explorer" class="hover:text-blue-400 transition">Explorer</a></li>
+                            <li><a href="/post" class="hover:text-blue-400 transition">Posts</a></li>
+                            <li><a href="/reward" class="hover:text-blue-400 transition">Récompenses</a></li>
+                            <?php if (isset($_SESSION['user'])): ?>
+                                <li><a href="/me/inbox" class="hover:text-blue-400 transition">Messages</a></li>
+                                <li><a href="/me" class="hover:text-blue-400 transition">Profil</a></li>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </ul>
                 </nav>
@@ -229,25 +241,17 @@ if (isset($_SESSION['user_id'])) {
     </header>
 
     <main class="flex-1">
-    
-    <!--
-    <script>
-    function showToast(message, pseudo) { ... }
-    function pollLastMessage() { ... }
-    </script>
-    -->
 
     </main>
 
     <?php if (isset($_SESSION['user']) && (in_array('post.create', $userPermissions) || in_array('*', $userPermissions))): ?>
     <button 
         type="button"
-        data-modal-target="post-modal" 
-        data-modal-toggle="post-modal"
+        onclick="showPostModal()"
         class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center z-30 hover:scale-110"
         title="Créer un nouveau post"
     >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+        <iconify-icon icon="tabler:plus" width="24" height="24"></iconify-icon>
     </button>
     <?php endif; ?>
 
@@ -270,37 +274,12 @@ if (isset($_SESSION['user_id'])) {
     ?>
 
     <script>
-        function submitPostForm() {
-            const form = document.getElementById('postForm');
-            if (form) {
-                const formData = new FormData(form);
-                if (!formData.get('latitude') || !formData.get('longitude')) {
-                    formData.set('latitude', '48.8566');
-                    formData.set('longitude', '2.3522');
-                }
-                
-                fetch('/post/create', {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const modal = document.getElementById('post-modal');
-                        if (modal) {
-                            const modalInstance = new Modal(modal);
-                            modalInstance.hide();
-                        }
-                        window.location.reload();
-                    } else {
-                        alert('Erreur: ' + (data.message || 'Une erreur est survenue.'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur de soumission:', error);
-                    alert('Une erreur technique est survenue.');
-                });
+        // Fonction pour ouvrir le modal de post (utilisée par le bouton flottant)
+        function openPostModal() {
+            const modal = document.getElementById('post-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
             }
         }
     </script>

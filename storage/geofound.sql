@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `avatar` (
   `head` varchar(50) DEFAULT NULL,
   `accessory` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `bookmarks`;
 CREATE TABLE IF NOT EXISTS `bookmarks` (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `bookmarks` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_bookmark` (`user_id`,`post_id`),
   KEY `post_id` (`post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `captcha`;
 CREATE TABLE IF NOT EXISTS `captcha` (
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `captcha` (
   `requested` tinyint(1) DEFAULT '0',
   `success_requested` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE IF NOT EXISTS `comment` (
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `comment` (
   PRIMARY KEY (`id`),
   KEY `post_id` (`post_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `follow`;
 CREATE TABLE IF NOT EXISTS `follow` (
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `follow` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user1_id` (`user1_id`,`user2_id`),
   KEY `user2_id` (`user2_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `message`;
 CREATE TABLE IF NOT EXISTS `message` (
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `message` (
   `content` varchar(512) DEFAULT NULL,
   `state` varchar(16) DEFAULT 'sent',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `order_table`;
 CREATE TABLE IF NOT EXISTS `order_table` (
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `order_table` (
   `made_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deliver_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `page_maintenance`;
 CREATE TABLE IF NOT EXISTS `page_maintenance` (
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `page_maintenance` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `page_permissions`;
 CREATE TABLE IF NOT EXISTS `page_permissions` (
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `page_permissions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_page_permission` (`page_path`,`permission_id`),
   KEY `permission_id` (`permission_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `permissions`;
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `permissions` (`id`, `name`, `description`, `created_at`) VALUES
 (1, '*', 'Permission administrateur - Accès à tout', '2025-06-27 11:28:08'),
@@ -145,14 +145,14 @@ CREATE TABLE IF NOT EXISTS `post` (
   PRIMARY KEY (`id`),
   KEY `user` (`user`),
   KEY `content_id` (`content_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `post_content`;
 CREATE TABLE IF NOT EXISTS `post_content` (
   `id` int NOT NULL AUTO_INCREMENT,
   `content` longtext,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `ranks`;
 CREATE TABLE IF NOT EXISTS `ranks` (
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS `ranks` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `ranks` (`id`, `name`, `color`, `created_at`) VALUES
 (1, 'admin', '#EF4444', '2025-06-27 11:28:08'),
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `rank_permissions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_rank_permission` (`rank_id`,`permission_id`),
   KEY `permission_id` (`permission_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `rank_permissions` (`id`, `rank_id`, `permission_id`, `created_at`) VALUES
 (1, 1, 1, '2025-06-27 11:28:08'),
@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `reaction` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_reaction` (`post_id`,`user_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `report`;
 CREATE TABLE IF NOT EXISTS `report` (
@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS `report` (
   PRIMARY KEY (`id`),
   KEY `report_to` (`report_to`),
   KEY `assigned_to` (`assigned_to`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `reward`;
 CREATE TABLE IF NOT EXISTS `reward` (
@@ -228,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `reward` (
   `point` int DEFAULT '0',
   `image` longtext,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `sanction`;
 CREATE TABLE IF NOT EXISTS `sanction` (
@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `sanction` (
   `end_at` datetime DEFAULT NULL,
   `cancel` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `support`;
 CREATE TABLE IF NOT EXISTS `support` (
@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS `support` (
   `assigned_to` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `assigned_to` (`assigned_to`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `token` (`token`),
   KEY `avatar_id` (`avatar_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `users` (`id`, `pseudo`, `user_rank`, `password`, `email`, `description`, `desactivated`, `token`, `connected`, `verified`, `verified_at`, `avatar_id`, `point`) VALUES
 (1, 'admin', 'admin', '$2y$10$mjIYy.RcnzPIGytlmqifBudv8b5mqW.0KE/JpIFXmkRiv0WrxpfB2', 'admin@geofound.com', 'Default admin account', 0, NULL, NULL, 1, NULL, NULL, 0);
@@ -288,7 +288,7 @@ CREATE TABLE IF NOT EXISTS `user_message` (
   KEY `message_id` (`message_id`),
   KEY `sender_id` (`sender_id`),
   KEY `receiver_id` (`receiver_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `user_permissions`;
 CREATE TABLE IF NOT EXISTS `user_permissions` (
@@ -302,7 +302,7 @@ CREATE TABLE IF NOT EXISTS `user_permissions` (
   UNIQUE KEY `unique_user_permission` (`user_id`,`permission_id`),
   KEY `permission_id` (`permission_id`),
   KEY `created_by` (`created_by`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 ALTER TABLE `page_permissions`
   ADD CONSTRAINT `page_permissions_ibfk_1` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
@@ -310,3 +310,30 @@ ALTER TABLE `page_permissions`
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`avatar_id`) REFERENCES `avatar` (`id`) ON DELETE SET NULL;
 COMMIT;
+
+-- Table des signalements
+CREATE TABLE IF NOT EXISTS reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type ENUM('post', 'comment', 'message') NOT NULL,
+    target_id INT NOT NULL,
+    reporter_id INT NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    details TEXT,
+    status ENUM('pending', 'reviewed', 'rejected', 'sanctioned') DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    reviewed_by INT DEFAULT NULL,
+    reviewed_at DATETIME DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table des sanctions
+CREATE TABLE IF NOT EXISTS sanctions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    report_id INT DEFAULT NULL,
+    type ENUM('ban', 'mute', 'delete_content', 'warning') NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    details TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME DEFAULT NULL,
+    admin_id INT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

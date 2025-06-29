@@ -1,12 +1,16 @@
-
 class PermissionManager {
     constructor() {
         this.currentPage = window.location.pathname;
+        console.log('PermissionManager: Constructeur appelé pour la page:', this.currentPage);
         this.init();
     }
 
     init() {
         console.log('PermissionManager: Initialisation...');
+        console.log('PermissionManager: window.userPermissions =', window.userPermissions);
+        console.log('PermissionManager: Type de userPermissions =', typeof window.userPermissions);
+        console.log('PermissionManager: Est un array?', Array.isArray(window.userPermissions));
+        
         if (window.userPermissions && Array.isArray(window.userPermissions) && 
             (window.userPermissions.includes('*') || window.userPermissions.includes('admin.access'))) {
             console.log('PermissionManager: Permissions OK, préparation de la modale.');
@@ -14,6 +18,8 @@ class PermissionManager {
             this.setupModal();
         } else {
             console.log('PermissionManager: Permissions insuffisantes, la modale ne sera pas initialisée.');
+            console.log('PermissionManager: userPermissions.includes("*") =', window.userPermissions ? window.userPermissions.includes('*') : 'userPermissions est null/undefined');
+            console.log('PermissionManager: userPermissions.includes("admin.access") =', window.userPermissions ? window.userPermissions.includes('admin.access') : 'userPermissions est null/undefined');
         }
     }
 
@@ -96,8 +102,8 @@ class PermissionManager {
 
     setupTabs() {
         console.log('PermissionManager: setupTabs() - Configuration des onglets.');
-        const tabButtons = document.querySelectorAll('
-        const tabContents = document.querySelectorAll('
+        const tabButtons = document.querySelectorAll('[data-tab]');
+        const tabContents = document.querySelectorAll('[id$="-tab"]');
         
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -111,7 +117,7 @@ class PermissionManager {
             });
         });
 
-        
+        // Charger l'onglet par défaut
         console.log("PermissionManager: Chargement initial des données de l'onglet 'maintenance'.");
         this.loadTabData('maintenance');
     }

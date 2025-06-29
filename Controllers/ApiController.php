@@ -161,27 +161,58 @@ class ApiController {
     }
 
     public function add_friend() {
-        ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
+        // Désactiver l'affichage des erreurs pour éviter les réponses HTML
+        ini_set('display_errors', 0);
+        ini_set('display_startup_errors', 0);
         error_reporting(E_ALL);
+        
         session_start();
-        if (!isset($_SESSION['user_id'])) exit;
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Non autorisé']);
+            return;
+        }
+        
         $pdo = Database::getConnection();
         $uid = $_SESSION['user_id'];
         $pseudo = trim($_POST['pseudo'] ?? '');
-        if ($pseudo == '') exit('Pseudo requis');
+        
+        if ($pseudo == '') {
+            http_response_code(400);
+            echo json_encode(['error' => 'Pseudo requis']);
+            return;
+        }
+        
         $stmt = $pdo->prepare('SELECT id FROM users WHERE pseudo = :pseudo');
         $stmt->execute(['pseudo'=>$pseudo]);
         $user = $stmt->fetch();
-        if (!$user) exit('Utilisateur introuvable');
+        
+        if (!$user) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Utilisateur introuvable']);
+            return;
+        }
+        
         $fid = $user['id'];
-        if ($fid == $uid) exit('Impossible de s\'ajouter soi-même');
+        if ($fid == $uid) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Impossible de s\'ajouter soi-même']);
+            return;
+        }
+        
         $stmt = $pdo->prepare('SELECT * FROM follow WHERE (user1_id=:uid AND user2_id=:fid) OR (user1_id=:fid AND user2_id=:uid)');
         $stmt->execute(['uid'=>$uid,'fid'=>$fid]);
-        if ($stmt->rowCount() > 0) exit('Demande déjà envoyée');
+        
+        if ($stmt->rowCount() > 0) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Demande déjà envoyée']);
+            return;
+        }
+        
         $stmt = $pdo->prepare('INSERT INTO follow (user1_id, user2_id, follow_at, state) VALUES (:uid, :fid, NOW(), "pending")');
         $stmt->execute(['uid'=>$uid,'fid'=>$fid]);
-        echo 'Demande envoyée';
+        
+        echo json_encode(['success' => true, 'message' => 'Demande envoyée']);
     }
 
     public function accept_friend() {
@@ -369,5 +400,83 @@ class ApiController {
         header('Content-Type: application/json');
         echo json_encode(['posts' => $posts]);
         exit;
+    }
+
+    public function createReport()
+    {
+        // Vérifier que l'utilisateur est connecté
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Vous devez être connecté']);
+            exit;
+        }
+        
+        $type = $_POST['type'] ?? null;
+        $targetId = $_POST['target_id'] ?? null;
+        $reason = $_POST['reason'] ?? null;
+        $details = $_POST['details'] ?? '';
+        
+        if (!$type || !$targetId || !$reason) {
+            echo json_encode(['success' => false, 'message' => 'Paramètres manquants']);
+            exit;
+        }
+        
+        // Vérifier que le type est valide
+        if (!in_array($type, ['post', 'comment', 'message', 'user'])) {
+            echo json_encode(['success' => false, 'message' => 'Type de signalement invalide']);
+            exit;
+        }
+        
+        // Vérifier que l'utilisateur n'a pas déjà signalé ce contenu
+        $db = \App\Helpers\Database::getConnection();
+        $stmt = $db->prepare("
+            SELECT id FROM reports 
+            WHERE type = ? AND target_id = ? AND reporter_id = ? AND status != 'rejected'
+        ");
+        $stmt->execute([$type, $targetId, $_SESSION['user_id']]);
+        
+        if ($stmt->fetch()) {
+            echo json_encode(['success' => false, 'message' => 'Vous avez déjà signalé ce contenu']);
+            exit;
+        }
+        
+        // Vérifier que le contenu existe
+        $contentExists = false;
+        if ($type === 'post') {
+            $stmt = $db->prepare("SELECT id FROM posts WHERE id = ?");
+            $stmt->execute([$targetId]);
+            $contentExists = $stmt->fetch();
+        } elseif ($type === 'message') {
+            $stmt = $db->prepare("SELECT id FROM messages WHERE id = ?");
+            $stmt->execute([$targetId]);
+            $contentExists = $stmt->fetch();
+        } elseif ($type === 'comment') {
+            $stmt = $db->prepare("SELECT id FROM comment WHERE id = ?");
+            $stmt->execute([$targetId]);
+            $contentExists = $stmt->fetch();
+        } elseif ($type === 'user') {
+            $stmt = $db->prepare("SELECT id FROM users WHERE id = ?");
+            $stmt->execute([$targetId]);
+            $contentExists = $stmt->fetch();
+        }
+        
+        if (!$contentExists) {
+            echo json_encode(['success' => false, 'message' => 'Contenu non trouvé']);
+            exit;
+        }
+        
+        // Créer le signalement
+        try {
+            $stmt = $db->prepare("
+                INSERT INTO reports (type, target_id, reporter_id, reason, details) 
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([$type, $targetId, $_SESSION['user_id'], $reason, $details]);
+            
+            echo json_encode(['success' => true, 'message' => 'Signalement envoyé avec succès']);
+            
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'envoi du signalement']);
+        }
     }
 } 

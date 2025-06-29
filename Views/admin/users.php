@@ -137,12 +137,30 @@
     </div>
 </div>
 
+<!-- Overlay de chargement -->
+<div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-lg p-6">
+        <div class="flex items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            <span class="ml-3 text-white">Chargement...</span>
+        </div>
+    </div>
+</div>
+
+<!-- Container pour les notifications -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
 <script>
+console.log('=== SCRIPT ADMIN USERS CHARGÉ ===');
+console.log('Session user_id:', <?php echo $_SESSION['user_id'] ?? 'null'; ?>);
+
 let currentPage = 1;
 let totalPages = 1;
 let users = [];
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DOMContentLoaded TRIGGERED ===');
+    console.log('ID de session actuel:', <?php echo $_SESSION['user_id'] ?? 'null'; ?>);
     loadUsers();
     loadRanks();
     loadPermissions();
@@ -159,6 +177,13 @@ function setupEventListeners() {
     
     // Formulaire d'édition
     document.getElementById('edit-user-form').addEventListener('submit', saveUser);
+    
+    // Fermer la modal en cliquant à l'extérieur
+    document.getElementById('edit-user-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEditModal();
+        }
+    });
 }
 
 async function loadUsers() {
@@ -174,15 +199,22 @@ async function loadUsers() {
             status: status
         });
         
+        console.log('Chargement des utilisateurs avec params:', params.toString());
+        
         const response = await fetch(`/api/admin/users?${params}`);
+        console.log('Réponse API status:', response.status);
+        
         const data = await response.json();
+        console.log('Données API reçues:', data);
         
         if (data.success) {
             users = data.users;
             totalPages = data.total_pages;
+            console.log('Utilisateurs chargés:', users.length);
             renderUsers();
             updatePagination();
         } else {
+            console.error('Erreur API:', data.error);
             showNotification('Erreur lors du chargement des utilisateurs', 'error');
         }
     } catch (error) {
@@ -195,14 +227,46 @@ function renderUsers() {
     const tbody = document.getElementById('users-list');
     tbody.innerHTML = '';
     
-    users.forEach(user => {
+    console.log('Rendu de', users.length, 'utilisateurs');
+    console.log('ID de session actuel:', <?php echo $_SESSION['user_id'] ?? 'null'; ?>);
+    
+    users.forEach((user, index) => {
+        console.log(`Utilisateur ${index + 1}:`, user);
+        
         const row = document.createElement('tr');
         row.className = 'hover:bg-gray-700';
+        
+        // Préparer l'affichage du grade
+        let rankDisplay = '';
+        if (user.rank_display_name) {
+            rankDisplay = `
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" 
+                      style="background-color: ${user.rank_bg_color || '#1E40AF'}; color: ${user.rank_color || '#FFFFFF'};">
+                    ${user.rank_display_name}
+                </span>
+            `;
+        } else {
+            rankDisplay = `
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-600 text-white">
+                    Aucun grade
+                </span>
+            `;
+        }
+        
+        const currentUserId = <?php echo $_SESSION['user_id'] ?? 'null'; ?>;
+        const isOwnAccount = false; // Permettre l'auto-édition
+        
+        console.log(`User ID ${user.id} vs Current User ID ${currentUserId}:`, isOwnAccount ? 'PROPRE COMPTE' : 'AUTRE UTILISATEUR');
+        
         row.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 h-10 w-10">
-                        <img class="h-10 w-10 rounded-full" src="/assets/img/avatars/default-avatar.png" alt="">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-semibold text-sm">
+                                ${user.pseudo.substring(0, 2).toUpperCase()}
+                            </span>
+                        </div>
                     </div>
                     <div class="ml-4">
                         <div class="text-sm font-medium text-white">${user.pseudo}</div>
@@ -211,37 +275,57 @@ function renderUsers() {
                 </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" style="background-color: ${user.rank_color || '#3B82F6'}; color: white;">
-                    ${user.rank_name || 'Aucun rang'}
-                </span>
+                ${rankDisplay}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.status == 0 ? 'bg-green-100 text-green-800' :
-                    user.status == 1 ? 'bg-red-100 text-red-800' :
-                    'bg-gray-100 text-gray-800'
-                }">
-                    ${user.status == 0 ? 'Actif' : user.status == 1 ? 'Banni' : 'Inactif'}
-                </span>
+                <div class="flex items-center space-x-2">
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        user.status == 0 ? 'bg-green-600 text-white' :
+                        user.status == 1 ? 'bg-red-600 text-white' :
+                        user.status == 2 ? 'bg-yellow-600 text-white' :
+                        'bg-gray-600 text-white'
+                    }">
+                        ${user.status == 0 ? 'Actif' : 
+                          user.status == 1 ? 'Banni' : 
+                          user.status == 2 ? 'Inactif' : 'Inconnu'}
+                    </span>
+                    ${user.email_verified ? 
+                        '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">✓ Email</span>' : 
+                        '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-600 text-white">Email non vérifié</span>'
+                    }
+                </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                ${user.connected ? new Date(user.connected).toLocaleString() : 'Jamais connecté'}
+                ${user.connected ? new Date(user.connected).toLocaleString('fr-FR') : 'Jamais connecté'}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                 <button onclick="viewUserPermissions(${user.id})" class="text-blue-400 hover:text-blue-300">
-                    Voir (${user.permissions_count})
+                    Voir (${user.permissions_count || 0})
                 </button>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button onclick="editUser(${user.id})" class="text-blue-400 hover:text-blue-300 mr-3">
-                    Éditer
-                </button>
-                <button onclick="toggleUserStatus(${user.id})" class="text-yellow-400 hover:text-yellow-300 mr-3">
-                    ${user.status == 1 ? 'Débannir' : 'Bannir'}
-                </button>
-                <button onclick="deleteUser(${user.id})" class="text-red-400 hover:text-red-300">
-                    Supprimer
-                </button>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                <div class="flex space-x-2">
+                    <button onclick="editUser(${user.id})" 
+                            class="text-blue-400 hover:text-blue-300 transition-colors px-2 py-1 border border-blue-400 rounded"
+                            title="Modifier">
+                        ÉDITER
+                    </button>
+                    <button onclick="toggleUserStatus(${user.id})" 
+                            class="text-yellow-400 hover:text-yellow-300 transition-colors px-2 py-1 border border-yellow-400 rounded"
+                            title="${user.status == 1 ? 'Réactiver' : 'Bannir'}">
+                        BANNIR
+                    </button>
+                    <button onclick="viewUserPermissions(${user.id})" 
+                            class="text-green-400 hover:text-green-300 transition-colors px-2 py-1 border border-green-400 rounded"
+                            title="Voir les permissions">
+                        PERMISSIONS
+                    </button>
+                    <button onclick="deleteUser(${user.id})" 
+                            class="text-red-400 hover:text-red-300 transition-colors px-2 py-1 border border-red-400 rounded"
+                            title="Supprimer">
+                        SUPPRIMER
+                    </button>
+                </div>
             </td>
         `;
         tbody.appendChild(row);
@@ -282,12 +366,17 @@ async function loadRanks() {
         const filterSelect = document.getElementById('filter-rank');
         const editSelect = document.getElementById('edit-rank');
         
+        // Vider les selects d'abord
+        filterSelect.innerHTML = '<option value="">Tous les grades</option>';
+        editSelect.innerHTML = '<option value="">Aucun grade</option>';
+        
         ranks.forEach(rank => {
-            filterSelect.innerHTML += `<option value="${rank.id}">${rank.name}</option>`;
-            editSelect.innerHTML += `<option value="${rank.id}">${rank.name}</option>`;
+            const optionText = `${rank.display_name} (${rank.name})`;
+            filterSelect.innerHTML += `<option value="${rank.name}">${optionText}</option>`;
+            editSelect.innerHTML += `<option value="${rank.name}">${optionText}</option>`;
         });
     } catch (error) {
-        console.error('Erreur lors du chargement des rangs:', error);
+        console.error('Erreur lors du chargement des grades:', error);
     }
 }
 
@@ -297,6 +386,8 @@ async function loadPermissions() {
         const permissions = await response.json();
         
         const container = document.getElementById('edit-permissions');
+        container.innerHTML = ''; // Vider le conteneur d'abord
+        
         permissions.forEach(permission => {
             const div = document.createElement('div');
             div.className = 'flex items-center mb-2';
@@ -313,44 +404,112 @@ async function loadPermissions() {
 
 async function editUser(userId) {
     try {
+        console.log('Chargement de l\'utilisateur:', userId);
+        
         const response = await fetch(`/api/admin/users/${userId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        
         const user = await response.json();
+        console.log('Données utilisateur reçues:', user);
+        
+        if (user.error) {
+            throw new Error(user.error);
+        }
         
         document.getElementById('edit-user-id').value = user.id;
         document.getElementById('edit-username').value = user.pseudo;
         document.getElementById('edit-email').value = user.email;
-        document.getElementById('edit-rank').value = user.rank_id || '';
-        document.getElementById('edit-status').value = user.status == 1 ? 'banned' : 'active';
+        document.getElementById('edit-rank').value = user.rank_name || '';
+        
+        console.log('Grade sélectionné:', user.rank_name);
+        
+        // Gérer les 3 statuts
+        let statusValue = 'active';
+        if (user.status == 1) {
+            statusValue = 'banned';
+        } else if (user.status == 2) {
+            statusValue = 'inactive';
+        }
+        document.getElementById('edit-status').value = statusValue;
         
         // Cocher les permissions de l'utilisateur
         const checkboxes = document.querySelectorAll('#edit-permissions input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
-            checkbox.checked = user.permissions.some(p => p.id == checkbox.value);
+            checkbox.checked = user.permissions && user.permissions.some(p => p.id == checkbox.value);
         });
         
         document.getElementById('edit-user-modal').classList.remove('hidden');
     } catch (error) {
         console.error('Erreur:', error);
-        showNotification('Erreur lors du chargement de l\'utilisateur', 'error');
+        showNotification('Erreur lors du chargement de l\'utilisateur: ' + error.message, 'error');
     }
 }
 
 function closeEditModal() {
     document.getElementById('edit-user-modal').classList.add('hidden');
+    // Réinitialiser le formulaire
+    document.getElementById('edit-user-form').reset();
+    // Décocher toutes les permissions
+    const checkboxes = document.querySelectorAll('#edit-permissions input[type="checkbox"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+}
+
+function showLoading(show = true) {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (show) {
+        loadingOverlay.classList.remove('hidden');
+    } else {
+        loadingOverlay.classList.add('hidden');
+    }
 }
 
 async function saveUser(e) {
     e.preventDefault();
     
     try {
+        showLoading(true);
+        
         const userId = document.getElementById('edit-user-id').value;
+        const currentUserId = <?php echo $_SESSION['user_id'] ?? 'null'; ?>;
+        
+        // Empêcher la modification de son propre compte
+        if (userId == currentUserId) {
+            showNotification('Vous ne pouvez pas modifier votre propre compte', 'error');
+            return;
+        }
+        
+        const pseudo = document.getElementById('edit-username').value.trim();
+        const email = document.getElementById('edit-email').value.trim();
+        const rankName = document.getElementById('edit-rank').value;
+        const status = document.getElementById('edit-status').value;
+        const permissions = Array.from(document.querySelectorAll('#edit-permissions input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+        
+        // Validations côté client
+        if (!pseudo) {
+            showNotification('Le nom d\'utilisateur est requis', 'error');
+            return;
+        }
+        
+        if (!email) {
+            showNotification('L\'email est requis', 'error');
+            return;
+        }
+        
+        if (!email.includes('@')) {
+            showNotification('L\'email n\'est pas valide', 'error');
+            return;
+        }
+        
         const formData = {
-            username: document.getElementById('edit-username').value,
-            email: document.getElementById('edit-email').value,
-            rank_id: document.getElementById('edit-rank').value,
-            status: document.getElementById('edit-status').value,
-            permissions: Array.from(document.querySelectorAll('#edit-permissions input[type="checkbox"]:checked'))
-                .map(cb => cb.value)
+            username: pseudo,
+            email: email,
+            rank_name: rankName,
+            status: status,
+            permissions: permissions
         };
         
         const response = await fetch(`/api/admin/users/${userId}`, {
@@ -359,17 +518,24 @@ async function saveUser(e) {
             body: JSON.stringify(formData)
         });
         
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         if (data.success) {
             showNotification('Utilisateur mis à jour avec succès', 'success');
             closeEditModal();
             loadUsers();
         } else {
-            showNotification(data.error, 'error');
+            showNotification(data.error || 'Erreur lors de la sauvegarde', 'error');
         }
     } catch (error) {
         console.error('Erreur:', error);
-        showNotification('Erreur lors de la sauvegarde', 'error');
+        showNotification('Erreur lors de la sauvegarde: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
     }
 }
 
@@ -379,20 +545,29 @@ async function toggleUserStatus(userId) {
     }
     
     try {
+        showLoading(true);
+        
         const response = await fetch(`/api/admin/users/${userId}/toggle-status`, {
             method: 'POST'
         });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
         
         const data = await response.json();
         if (data.success) {
             showNotification('Statut de l\'utilisateur modifié', 'success');
             loadUsers();
         } else {
-            showNotification(data.error, 'error');
+            showNotification(data.error || 'Erreur lors de la modification du statut', 'error');
         }
     } catch (error) {
         console.error('Erreur:', error);
-        showNotification('Erreur lors de la modification du statut', 'error');
+        showNotification('Erreur lors de la modification du statut: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
     }
 }
 
@@ -402,26 +577,41 @@ async function deleteUser(userId) {
     }
     
     try {
+        showLoading(true);
+        
         const response = await fetch(`/api/admin/users/${userId}`, {
             method: 'DELETE'
         });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
         
         const data = await response.json();
         if (data.success) {
             showNotification('Utilisateur supprimé avec succès', 'success');
             loadUsers();
         } else {
-            showNotification(data.error, 'error');
+            showNotification(data.error || 'Erreur lors de la suppression', 'error');
         }
     } catch (error) {
         console.error('Erreur:', error);
-        showNotification('Erreur lors de la suppression', 'error');
+        showNotification('Erreur lors de la suppression: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
     }
 }
 
 async function viewUserPermissions(userId) {
     try {
         const response = await fetch(`/api/admin/user-permissions?user_id=${userId}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        
         const permissions = await response.json();
         
         let permissionsList = permissions.map(p => p.name).join(', ');
@@ -429,10 +619,31 @@ async function viewUserPermissions(userId) {
             permissionsList = 'Aucune permission individuelle';
         }
         
-        alert(`Permissions de l'utilisateur:\n${permissionsList}`);
+        // Utiliser une modale plus moderne au lieu d'alert
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 class="text-lg font-medium text-white mb-4">Permissions de l'utilisateur</h3>
+                <p class="text-gray-300 mb-4">${permissionsList}</p>
+                <div class="flex justify-end">
+                    <button onclick="this.closest('.fixed').remove()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Fermer la modale en cliquant à l'extérieur
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
     } catch (error) {
         console.error('Erreur:', error);
-        showNotification('Erreur lors du chargement des permissions', 'error');
+        showNotification('Erreur lors du chargement des permissions: ' + error.message, 'error');
     }
 }
 

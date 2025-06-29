@@ -11,29 +11,38 @@ if (!isset($_SESSION['user_id'])) {
 $db = \App\Helpers\Database::getConnection();
 $user_id = $_SESSION['user_id'];
 
+// Récupérer l'ID de l'utilisateur dont on consulte le profil
+$profile_user_id = $_GET['id'] ?? $user_id;
+$is_own_profile = ($profile_user_id == $user_id);
+
 // Récup info utilisateur
-$stmt = $db->prepare("SELECT pseudo, avatar FROM users WHERE id = ?");
-$stmt->execute([$user_id]);
+$stmt = $db->prepare("SELECT id, pseudo, avatar FROM users WHERE id = ?");
+$stmt->execute([$profile_user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+    header('Location: /error/404');
+    exit;
+}
 
 // Nombre de posts
 $stmt = $db->prepare("SELECT COUNT(*) FROM post WHERE user_id = ?");
-$stmt->execute([$user_id]);
+$stmt->execute([$profile_user_id]);
 $post_count = $stmt->fetchColumn() ?: 0;
 
 // Followers
 $stmt = $db->prepare("SELECT COUNT(*) FROM follow WHERE user2_id = ? AND state = 'accepted'");
-$stmt->execute([$user_id]);
+$stmt->execute([$profile_user_id]);
 $followers_count = $stmt->fetchColumn() ?: 0;
 
 // Following
 $stmt = $db->prepare("SELECT COUNT(*) FROM follow WHERE user1_id = ? AND state = 'accepted'");
-$stmt->execute([$user_id]);
+$stmt->execute([$profile_user_id]);
 $following_count = $stmt->fetchColumn() ?: 0;
 
 // Posts de l'utilisateur
 $stmt = $db->prepare("SELECT post.description, post_content.content FROM post INNER JOIN post_content ON post.content_id = post_content.id WHERE post.user_id = ? ORDER BY post.id DESC");
-$stmt->execute([$user_id]);
+$stmt->execute([$profile_user_id]);
 $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -45,7 +54,18 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
     <div class="flex items-center gap-4">
         <span class="text-white text-2xl font-light"><?= htmlspecialchars($user['pseudo']) ?></span>
-        <a href="/user/edit" class="bg-gray-200 text-gray-900 px-4 py-1 rounded-lg font-semibold text-sm hover:bg-gray-300 transition">Éditer le profil</a>
+        
+        <?php if ($is_own_profile): ?>
+            <a href="/user/edit" class="bg-gray-200 text-gray-900 px-4 py-1 rounded-lg font-semibold text-sm hover:bg-gray-300 transition">Éditer le profil</a>
+        <?php else: ?>
+            <!-- Bouton de signalement pour les autres utilisateurs -->
+            <button onclick="openReportModal('user', <?= $user['id'] ?>)" 
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-lg font-semibold text-sm transition flex items-center gap-2">
+                <iconify-icon icon="tabler:flag" width="14" height="14"></iconify-icon>
+                Signaler ce compte
+            </button>
+        <?php endif; ?>
+        
         <span class="inline-block">
             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"></path>

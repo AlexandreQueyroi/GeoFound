@@ -226,6 +226,61 @@ function showNotification(message, type = 'info') {
         }, 300);
     }, 3000);
 }
+
+function openReportModal(type, targetId) {
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+        modal.dataset.type = type;
+        modal.dataset.targetId = targetId;
+        showReportModal();
+    }
+}
+
+function submitReport() {
+    const modal = document.getElementById('report-modal');
+    const type = modal.dataset.type || 'post';
+    const targetId = modal.dataset.targetId || <?php echo $post['id']; ?>;
+    const reason = document.getElementById('report-reason').value;
+    const details = document.getElementById('report-details').value;
+    
+    if (!reason) {
+        showNotification('Veuillez sélectionner un motif', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('type', type);
+    formData.append('target_id', targetId);
+    formData.append('reason', reason);
+    formData.append('details', details);
+    
+    fetch('/api/report', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Signalement envoyé avec succès', 'success');
+            hideReportModal();
+        } else {
+            showNotification('Erreur: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showNotification('Une erreur est survenue', 'error');
+    });
+}
+
+function hideReportModal() {
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.getElementById('report-reason').value = '';
+        document.getElementById('report-details').value = '';
+    }
+}
 </script>
 
 <?php include_once __DIR__ . '/../layouts/footer.php'; ?> 

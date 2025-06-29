@@ -20,7 +20,7 @@ class Post {
         try {
             $pdo = Database::getConnection();
 
-            
+            // Vérifier qu'une image a été uploadée
             if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
                 \App\Helpers\Logger::error('Aucune image valide reçue', 'Post::create');
                 return false;
@@ -29,18 +29,18 @@ class Post {
             $image_data = file_get_contents($image_tmp);
             $image_base64 = base64_encode($image_data);
 
-            
+            // Insérer l'image dans post_content
             $sqlContent = "INSERT INTO post_content (content) VALUES (?)";
             $stmtContent = $pdo->prepare($sqlContent);
             $stmtContent->execute([$image_base64]);
             $content_id = $pdo->lastInsertId();
 
-            
-            $sql = "INSERT INTO post (user_id, content_id, name, description, latitude, longitude, date) 
-                    VALUES (:user_id, :content_id, :name, :description, :latitude, :longitude, :date)";
+            // Insérer le post
+            $sql = "INSERT INTO post (user, content_id, name, description, latitude, longitude, date) 
+                    VALUES (:user, :content_id, :name, :description, :latitude, :longitude, :date)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
-                'user_id' => $data['user_id'],
+                'user' => $data['user_id'],
                 'content_id' => $content_id,
                 'name' => $data['name'],
                 'description' => $data['description'],
@@ -86,7 +86,7 @@ class Post {
                 (SELECT COUNT(*) FROM reaction r WHERE r.post_id = p.id AND r.state = 'like') as like_count,
                 (SELECT COUNT(*) FROM comment c WHERE c.post_id = p.id) as comment_count
             FROM post p
-            LEFT JOIN users u ON p.user_id = u.id
+            LEFT JOIN users u ON p.user = u.id
             LEFT JOIN post_content pc ON p.content_id = pc.id
             ORDER BY p.id DESC
             LIMIT :limit OFFSET :offset");
