@@ -19,11 +19,11 @@
                             <li class="friend-item" data-friend-id="<?= htmlspecialchars($friend['id']) ?>" data-friend-online="<?= $friend['is_online'] ? 'true' : 'false' ?>">
                                 <div class="flex items-center p-3 rounded-lg friend-selector hover:bg-gray-700 cursor-pointer transition-colors duration-200">
                                     <div class="relative mr-3">
-                                        <?php if (!empty($friend['avatar'])): ?>
-                                            <img src="<?= htmlspecialchars($friend['avatar']) ?>" alt="Avatar" class="w-12 h-12 rounded-full object-cover">
+                                        <?php if (!empty($friend['avatar_id'])): ?>
+                                            <img src="<?= \App\Helpers\AvatarHelper::getAvatarUrl($friend['avatar_id']) ?>" alt="Avatar" class="w-12 h-12 rounded-full object-cover">
                                         <?php else: ?>
                                             <div class="bg-primary rounded-full w-12 h-12 flex items-center justify-center text-white font-bold text-xl">
-                                                <?= strtoupper(substr($friend['pseudo'], 0, 1)) ?>
+                                                <?= \App\Helpers\AvatarHelper::getInitials($friend['pseudo']) ?>
                                             </div>
                                         <?php endif; ?>
                                         <?php if ($friend['is_online']): ?>
@@ -38,6 +38,11 @@
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </ul>
+            </div>
+            <!-- Boutons d'action -->
+            <div class="p-4 border-t border-gray-700 space-y-2">
+                <button id="add-friend-btn" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2">Ajouter un ami</button>
+                <button id="friend-requests-btn" class="w-full text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2">Demandes d'amis</button>
             </div>
         </div>
 
@@ -84,6 +89,53 @@
     </div>
 </div>
 
+<!-- Ajout des modaux Flowbite -->
+<!-- Modal Ajouter un ami -->
+<div id="add-friend-modal" tabindex="-1" class="hidden fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black bg-opacity-50 flex justify-center items-center">
+  <div class="relative w-full max-w-md max-h-full">
+    <div class="relative bg-secondary rounded-lg shadow dark:bg-gray-700">
+      <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center close-add-friend">
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        <span class="sr-only">Fermer</span>
+      </button>
+      <div class="p-6 text-center">
+        <h3 class="mb-5 text-lg font-normal text-white">Ajouter un ami</h3>
+        <form id="add-friend-form" class="space-y-4">
+          <input type="text" id="add-friend-pseudo" name="pseudo" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Pseudo de l'ami" required>
+          <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Envoyer la demande</button>
+        </form>
+        <div id="add-friend-result" class="mt-2 text-sm"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Demandes d'amis -->
+<div id="friend-requests-modal" tabindex="-1" class="hidden fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black bg-opacity-50 flex justify-center items-center">
+  <div class="relative w-full max-w-md max-h-full">
+    <div class="relative bg-secondary rounded-lg shadow dark:bg-gray-700">
+      <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center close-friend-requests">
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        <span class="sr-only">Fermer</span>
+      </button>
+      <div class="p-6 text-center">
+        <h3 class="mb-5 text-lg font-normal text-white">Demandes d'amis</h3>
+        <div id="friend-requests-content">
+          <div class="mb-4">
+            <h4 class="text-lg font-semibold text-white mb-2">Demandes reçues</h4>
+            <ul id="received-requests" class="space-y-2"></ul>
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold text-white mb-2">Demandes envoyées</h4>
+            <ul id="sent-requests" class="space-y-2"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Flowbite CDN -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
 <script>
 let currentFriendId = null;
 
@@ -210,6 +262,73 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Ouvrir/fermer le modal Ajouter un ami
+    document.getElementById('add-friend-btn').addEventListener('click', function() {
+        document.getElementById('add-friend-modal').classList.remove('hidden');
+    });
+    document.querySelectorAll('.close-add-friend').forEach(btn => btn.addEventListener('click', function() {
+        document.getElementById('add-friend-modal').classList.add('hidden');
+    }));
+    // Ouvrir/fermer le modal Demandes d'amis
+    document.getElementById('friend-requests-btn').addEventListener('click', function() {
+        document.getElementById('friend-requests-modal').classList.remove('hidden');
+        loadFriendRequests();
+    });
+    document.querySelectorAll('.close-friend-requests').forEach(btn => btn.addEventListener('click', function() {
+        document.getElementById('friend-requests-modal').classList.add('hidden');
+    }));
+    // Soumission du formulaire d'ajout d'ami
+    document.getElementById('add-friend-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pseudo = document.getElementById('add-friend-pseudo').value.trim();
+        if (!pseudo) return;
+        fetch('/friend/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'pseudo=' + encodeURIComponent(pseudo)
+        })
+        .then(r => r.text())
+        .then(msg => {
+            document.getElementById('add-friend-result').textContent = msg;
+        });
+    });
+    // Charger les demandes d'amis
+    function loadFriendRequests() {
+        fetch('/friend/requests')
+            .then(r => r.json())
+            .then(data => {
+                const received = data.received || [];
+                const sent = data.sent || [];
+                const receivedList = document.getElementById('received-requests');
+                const sentList = document.getElementById('sent-requests');
+                receivedList.innerHTML = received.length ? '' : '<li class="text-gray-400">Aucune</li>';
+                sentList.innerHTML = sent.length ? '' : '<li class="text-gray-400">Aucune</li>';
+                received.forEach(req => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between bg-gray-700 rounded-lg p-2';
+                    li.innerHTML = `<span class="text-white">${req.pseudo}</span>
+                        <button class="ml-2 px-2 py-1 bg-green-600 text-white rounded accept-request" data-id="${req.id}">Accepter</button>
+                        <button class="ml-2 px-2 py-1 bg-red-600 text-white rounded refuse-request" data-id="${req.id}">Refuser</button>`;
+                    receivedList.appendChild(li);
+                });
+                sent.forEach(req => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between bg-gray-700 rounded-lg p-2';
+                    li.innerHTML = `<span class="text-white">${req.pseudo}</span>`;
+                    sentList.appendChild(li);
+                });
+                // Actions accepter/refuser
+                document.querySelectorAll('.accept-request').forEach(btn => btn.onclick = function() {
+                    fetch('/friend/accept', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'id=' + btn.dataset.id })
+                        .then(() => loadFriendRequests());
+                });
+                document.querySelectorAll('.refuse-request').forEach(btn => btn.onclick = function() {
+                    fetch('/friend/refuse', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'id=' + btn.dataset.id })
+                        .then(() => loadFriendRequests());
+                });
+            });
     }
 });
 </script>

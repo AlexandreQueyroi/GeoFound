@@ -17,10 +17,14 @@ $routes = [
     '/friend' => ['controller' => 'FriendController', 'action' => 'index'],
     '/friend/add' => ['controller' => 'FriendController', 'action' => 'add'],
     '/friend/accept' => ['controller' => 'FriendController', 'action' => 'accept'],
+    '/friend/refuse' => ['controller' => 'FriendController', 'action' => 'refuse'],
+    '/friend/requests' => ['controller' => 'FriendController', 'action' => 'requests'],
 
     '/message/inbox' => ['controller' => 'MessageController', 'action' => 'inbox'],
     '/message/view' => ['controller' => 'MessageController', 'action' => 'view'],
     '/message/conversation' => ['controller' => 'MessageController', 'action' => 'conversation'],
+    '/message/send' => ['controller' => 'MessageController', 'action' => 'send'],
+    '/message/friends' => ['controller' => 'MessageController', 'action' => 'friends'],
 
     '/post' => ['controller' => 'PostController', 'action' => 'index'],
     '/post/view' => ['controller' => 'PostController', 'action' => 'view'],

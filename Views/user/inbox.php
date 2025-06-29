@@ -13,11 +13,11 @@
                 <ul id="friend-list" class="space-y-2">
                     <?php foreach ($friends ?? [] as $f): ?>
                         <li data-id="<?= $f['id'] ?>" data-pseudo="<?= htmlspecialchars($f['pseudo']) ?>" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-700 cursor-pointer<?php if (isset($selected_friend) && $selected_friend == $f['id']) echo ' selected'; ?>">
-                            <?php if (!empty($f['avatar'])): ?>
-                                <img src="<?= htmlspecialchars($f['avatar']) ?>" alt="Avatar" class="w-10 h-10 rounded-full object-cover mr-2">
+                            <?php if (!empty($f['avatar_id'])): ?>
+                                <img src="<?= \App\Helpers\AvatarHelper::getAvatarUrl($f['avatar_id']) ?>" alt="Avatar" class="w-10 h-10 rounded-full object-cover mr-2">
                             <?php else: ?>
                                 <div class="bg-primary rounded-full w-10 h-10 flex items-center justify-center text-white font-bold text-lg mr-2">
-                                    <?= strtoupper(substr($f['pseudo'], 0, 1)) ?>
+                                    <?= \App\Helpers\AvatarHelper::getInitials($f['pseudo']) ?>
                                 </div>
                             <?php endif; ?>
                             <span class="text-white"><?= htmlspecialchars($f['pseudo']) ?></span>
@@ -88,9 +88,9 @@
     </div>
 </div>
 <script>
-    window.selectedFriendId = <?= $selected_friend ? intval($selected_friend) : 'null' ?>;
+    window.selectedFriendId = null;
 </script>
-<script src="https:
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
 <script src="/assets/js/messagerie.js"></script>
 <script>
 function renderMessages(messages, userId) {
@@ -189,6 +189,122 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Gestion des modaux
+    // Ouvrir le modal Ajouter un ami
+    document.getElementById('add-friend-btn').addEventListener('click', function() {
+        document.getElementById('add-friend-modal').classList.remove('hidden');
+    });
+    document.getElementById('close-add-friend').addEventListener('click', function() {
+        document.getElementById('add-friend-modal').classList.add('hidden');
+    });
+
+    // Ouvrir le modal Demandes d'amis
+    document.getElementById('friend-requests-btn').addEventListener('click', function() {
+        document.getElementById('friend-requests-modal').classList.remove('hidden');
+        loadFriendRequests();
+    });
+    document.getElementById('close-friend-requests').addEventListener('click', function() {
+        document.getElementById('friend-requests-modal').classList.add('hidden');
+    });
+
+    // Envoi de la demande d'ami
+    document.getElementById('send-friend-request').addEventListener('click', function() {
+        const pseudo = document.getElementById('add-friend-pseudo').value.trim();
+        if (!pseudo) return;
+        fetch('/friend/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'pseudo=' + encodeURIComponent(pseudo)
+        })
+        .then(r => r.text())
+        .then(msg => {
+            document.getElementById('add-friend-feedback').textContent = msg;
+            if (msg.includes('envoyée') || msg.includes('Demande')) {
+                document.getElementById('add-friend-pseudo').value = '';
+                setTimeout(() => {
+                    document.getElementById('add-friend-modal').classList.add('hidden');
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            document.getElementById('add-friend-feedback').textContent = 'Erreur lors de l\'envoi de la demande';
+        });
+    });
+
+    // Charger les demandes d'amis
+    function loadFriendRequests() {
+        fetch('/friend/requests')
+            .then(r => r.json())
+            .then(data => {
+                const received = data.received || [];
+                const sent = data.sent || [];
+                const receivedList = document.getElementById('received-requests');
+                const sentList = document.getElementById('sent-requests');
+                
+                receivedList.innerHTML = received.length ? '' : '<li class="text-gray-400">Aucune demande reçue</li>';
+                sentList.innerHTML = sent.length ? '' : '<li class="text-gray-400">Aucune demande envoyée</li>';
+                
+                received.forEach(req => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between bg-gray-700 rounded-lg p-2';
+                    li.innerHTML = `
+                        <span class="text-white">${req.pseudo}</span>
+                        <div class="flex space-x-2">
+                            <button class="px-2 py-1 bg-green-600 text-white rounded accept-request" data-id="${req.id}">Accepter</button>
+                            <button class="px-2 py-1 bg-red-600 text-white rounded refuse-request" data-id="${req.id}">Refuser</button>
+                        </div>
+                    `;
+                    receivedList.appendChild(li);
+                });
+                
+                sent.forEach(req => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between bg-gray-700 rounded-lg p-2';
+                    li.innerHTML = `<span class="text-white">${req.pseudo}</span>`;
+                    sentList.appendChild(li);
+                });
+                
+                // Actions accepter/refuser
+                document.querySelectorAll('.accept-request').forEach(btn => {
+                    btn.onclick = function() {
+                        fetch('/friend/accept', { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                            body: 'id=' + btn.dataset.id 
+                        })
+                        .then(() => loadFriendRequests());
+                    };
+                });
+                
+                document.querySelectorAll('.refuse-request').forEach(btn => {
+                    btn.onclick = function() {
+                        fetch('/friend/refuse', { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                            body: 'id=' + btn.dataset.id 
+                        })
+                        .then(() => loadFriendRequests());
+                    };
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des demandes:', error);
+            });
+    }
+
+    // Fermer les modaux en cliquant à l'extérieur
+    window.addEventListener('click', function(event) {
+        const addFriendModal = document.getElementById('add-friend-modal');
+        const friendRequestsModal = document.getElementById('friend-requests-modal');
+        
+        if (event.target === addFriendModal) {
+            addFriendModal.classList.add('hidden');
+        }
+        if (event.target === friendRequestsModal) {
+            friendRequestsModal.classList.add('hidden');
+        }
+    });
 });
 </script>
 <?php include_once __DIR__ . '/../layouts/footer.php'; ?> 
