@@ -162,6 +162,12 @@ class AdminController {
             header('Location: /error/403');
             exit;
         }
+        
+        // Headers pour éviter le cache
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        
         require __DIR__ . '/../Views/admin/maintenance.php';
     }
 
@@ -441,7 +447,11 @@ class AdminController {
                 break;
                 
             case 'POST':
-                $data = json_decode(file_get_contents('php://input'), true);
+                // DEBUG LOG
+                $rawInput = file_get_contents('php://input');
+                error_log('DEBUG POST RAW: ' . $rawInput);
+                $data = json_decode($rawInput, true);
+                error_log('DEBUG POST DECODE: ' . print_r($data, true));
                 $pagePath = $data['page_path'] ?? '';
                 $pageName = $data['page_name'] ?? '';
                 $isMaintenance = $data['is_maintenance'] ?? false;

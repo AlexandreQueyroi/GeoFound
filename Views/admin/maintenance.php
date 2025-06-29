@@ -45,18 +45,30 @@
 </div>
 
 <script>
+console.log('SCRIPT MAINTENANCE: Script chargé - v1.1');
+
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('SCRIPT MAINTENANCE: DOMContentLoaded déclenché');
     loadMaintenancePages();
     
     
     document.getElementById('add-page-form').addEventListener('submit', function(e) {
+        console.log('SCRIPT MAINTENANCE: Formulaire soumis');
         e.preventDefault();
         
         const pagePath = document.getElementById('page-path').value;
         const pageName = document.getElementById('page-name').value;
         const isMaintenance = document.getElementById('is-maintenance').checked;
         const message = document.getElementById('maintenance-message').value;
-        
+
+        // LOG DEBUG
+        console.debug('DEBUG ENVOI:', {
+            page_path: pagePath,
+            page_name: pageName,
+            is_maintenance: isMaintenance,
+            message: message
+        });
+
         fetch('/api/admin/maintenance', {
             method: 'POST',
             headers: {

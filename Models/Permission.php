@@ -16,40 +16,42 @@ class Permission {
     public static function hasPermission($userId, $permissionName) {
         self::init();
         
-        // Vérifier d'abord si l'utilisateur a la permission admin (*)
+        // Vérifier d'abord les permissions directes de l'utilisateur
         $stmt = self::$db->prepare("
-            SELECT 1 FROM user_permissions up
+            SELECT p.name 
+            FROM user_permissions up
             JOIN permissions p ON up.permission_id = p.id
-            WHERE up.user_id = ? AND p.name = '*' 
-            AND (up.expires_at IS NULL OR up.expires_at > NOW())
+            WHERE up.user_id = ? AND (up.expires_at IS NULL OR up.expires_at > NOW())
         ");
         $stmt->execute([$userId]);
-        if ($stmt->fetch()) {
-            return true; // L'utilisateur a la permission admin, accès à tout
+        $userPermissions = $stmt->fetchAll();
+        
+        foreach ($userPermissions as $perm) {
+            if ($perm['name'] === $permissionName || $perm['name'] === '*') {
+                return true;
+            }
         }
-
-        // Vérifier les permissions directes de l'utilisateur
+        
+        // Vérifier les permissions du rang de l'utilisateur
         $stmt = self::$db->prepare("
-            SELECT 1 FROM user_permissions up
-            JOIN permissions p ON up.permission_id = p.id
-            WHERE up.user_id = ? AND p.name = ? 
-            AND (up.expires_at IS NULL OR up.expires_at > NOW())
-        ");
-        $stmt->execute([$userId, $permissionName]);
-        if ($stmt->fetch()) {
-            return true;
-        }
-
-        // Vérifier les permissions via le rang de l'utilisateur
-        $stmt = self::$db->prepare("
-            SELECT 1 FROM users u
+            SELECT r.permissions 
+            FROM users u
             JOIN ranks r ON u.user_rank = r.name
-            JOIN rank_permissions rp ON r.id = rp.rank_id
-            JOIN permissions p ON rp.permission_id = p.id
-            WHERE u.id = ? AND p.name = ?
+            WHERE u.id = ?
         ");
-        $stmt->execute([$userId, $permissionName]);
-        return $stmt->fetch() !== false;
+        $stmt->execute([$userId]);
+        $rank = $stmt->fetch();
+        
+        if ($rank && $rank['permissions']) {
+            $rankPermissions = json_decode($rank['permissions'], true);
+            if (is_array($rankPermissions)) {
+                if (in_array($permissionName, $rankPermissions) || in_array('*', $rankPermissions)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     /**
@@ -146,6 +148,8 @@ class Permission {
      */
     public static function getUserPermissions($userId) {
         self::init();
+        
+        // Récupérer les permissions directes de l'utilisateur
         $stmt = self::$db->prepare("
             SELECT p.*, up.expires_at, up.created_at as granted_at
             FROM permissions p
@@ -154,7 +158,38 @@ class Permission {
             ORDER BY p.name
         ");
         $stmt->execute([$userId]);
-        return $stmt->fetchAll();
+        $userPermissions = $stmt->fetchAll();
+        
+        // Récupérer les permissions du rang de l'utilisateur
+        $stmt = self::$db->prepare("
+            SELECT r.permissions 
+            FROM users u
+            JOIN ranks r ON u.user_rank = r.name
+            WHERE u.id = ?
+        ");
+        $stmt->execute([$userId]);
+        $rank = $stmt->fetch();
+        
+        $rankPermissions = [];
+        if ($rank && $rank['permissions']) {
+            $permissionNames = json_decode($rank['permissions'], true);
+            if (is_array($permissionNames)) {
+                foreach ($permissionNames as $permName) {
+                    // Récupérer les détails de la permission
+                    $stmt = self::$db->prepare("SELECT * FROM permissions WHERE name = ?");
+                    $stmt->execute([$permName]);
+                    $perm = $stmt->fetch();
+                    if ($perm) {
+                        $perm['granted_at'] = null; // Permission du rang
+                        $perm['expires_at'] = null; // Permission permanente du rang
+                        $rankPermissions[] = $perm;
+                    }
+                }
+            }
+        }
+        
+        // Combiner les permissions
+        return array_merge($userPermissions, $rankPermissions);
     }
 
     /**
@@ -314,24 +349,23 @@ class Permission {
      */
     public static function getMaintenancePages() {
         self::init();
-        $stmt = self::$db->prepare("
-            SELECT 
-                all_pages.page_path,
-                COALESCE(pm.page_name, all_pages.page_path) AS page_name,
-                COALESCE(pm.is_maintenance, 0) AS is_maintenance,
-                pm.maintenance_message,
-                pm.created_at,
-                pm.updated_at
-            FROM (
-                SELECT page_path FROM page_maintenance
-                UNION
-                SELECT page_path FROM page_permissions
-            ) AS all_pages
-            LEFT JOIN page_maintenance pm ON all_pages.page_path = pm.page_path
-            ORDER BY page_name
-        ");
-        $stmt->execute();
-        return $stmt->fetchAll();
+        try {
+            $stmt = self::$db->prepare("
+                SELECT 
+                    page_path,
+                    page_name,
+                    is_maintenance,
+                    maintenance_message,
+                    created_at,
+                    updated_at
+                FROM page_maintenance
+                ORDER BY page_name
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            return [];
+        }
     }
 
     /**
